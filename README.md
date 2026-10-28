@@ -49,6 +49,20 @@ Traditional linear statistical methods (such as ARIMA, ARMA, and classical econo
   - `Close`: Official closing price (Primary target variable)
   - `VWAP`: Volume Weighted Average Price
 
+### Exploratory Data Visualizations
+<p align="center">
+  <img src="assets/chart_price_history.png" alt="Historical Price & VWAP" width="95%"/>
+</p>
+<p align="center">
+  <img src="assets/chart_moving_averages.png" alt="Moving Average Crossover" width="95%"/>
+</p>
+<p align="center">
+  <img src="assets/chart_returns_volatility.png" alt="Daily Returns & Volatility Dynamics" width="95%"/>
+</p>
+<p align="center">
+  <img src="assets/chart_correlation_heatmap.png" alt="Correlation Heatmap" width="70%"/>
+</p>
+
 ---
 
 ## 5. Architectural Pipeline & Methodology
@@ -120,6 +134,16 @@ The models were evaluated on the completely unseen test dataset spanning **665 t
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
 | **LSTM** | ₹13.09 | 388.54 | ₹19.71 | 3.19% | 0.9666 | Baseline |
 | **GRU** | **₹9.27** | **195.81** | **₹13.99** | **2.26%** | **0.9832** | **WINNER (Selected)** |
+
+<p align="center">
+  <img src="assets/chart_head_to_head.png" alt="Head-to-Head Trajectory Benchmark" width="95%"/>
+</p>
+<p align="center">
+  <img src="assets/chart_loss_curves.png" alt="Training vs Validation Loss Curves" width="95%"/>
+</p>
+<p align="center">
+  <img src="assets/chart_residual_errors.png" alt="Residual Error Distribution" width="85%"/>
+</p>
 
 ### Analytical Insights:
 - **Best Performer:** **GRU** outperformed LSTM across all regression error criteria, achieving lower RMSE (₹13.99 vs ₹19.71) and lower MAE (₹9.27 vs ₹13.09).
