@@ -173,7 +173,6 @@ stock_price_prediction/
 ├── predict.py                 # CLI inference pipeline for next-day close prediction
 ├── requirements.txt           # Python package dependencies
 ├── README.md                  # Comprehensive project documentation
-├── VIVA.md                    # 28+ Viva Voce questions & answers for MBA defense
 │
 ├── data/
 │   └── ADANIPORTS-selected-columns-2.csv # Historical stock dataset
