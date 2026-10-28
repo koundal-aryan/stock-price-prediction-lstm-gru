@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Exploratory Data Analysis | ADANIPORTS Stock Prediction{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Exploratory Financial Data Analysis (EDA)</h2>
+        <p>In-depth econometric, volatility, and trend analysis of ADANIPORTS historical stock prices.</p>
+    </div>
+    <div class="header-tags">
+        <span class="meta-pill"><i class="fa-solid fa-calendar-days"></i> {{ summary.start_date }} to {{ summary.end_date }}</span>
+        <span class="meta-pill"><i class="fa-solid fa-list-check"></i> {{ summary.total_rows }} Sessions</span>
+    </div>
+</div>
+
+<!-- Return & Risk Summary KPI Grid -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-label"><span>Mean Daily Return</span> <i class="fa-solid fa-percent"></i></div>
+        <div class="kpi-value">{{ "%.3f"|format(return_stats.mean_return) }}%</div>
+        <div class="kpi-subtitle">Average daily trading return</div>
+    </div>
+    <div class="kpi-card amber-border">
+        <div class="kpi-label"><span>Daily Volatility (Std Dev)</span> <i class="fa-solid fa-chart-simple"></i></div>
+        <div class="kpi-value">{{ "%.3f"|format(return_stats.std_return) }}%</div>
+        <div class="kpi-subtitle">Standard deviation of daily returns</div>
+    </div>
+    <div class="kpi-card success-border">
+        <div class="kpi-label"><span>Max Single-Day Gain</span> <i class="fa-solid fa-arrow-trend-up"></i></div>
+        <div class="kpi-value" style="color: var(--success);">+{{ "%.2f"|format(return_stats.max_return) }}%</div>
+        <div class="kpi-subtitle">Historical maximum surge</div>
+    </div>
+    <div class="kpi-card danger-border">
+        <div class="kpi-label"><span>Max Single-Day Drop</span> <i class="fa-solid fa-arrow-trend-down"></i></div>
+        <div class="kpi-value" style="color: var(--danger);">{{ "%.2f"|format(return_stats.min_return) }}%</div>
+        <div class="kpi-subtitle">Historical maximum drawdown</div>
+    </div>
+    <div class="kpi-card purple-border">
+        <div class="kpi-label"><span>Return Skewness</span> <i class="fa-solid fa-scale-balanced"></i></div>
+        <div class="kpi-value">{{ "%.3f"|format(return_stats.skewness) }}</div>
+        <div class="kpi-subtitle">Asymmetry of return distribution</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label"><span>Return Kurtosis</span> <i class="fa-solid fa-mountain"></i></div>
+        <div class="kpi-value">{{ "%.3f"|format(return_stats.kurtosis) }}</div>
+        <div class="kpi-subtitle">Fat-tail risk indicator (>3 indicates leptokurtic)</div>
+    </div>
+</div>
+
+<!-- Section 1: Interactive Historical Closing Price & VWAP -->
+<div class="chart-card">
+    <div class="chart-header">
+        <div class="chart-title">
+            <h3>1. Historical Closing Price &amp; Volume Weighted Average Price (VWAP)</h3>
+            <p>Use range buttons or slider to inspect macro cycles, structural breaks, and long-term trends.</p>
+        </div>
+    </div>
+    <div class="chart-container">
+        {{ chart_history|safe }}
+    </div>
+</div>
+
+<!-- Section 2: Moving Averages Trend Crossover Analysis -->
+<div class="chart-card">
+    <div class="chart-header">
+        <div class="chart-title">
+            <h3>2. Trend Analysis: Simple Moving Averages (SMA 20, SMA 50, SMA 100)</h3>
+            <p>Golden Cross and Death Cross indicator identification across medium and long horizons.</p>
+        </div>
+    </div>
+    <div class="chart-container">
+        {{ chart_sma|safe }}
+    </div>
+</div>
+
+<!-- Section 3: Risk & Returns Dynamics Subplot -->
+<div class="chart-card">
+    <div class="chart-header">
+        <div class="chart-title">
+            <h3>3. Daily Returns Distribution and 20-Day Rolling Volatility</h3>
+            <p>Visualizing volatility clustering and fat-tailed shocks during periods of market turmoil.</p>
+        </div>
+    </div>
+    <div class="chart-container">
+        {{ chart_returns|safe }}
+    </div>
+</div>
+
+<!-- Section 4: Dataset Integrity & Field Distribution Table -->
+<div class="charts-row-2">
+    <div class="table-card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            <i class="fa-solid fa-clipboard-check" style="color: var(--success); margin-right: 0.5rem;"></i> Preprocessing Audit
+        </h3>
+        <table class="custom-table">
+            <tbody>
+                <tr>
+                    <td><strong>Initial Rows Loaded</strong></td>
+                    <td>{{ prep_report.initial_rows }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Duplicate Dates Found</strong></td>
+                    <td>{{ prep_report.duplicates_found }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Invalid Prices Detected</strong></td>
+                    <td>{{ prep_report.invalid_price_records_removed }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Missing Values Imputed</strong></td>
+                    <td>0 remaining (ffill + bfill applied)</td>
+                </tr>
+                <tr>
+                    <td><strong>Final Usable Sessions</strong></td>
+                    <td><strong>{{ prep_report.final_usable_records }}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Chronological Order</strong></td>
+                    <td>Strictly Enforced (Ascending by Date)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            <i class="fa-solid fa-lightbulb" style="color: var(--warning); margin-right: 0.5rem;"></i> Financial Econometric Insights
+        </h3>
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7;">
+            <li><strong>Volatility Clustering:</strong> Large price variations tend to be followed by large variations, visible in the rolling volatility chart.</li>
+            <li><strong>Fat Tails (Leptokurtic):</strong> Return kurtosis of {{ "%.2f"|format(return_stats.kurtosis) }} indicates extreme outliers occur far more frequently than predicted by a normal distribution.</li>
+            <li><strong>Non-Stationarity:</strong> Historical prices exhibit strong non-stationarity and upward drift, justifying MinMaxScaler fitting strictly on training intervals.</li>
+            <li><strong>Information Availability:</strong> All moving averages and return metrics are calculated looking only backward in time, eliminating look-ahead bias.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

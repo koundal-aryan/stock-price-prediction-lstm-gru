@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Stock Price Prediction | Deep Learning - Overview{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-subtitle">MBA Data Science &amp; AI Academic Project</div>
+    <h2 class="hero-title">Stock Price Prediction Using Deep Learning:<br>LSTM and GRU Models</h2>
+    <p class="hero-desc">
+        A Deep Learning-Based Time Series Analysis of <strong>ADANIPORTS</strong> stock prices. 
+        Implements an end-to-end mathematical and computational pipeline featuring isolated data scaling, 
+        chronological 60-day sliding-window sequences, gated recurrent neural networks, and rigorous regression diagnostics.
+    </p>
+    <div class="hero-actions">
+        <a href="{{ url_for('dashboard') }}" class="btn-primary">
+            <i class="fa-solid fa-gauge-high"></i> Open Analytics Dashboard
+        </a>
+        <a href="{{ url_for('prediction_view') }}" class="btn-outline">
+            <i class="fa-solid fa-bullseye"></i> Next-Day Close Forecast
+        </a>
+        <a href="{{ url_for('models_view') }}" class="btn-outline">
+            <i class="fa-solid fa-code-compare"></i> Model Comparison (LSTM vs GRU)
+        </a>
+    </div>
+</div>
+
+<!-- Architecture Pipeline Steps -->
+<div class="page-header" style="border: none; margin-bottom: 1rem;">
+    <div>
+        <h2>End-to-End System Pipeline</h2>
+        <p>A zero-data-leakage architecture strictly adhering to financial econometrics &amp; deep learning standards.</p>
+    </div>
+</div>
+
+<div class="pipeline-grid">
+    <div class="pipeline-card">
+        <div class="pipeline-step-badge">1</div>
+        <h4>Dataset Ingestion</h4>
+        <p>Historical daily quotes of ADANIPORTS from 2007 to 2021 (3,322 trading records) with automatic schema detection.</p>
+    </div>
+    
+    <div class="pipeline-card">
+        <div class="pipeline-step-badge">2</div>
+        <h4>Time-Series Integrity</h4>
+        <p>Strict chronological sorting, duplicate date removal, missing value imputation (ffill/bfill), and price validity checks.</p>
+    </div>
+
+    <div class="pipeline-card">
+        <div class="pipeline-step-badge">3</div>
+        <h4>Technical Features</h4>
+        <p>Constructs 20, 50, &amp; 100-day Simple Moving Averages, daily percentage returns, and rolling volatility.</p>
+    </div>
+
+    <div class="pipeline-card">
+        <div class="pipeline-step-badge">4</div>
+        <h4>Sequence Generator</h4>
+        <p>Generates sliding windows of 60 trading days ($t-59$ to $t$) to forecast the next trading day's Close ($t+1$).</p>
+    </div>
+
+    <div class="pipeline-card">
+        <div class="pipeline-step-badge">5</div>
+        <h4>Deep Learning</h4>
+        <p>Trains custom 2-layer stacked LSTM and GRU networks with Dropout (0.2), Adam optimization, and EarlyStopping.</p>
+    </div>
+
+    <div class="pipeline-card">
+        <div class="pipeline-step-badge">6</div>
+        <h4>Evaluation &amp; Serving</h4>
+        <p>Computes MAE, MSE, RMSE, MAPE, and R² on unscaled INR prices, selecting the best model for live Flask inference.</p>
+    </div>
+</div>
+
+<!-- Key Highlights Row -->
+<div class="charts-row-2">
+    <div class="table-card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">
+            <i class="fa-solid fa-database" style="color: var(--primary); margin-right: 0.5rem;"></i> Dataset Characteristics
+        </h3>
+        <table class="custom-table">
+            <tbody>
+                <tr>
+                    <td><strong>Asset Ticker</strong></td>
+                    <td>ADANIPORTS (Formerly MUNDRAPORT)</td>
+                </tr>
+                <tr>
+                    <td><strong>Trading Period</strong></td>
+                    <td>2007-11-27 to 2021-04-30 (13.5 Years)</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Trading Days</strong></td>
+                    <td>3,322 Sessions</td>
+                </tr>
+                <tr>
+                    <td><strong>Target Variable</strong></td>
+                    <td>$Close(t+1)$ (Next Trading Day Close)</td>
+                </tr>
+                <tr>
+                    <td><strong>Window / Sequence Size</strong></td>
+                    <td>60 Trading Days</td>
+                </tr>
+                <tr>
+                    <td><strong>Train / Test Split</strong></td>
+                    <td>80% Chronological Train / 20% Test (665 Days)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">
+            <i class="fa-solid fa-trophy" style="color: var(--warning); margin-right: 0.5rem;"></i> Model Benchmark Overview
+        </h3>
+        {% if results %}
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Model</th>
+                    <th>MAE (₹)</th>
+                    <th>RMSE (₹)</th>
+                    <th>R² Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr {% if results.best_model == 'LSTM' %}class="highlight-winner"{% endif %}>
+                    <td><strong>LSTM</strong> {% if results.best_model == 'LSTM' %}<span class="winner-badge">BEST</span>{% endif %}</td>
+                    <td>₹{{ "%.2f"|format(results.LSTM.MAE) }}</td>
+                    <td>₹{{ "%.2f"|format(results.LSTM.RMSE) }}</td>
+                    <td>{{ "%.4f"|format(results.LSTM.R2) }}</td>
+                </tr>
+                <tr {% if results.best_model == 'GRU' %}class="highlight-winner"{% endif %}>
+                    <td><strong>GRU</strong> {% if results.best_model == 'GRU' %}<span class="winner-badge">BEST</span>{% endif %}</td>
+                    <td>₹{{ "%.2f"|format(results.GRU.MAE) }}</td>
+                    <td>₹{{ "%.2f"|format(results.GRU.RMSE) }}</td>
+                    <td>{{ "%.4f"|format(results.GRU.R2) }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="margin-top: 1.25rem;">
+            <p style="font-size: 0.88rem; color: var(--text-secondary);">
+                <strong>Winning Architecture:</strong> <span style="color: var(--primary); font-weight: 700;">{{ results.best_model }}</span>.
+                {{ results.selection_reason }}
+            </p>
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted);">Models have not been trained yet. Please run <code>python train.py</code>.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="disclaimer-box" style="margin-top: 2rem;">
+    <strong><i class="fa-solid fa-triangle-exclamation"></i> Academic Notice:</strong> 
+    This application is engineered specifically for academic demonstration, research presentation, and viva voce evaluation in MBA Data Science &amp; AI. 
+    Stock market investments are subject to market risks, unforeseen news, and macro volatility. Historical price patterns alone cannot guarantee future asset returns.
+</div>
+{% endblock %}

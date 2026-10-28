@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Executive Analytics Dashboard | ADANIPORTS Stock Prediction{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Executive Stock Prediction Dashboard</h2>
+        <p>Live deep learning time-series analytics, technical indicators, and next-day price forecast.</p>
+    </div>
+    <div class="header-tags">
+        <span class="meta-pill"><i class="fa-solid fa-clock"></i> Window: 60 Trading Days</span>
+        <span class="meta-pill"><i class="fa-solid fa-microchip"></i> Engine: TensorFlow / Keras</span>
+        <span class="meta-pill"><i class="fa-solid fa-calendar-check"></i> Latest Date: {{ prediction.latest_date if prediction else 'N/A' }}</span>
+    </div>
+</div>
+
+<!-- KPI Cards Grid -->
+<div class="kpi-grid">
+    <!-- Card 1: Latest Close -->
+    <div class="kpi-card">
+        <div class="kpi-label">
+            <span>Latest Close</span>
+            <i class="fa-solid fa-indian-rupee-sign" style="color: var(--primary);"></i>
+        </div>
+        <div class="kpi-value">₹{{ "%.2f"|format(prediction.latest_close) if prediction else '---' }}</div>
+        <div class="kpi-subtitle">Last recorded trading session</div>
+    </div>
+
+    <!-- Card 2: Predicted Price -->
+    <div class="kpi-card {% if prediction and prediction.direction == 'UP' %}success-border{% else %}danger-border{% endif %}">
+        <div class="kpi-label">
+            <span>Predicted Close (t+1)</span>
+            <i class="fa-solid fa-bullseye" style="color: {% if prediction and prediction.direction == 'UP' %}var(--success){% else %}var(--danger){% endif %};"></i>
+        </div>
+        <div class="kpi-value">₹{{ "%.2f"|format(prediction.predicted_close) if prediction else '---' }}</div>
+        <div class="kpi-subtitle">
+            Next trading day estimate
+        </div>
+    </div>
+
+    <!-- Card 3: Expected Change -->
+    <div class="kpi-card {% if prediction and prediction.direction == 'UP' %}success-border{% else %}danger-border{% endif %}">
+        <div class="kpi-label">
+            <span>Expected Change</span>
+            <i class="fa-solid fa-chart-line" style="color: var(--text-secondary);"></i>
+        </div>
+        <div class="kpi-value" style="color: {% if prediction and prediction.direction == 'UP' %}var(--success){% else %}var(--danger){% endif %};">
+            {% if prediction %}
+                {% if prediction.direction == 'UP' %}+{% endif %}{{ "%.2f"|format(prediction.percentage_change) }}%
+            {% else %}
+                ---
+            {% endif %}
+        </div>
+        <div class="kpi-subtitle">
+            {% if prediction %}
+                <span class="badge-trend {% if prediction.direction == 'UP' %}up{% else %}down{% endif %}">
+                    <i class="fa-solid {% if prediction.direction == 'UP' %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+                    {% if prediction.direction == 'UP' %}+{% endif %}₹{{ "%.2f"|format(prediction.absolute_change) }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Card 4: Best Model -->
+    <div class="kpi-card purple-border">
+        <div class="kpi-label">
+            <span>Best Model</span>
+            <i class="fa-solid fa-award" style="color: var(--purple);"></i>
+        </div>
+        <div class="kpi-value" style="color: var(--purple);">{{ results.best_model if results else '---' }}</div>
+        <div class="kpi-subtitle">Selected via Test RMSE &amp; MAE</div>
+    </div>
+
+    <!-- Card 5: Test RMSE -->
+    <div class="kpi-card amber-border">
+        <div class="kpi-label">
+            <span>Model Test RMSE</span>
+            <i class="fa-solid fa-ruler-combined" style="color: var(--warning);"></i>
+        </div>
+        <div class="kpi-value">₹{{ "%.2f"|format(results[results.best_model].RMSE) if results else '---' }}</div>
+        <div class="kpi-subtitle">Root Mean Squared Error (₹)</div>
+    </div>
+
+    <!-- Card 6: Test MAE -->
+    <div class="kpi-card">
+        <div class="kpi-label">
+            <span>Model Test MAE</span>
+            <i class="fa-solid fa-calculator" style="color: var(--primary);"></i>
+        </div>
+        <div class="kpi-value">₹{{ "%.2f"|format(results[results.best_model].MAE) if results else '---' }}</div>
+        <div class="kpi-subtitle">Mean Absolute Error (₹)</div>
+    </div>
+</div>
+
+<!-- Callout Banner: Next-Day Prediction Summary -->
+{% if prediction %}
+<div class="callout-box">
+    <div class="callout-icon">
+        <i class="fa-solid fa-circle-info"></i>
+    </div>
+    <div class="callout-text">
+        <h4>Next Trading Day Automated Forecast Summary</h4>
+        <p>
+            Using the past <strong>60 consecutive trading sessions</strong> of ADANIPORTS up to <strong>{{ prediction.latest_date }}</strong> (Last Close: <strong>₹{{ "%.2f"|format(prediction.latest_close) }}</strong>), 
+            the <strong>{{ prediction.model_used }}</strong> network projects the next trading day's closing price at 
+            <strong>₹{{ "%.2f"|format(prediction.predicted_close) }}</strong> 
+            (an estimated change of <strong>{% if prediction.direction == 'UP' %}+{% endif %}{{ "%.2f"|format(prediction.percentage_change) }}%</strong>).
+            The test dataset R² coefficient is <strong>{{ "%.4f"|format(prediction.model_r2) }}</strong> with a Mean Absolute Error of <strong>₹{{ "%.2f"|format(prediction.model_mae) }}</strong>.
+        </p>
+    </div>
+</div>
+{% endif %}
+
+<!-- Primary Chart 1: Actual vs Best Model Predictions -->
+<div class="chart-card">
+    <div class="chart-header">
+        <div class="chart-title">
+            <h3>Actual vs {{ results.best_model if results else 'Deep Learning' }} Prediction on Test Dataset</h3>
+            <p>Evaluating 665 unseen trading days (August 2018 – April 2021) without look-ahead data leakage.</p>
+        </div>
+        <a href="{{ url_for('models_view') }}" class="meta-pill" style="text-decoration: none; color: var(--primary);">
+            <i class="fa-solid fa-code-compare"></i> Compare with other models &rarr;
+        </a>
+    </div>
+    <div class="chart-container">
+        {{ chart_best_pred|safe }}
+    </div>
+</div>
+
+<!-- Row 2: Closing Price & SMAs + Returns/Volatility -->
+<div class="charts-row-2">
+    <!-- Chart 2: Moving Averages -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <div class="chart-title">
+                <h3>Technical Moving Averages</h3>
+                <p>Close Price with 20-day, 50-day, and 100-day Simple Moving Averages.</p>
+            </div>
+        </div>
+        <div class="chart-container">
+            {{ chart_sma|safe }}
+        </div>
+    </div>
+
+    <!-- Chart 3: Head-to-Head LSTM vs GRU -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <div class="chart-title">
+                <h3>LSTM vs GRU Head-to-Head</h3>
+                <p>Direct comparison of trajectory tracking between both architectures.</p>
+            </div>
+        </div>
+        <div class="chart-container">
+            {{ chart_comparison|safe }}
+        </div>
+    </div>
+</div>
+
+<!-- Primary Chart 4: Historical Price with Range Slider -->
+<div class="chart-card">
+    <div class="chart-header">
+        <div class="chart-title">
+            <h3>ADANIPORTS Full Historical Price Action &amp; VWAP</h3>
+            <p>Multi-year overview across market cycles, including 2008 financial crisis and 2020 pandemic volatility.</p>
+        </div>
+    </div>
+    <div class="chart-container">
+        {{ chart_history|safe }}
+    </div>
+</div>
+
+<div class="disclaimer-box">
+    <strong><i class="fa-solid fa-shield-halved"></i> Methodological Note:</strong> 
+    Predictions are computed strictly using isolated MinMaxScaler transformation and backward-looking sequence generation. 
+    Past price patterns do not guarantee future returns.
+</div>
+{% endblock %}

@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Model Comparison: LSTM vs GRU | ADANIPORTS Stock Prediction{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Deep Learning Model Comparison: LSTM vs GRU</h2>
+        <p>Architectural benchmark, test set evaluation metrics, and learning curve diagnostics.</p>
+    </div>
+    <div class="header-tags">
+        <span class="meta-pill"><i class="fa-solid fa-trophy" style="color: var(--warning);"></i> Best Model: <strong>{{ results.best_model }}</strong></span>
+        <span class="meta-pill"><i class="fa-solid fa-layer-group"></i> 2-Layer Stacked RNN</span>
+    </div>
+</div>
+
+<!-- Comparison Table Card -->
+<div class="table-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">
+            <i class="fa-solid fa-table-list" style="color: var(--primary); margin-right: 0.5rem;"></i> Test Dataset Regression Benchmark (665 Trading Days)
+        </h3>
+        <span style="font-size: 0.85rem; color: var(--text-secondary);">*Evaluated on raw unscaled INR (₹) prices</span>
+    </div>
+
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Model Architecture</th>
+                <th>MAE (₹) &darr;</th>
+                <th>MSE &darr;</th>
+                <th>RMSE (₹) &darr;</th>
+                <th>MAPE (%) &darr;</th>
+                <th>R² Score &uarr;</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr {% if results.best_model == 'LSTM' %}class="highlight-winner"{% endif %}>
+                <td>
+                    <strong>LSTM (Long Short-Term Memory)</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-sans);">Stacked LSTM (64, 32) + Dropout (0.2) + Dense (16, 1)</div>
+                </td>
+                <td>₹{{ "%.2f"|format(results.LSTM.MAE) }}</td>
+                <td>{{ "%.2f"|format(results.LSTM.MSE) }}</td>
+                <td>₹{{ "%.2f"|format(results.LSTM.RMSE) }}</td>
+                <td>{{ "%.2f"|format(results.LSTM.MAPE) }}%</td>
+                <td><strong>{{ "%.4f"|format(results.LSTM.R2) }}</strong></td>
+                <td>
+                    {% if results.best_model == 'LSTM' %}
+                        <span class="winner-badge">WINNER</span>
+                    {% else %}
+                        <span style="color: var(--text-muted); font-size: 0.8rem; font-family: var(--font-sans);">Baseline</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr {% if results.best_model == 'GRU' %}class="highlight-winner"{% endif %}>
+                <td>
+                    <strong>GRU (Gated Recurrent Unit)</strong>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-sans);">Stacked GRU (64, 32) + Dropout (0.2) + Dense (16, 1)</div>
+                </td>
+                <td>₹{{ "%.2f"|format(results.GRU.MAE) }}</td>
+                <td>{{ "%.2f"|format(results.GRU.MSE) }}</td>
+                <td>₹{{ "%.2f"|format(results.GRU.RMSE) }}</td>
+                <td>{{ "%.2f"|format(results.GRU.MAPE) }}%</td>
+                <td><strong>{{ "%.4f"|format(results.GRU.R2) }}</strong></td>
+                <td>
+                    {% if results.best_model == 'GRU' %}
+                        <span class="winner-badge">WINNER</span>
+                    {% else %}
+                        <span style="color: var(--text-muted); font-size: 0.8rem; font-family: var(--font-sans);">Baseline</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="callout-box" style="margin-top: 1.5rem; margin-bottom: 0;">
+        <div class="callout-icon">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div class="callout-text">
+            <h4>Decision Rationale: Why {{ results.best_model }} Was Selected</h4>
+            <p>{{ results.selection_reason }} Lower MAE and RMSE indicate smaller absolute rupee forecast discrepancies, while an R² score exceeding 0.96 confirms that over 96% of variance in future price movements is explained by the network's recurrent state transitions.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Chart: Loss Curves -->
+<div class="chart-card">
+    <div class="chart-header">
+        <div class="chart-title">
+            <h3>Training vs Validation Loss (Learning Curves)</h3>
+            <p>Monitoring convergence, learning rate reduction, and EarlyStopping to ensure zero overfitting.</p>
+        </div>
+    </div>
+    <div class="chart-container">
+        {{ chart_loss|safe }}
+    </div>
+</div>
+
+<!-- Row: Individual Model Prediction Charts -->
+<div class="charts-row-2">
+    <!-- Chart: Actual vs LSTM -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <div class="chart-title">
+                <h3>Actual vs LSTM Predictions</h3>
+                <p>Test Set MAE: ₹{{ "%.2f"|format(results.LSTM.MAE) }} | R²: {{ "%.4f"|format(results.LSTM.R2) }}</p>
+            </div>
+        </div>
+        <div class="chart-container">
+            {{ chart_lstm|safe }}
+        </div>
+    </div>
+
+    <!-- Chart: Actual vs GRU -->
+    <div class="chart-card">
+        <div class="chart-header">
+            <div class="chart-title">
+                <h3>Actual vs GRU Predictions</h3>
+                <p>Test Set MAE: ₹{{ "%.2f"|format(results.GRU.MAE) }} | R²: {{ "%.4f"|format(results.GRU.R2) }}</p>
+            </div>
+        </div>
+        <div class="chart-container">
+            {{ chart_gru|safe }}
+        </div>
+    </div>
+</div>
+
+<!-- MBA Viva Theoretical Comparison Grid -->
+<div class="charts-row-2">
+    <div class="table-card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            <i class="fa-solid fa-brain" style="color: var(--primary); margin-right: 0.5rem;"></i> LSTM Architecture Details
+        </h3>
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7;">
+            <li><strong>Gates:</strong> Contains 3 gating mechanisms: <em>Forget Gate</em> (discards irrelevant past prices), <em>Input Gate</em> (updates candidate state), and <em>Output Gate</em> (controls cell output).</li>
+            <li><strong>Internal State:</strong> Separates Cell State ($c_t$) from Hidden State ($h_t$), creating a constant error carousel that mitigates vanishing gradients over 60 time steps.</li>
+            <li><strong>Parameters:</strong> 4 weight matrices per unit ($4 \times d$). Higher capacity, but slightly more susceptible to overfitting on noisy financial series.</li>
+        </ul>
+    </div>
+
+    <div class="table-card" style="margin-bottom: 0;">
+        <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem;">
+            <i class="fa-solid fa-bolt" style="color: var(--danger); margin-right: 0.5rem;"></i> GRU Architecture Details
+        </h3>
+        <ul style="padding-left: 1.25rem; font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7;">
+            <li><strong>Gates:</strong> Streamlined into 2 gating mechanisms: <em>Reset Gate</em> (controls how much previous memory to forget) and <em>Update Gate</em> (balances past and new candidate memory).</li>
+            <li><strong>Internal State:</strong> Merges Cell State and Hidden State into a unified representation ($h_t$), allowing faster forward-backward passes and quicker convergence.</li>
+            <li><strong>Parameters:</strong> 3 weight matrices per unit ($3 \times d$). Approximately 25% fewer parameters than LSTM, making it less prone to overfitting on stock volatility.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

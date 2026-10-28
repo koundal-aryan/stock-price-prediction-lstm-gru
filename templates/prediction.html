@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block title %}Next-Day Price Prediction | ADANIPORTS Stock Prediction{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2>Next Trading Day Close Prediction</h2>
+        <p>Inferential forecasting using the trained deep learning model and the latest 60 trading days of ADANIPORTS.</p>
+    </div>
+    <div class="header-tags">
+        <span class="meta-pill"><i class="fa-solid fa-calendar-check"></i> Latest Date: {{ prediction.latest_date }}</span>
+        <span class="meta-pill"><i class="fa-solid fa-microchip"></i> Engine: {{ prediction.model_used }}</span>
+    </div>
+</div>
+
+<!-- Model Selection Form Card -->
+<div class="prediction-form-card">
+    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary);">
+        <i class="fa-solid fa-sliders" style="color: var(--primary); margin-right: 0.5rem;"></i> Select Model Configuration
+    </h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+        Choose whether to forecast with the benchmark-winning model or explicitly test LSTM or GRU architectures.
+    </p>
+
+    <form method="GET" action="{{ url_for('prediction_view') }}">
+        <div class="form-group">
+            <label for="model_select" class="form-label">Deep Learning Model:</label>
+            <select name="model" id="model_select" class="form-select">
+                <option value="best" {% if selected_model == 'best' %}selected{% endif %}>Best Model Recommended (Currently: {{ results.best_model }})</option>
+                <option value="GRU" {% if selected_model == 'GRU' %}selected{% endif %}>GRU Model (Test RMSE: ₹{{ "%.2f"|format(results.GRU.RMSE) }})</option>
+                <option value="LSTM" {% if selected_model == 'LSTM' %}selected{% endif %}>LSTM Model (Test RMSE: ₹{{ "%.2f"|format(results.LSTM.RMSE) }})</option>
+            </select>
+        </div>
+        <button type="submit" class="btn-primary">
+            <i class="fa-solid fa-bolt"></i> Generate Forecast
+        </button>
+    </form>
+</div>
+
+<!-- Forecast Results Display Card -->
+<div class="table-card" style="border-left: 5px solid {% if prediction.direction == 'UP' %}var(--success){% else %}var(--danger){% endif %};">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <span class="meta-pill" style="background-color: var(--primary-light); color: var(--primary); font-weight: 700;">
+                Model Used: {{ prediction.model_used }} {% if prediction.is_best_model %}(Best Performer){% endif %}
+            </span>
+            <h3 style="font-size: 1.6rem; font-weight: 800; margin-top: 0.5rem; color: var(--text-primary);">
+                Forecast Summary for Next Trading Day
+            </h3>
+        </div>
+        <div>
+            <span class="badge-trend {% if prediction.direction == 'UP' %}up{% else %}down{% endif %}" style="font-size: 1.1rem; padding: 0.5rem 1rem;">
+                <i class="fa-solid {% if prediction.direction == 'UP' %}fa-arrow-up{% else %}fa-arrow-down{% endif %}"></i>
+                {% if prediction.direction == 'UP' %}+{% endif %}{{ "%.2f"|format(prediction.percentage_change) }}% Expected Change
+            </span>
+        </div>
+    </div>
+
+    <div class="kpi-grid" style="margin-bottom: 1.5rem;">
+        <div class="kpi-card">
+            <div class="kpi-label"><span>Latest Recorded Close</span> <i class="fa-solid fa-calendar-day"></i></div>
+            <div class="kpi-value">₹{{ "%.2f"|format(prediction.latest_close) }}</div>
+            <div class="kpi-subtitle">Observed on {{ prediction.latest_date }}</div>
+        </div>
+
+        <div class="kpi-card {% if prediction.direction == 'UP' %}success-border{% else %}danger-border{% endif %}">
+            <div class="kpi-label"><span>Predicted Next-Day Close</span> <i class="fa-solid fa-crosshairs"></i></div>
+            <div class="kpi-value" style="color: {% if prediction.direction == 'UP' %}var(--success){% else %}var(--danger){% endif %};">
+                ₹{{ "%.2f"|format(prediction.predicted_close) }}
+            </div>
+            <div class="kpi-subtitle">Model Point Estimate</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-label"><span>Absolute Expected Diff</span> <i class="fa-solid fa-arrows-up-down"></i></div>
+            <div class="kpi-value">
+                {% if prediction.direction == 'UP' %}+{% endif %}₹{{ "%.2f"|format(prediction.absolute_change) }}
+            </div>
+            <div class="kpi-subtitle">Predicted spread in INR (₹)</div>
+        </div>
+
+        <div class="kpi-card purple-border">
+            <div class="kpi-label"><span>Confidence / R²</span> <i class="fa-solid fa-chart-pie"></i></div>
+            <div class="kpi-value" style="color: var(--purple);">{{ "%.4f"|format(prediction.model_r2) }}</div>
+            <div class="kpi-subtitle">Test Dataset Goodness-of-Fit</div>
+        </div>
+    </div>
+
+    <!-- Mandatory Disclaimer Box -->
+    <div class="disclaimer-box" style="margin-top: 0;">
+        <div style="display: flex; gap: 0.75rem;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 1.3rem; margin-top: 0.15rem;"></i>
+            <div>
+                <strong>IMPORTANT DISCLAIMER:</strong>
+                <p style="margin-top: 0.25rem;">
+                    {{ prediction.disclaimer }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 60-Day Lookback Sequence Historical Window Table -->
+<div class="table-card">
+    <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary);">
+        <i class="fa-solid fa-list-ol" style="color: var(--primary); margin-right: 0.5rem;"></i> 
+        Input Sequence History (Most Recent 10 of 60 Trading Days)
+    </h3>
+    <p style="color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 1.25rem;">
+        These 60 standardized price points were fed into the {{ prediction.model_used }} recurrent memory states to produce the inference above.
+    </p>
+
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Prev Close (₹)</th>
+                <th>Open (₹)</th>
+                <th>High (₹)</th>
+                <th>Low (₹)</th>
+                <th>Close (₹)</th>
+                <th>VWAP (₹)</th>
+                <th>Daily Return (%)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in recent_rows %}
+            <tr>
+                <td><strong>{{ row.Date }}</strong></td>
+                <td>₹{{ "%.2f"|format(row['Prev Close']) if 'Prev Close' in row else '---' }}</td>
+                <td>₹{{ "%.2f"|format(row.Open) if 'Open' in row else '---' }}</td>
+                <td>₹{{ "%.2f"|format(row.High) if 'High' in row else '---' }}</td>
+                <td>₹{{ "%.2f"|format(row.Low) if 'Low' in row else '---' }}</td>
+                <td><strong>₹{{ "%.2f"|format(row.Close) }}</strong></td>
+                <td>₹{{ "%.2f"|format(row.VWAP) if 'VWAP' in row else '---' }}</td>
+                <td>
+                    {% if 'Daily_Return' in row %}
+                        <span class="badge-trend {% if row.Daily_Return >= 0 %}up{% else %}down{% endif %}">
+                            {% if row.Daily_Return >= 0 %}+{% endif %}{{ "%.2f"|format(row.Daily_Return) }}%
+                        </span>
+                    {% else %}
+                        ---
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
