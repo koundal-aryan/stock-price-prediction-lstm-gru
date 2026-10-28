@@ -50,9 +50,6 @@ def plot_closing_price_history(df: pd.DataFrame, as_html: bool = True):
         ))
         
     fig.update_layout(
-        title="<b>ADANIPORTS: Historical Closing Price & VWAP</b>",
-        xaxis_title="Date",
-        yaxis_title="Price (₹ INR)",
         template="plotly_white",
         hovermode="x unified",
         xaxis=dict(
@@ -67,8 +64,15 @@ def plot_closing_price_history(df: pd.DataFrame, as_html: bool = True):
             rangeslider=dict(visible=True),
             type="date"
         ),
-        margin=dict(l=40, r=40, t=60, b=40),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        margin=dict(l=40, r=40, t=20, b=40),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            bgcolor="rgba(255, 255, 255, 0.8)"
+        )
     )
     
     return fig.to_html(include_plotlyjs=False, full_html=False) if as_html else fig
@@ -121,13 +125,17 @@ def plot_moving_averages(df: pd.DataFrame, as_html: bool = True):
         ))
         
     fig.update_layout(
-        title="<b>Trend Analysis: Closing Price vs 20, 50, & 100-Day Moving Averages</b>",
-        xaxis_title="Date",
-        yaxis_title="Price (₹ INR)",
         template="plotly_white",
         hovermode="x unified",
-        margin=dict(l=40, r=40, t=60, b=40),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        margin=dict(l=40, r=40, t=20, b=40),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            bgcolor="rgba(255, 255, 255, 0.8)"
+        )
     )
     
     return fig.to_html(include_plotlyjs=False, full_html=False) if as_html else fig
@@ -178,10 +186,9 @@ def plot_daily_returns_volatility(df: pd.DataFrame, as_html: bool = True):
     )
     
     fig.update_layout(
-        title="<b>ADANIPORTS Risk & Return Dynamics</b>",
         template="plotly_white",
         showlegend=False,
-        margin=dict(l=40, r=40, t=60, b=40)
+        margin=dict(l=40, r=40, t=20, b=40)
     )
     
     return fig.to_html(include_plotlyjs=False, full_html=False) if as_html else fig
@@ -214,13 +221,17 @@ def plot_actual_vs_predicted(
     ))
     
     fig.update_layout(
-        title=f"<b>Test Set Performance: Actual vs {model_title} Prediction</b>",
-        xaxis_title="Date",
-        yaxis_title="Price (₹ INR)",
         template="plotly_white",
         hovermode="x unified",
-        margin=dict(l=40, r=40, t=60, b=40),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        margin=dict(l=40, r=40, t=20, b=40),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            bgcolor="rgba(255, 255, 255, 0.8)"
+        )
     )
     
     return fig.to_html(include_plotlyjs=False, full_html=False) if as_html else fig
@@ -260,13 +271,17 @@ def plot_lstm_vs_gru_comparison(dates, y_true, lstm_pred, gru_pred, as_html: boo
     ))
     
     fig.update_layout(
-        title="<b>Head-to-Head Comparison: Actual vs LSTM vs GRU Predictions</b>",
-        xaxis_title="Date",
-        yaxis_title="Price (₹ INR)",
         template="plotly_white",
         hovermode="x unified",
-        margin=dict(l=40, r=40, t=60, b=40),
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        margin=dict(l=40, r=40, t=20, b=40),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="center",
+            x=0.5,
+            bgcolor="rgba(255, 255, 255, 0.8)"
+        )
     )
     
     return fig.to_html(include_plotlyjs=False, full_html=False) if as_html else fig
