@@ -720,8 +720,8 @@ elif menu == "🔮 Next-Day Forecast Terminal":
     st.markdown("## 🔮 Next-Day Price Target & Signal Terminal")
     st.caption(f"Real-time point-estimate and directional trajectory powered by {'Yahoo Finance Live Stream' if is_live_mode else 'Historical Sequence'} using the 60-day recurrent memory window.")
     
-    # Model Selector Toggle
-    col_sel_arch, col_mode_info = st.columns([1.5, 2])
+    # Responsive Top Filter Row
+    col_sel_arch, col_mode_info = st.columns([1.8, 1.2])
     with col_sel_arch:
         chosen_m = st.radio(
             "Select Prediction Engine",
@@ -729,10 +729,10 @@ elif menu == "🔮 Next-Day Forecast Terminal":
             horizontal=True
         )
     with col_mode_info:
-        feed_txt = "🟢 Yahoo Finance Live (NSE: ADANIPORTS)" if is_live_mode else "📁 Curated Historical Benchmark (NSE)"
+        feed_txt = "🟢 Yahoo Finance Live (NSE: ADANIPORTS)" if is_live_mode else "📁 Curated Benchmark (NSE)"
         st.markdown(f"""
-        <div style="background:#F1F5F9; border-radius:10px; padding:10px 14px; font-size:0.82rem; color:#475569; margin-top:10px;">
-            Active Feed: <b style="color:#0F172A;">{feed_txt}</b> | As of: <b>{latest_date_str}</b>
+        <div style="background:#F1F5F9; border:1px solid #E2E8F0; border-radius:10px; padding:8px 12px; font-size:0.8rem; color:#475569; margin-top:20px;">
+            Feed: <b style="color:#0F172A;">{feed_txt}</b><br>As of: <b>{latest_date_str}</b>
         </div>
         """, unsafe_allow_html=True)
 
@@ -746,46 +746,65 @@ elif menu == "🔮 Next-Day Forecast Terminal":
     signal_bg = "#DCFCE7" if is_bullish else "#FEE2E2"
     signal_icon = "↗" if is_bullish else "↘"
 
-    # High-Impact Hero Comparison Cards
+    # High-Impact Hero Comparison Cards (Equal Height & Dynamic Fluid Fonts)
     k1, k2, k3, k4 = st.columns(4)
     with k1:
         st.markdown(f"""
-        <div class="glass-card card-accent-blue">
-            <div class="card-label"><span>Current Close</span> <span>📍</span></div>
-            <div class="card-val">₹{latest_close:,.2f}</div>
-            <div class="card-sub">Session: {latest_date_str}</div>
+        <div class="glass-card card-accent-blue" style="height:100%; min-height:160px; display:flex; flex-direction:column; justify-content:space-between; padding:1.1rem 1.2rem;">
+            <div>
+                <div class="card-label"><span>Current Close</span> <span>📍</span></div>
+                <div style="font-size: clamp(1.4rem, 2vw, 1.75rem); font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace; word-break:keep-all; white-space:nowrap;">
+                    ₹{latest_close:,.2f}
+                </div>
+            </div>
+            <div class="card-sub" style="margin-top:auto; padding-top:6px;">Session: {latest_date_str}</div>
         </div>
         """, unsafe_allow_html=True)
+
     with k2:
         st.markdown(f"""
-        <div class="glass-card card-accent-green" style="background: linear-gradient(135deg, #FFFFFF 0%, {'#F0FDF4' if is_bullish else '#FEF2F2'} 100%);">
-            <div class="card-label"><span>Target Forecast (t+1)</span> <span style="background:{signal_bg}; color:{signal_color}; padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">{signal_icon} {pct_sel:+.2f}%</span></div>
-            <div class="card-val" style="color:{signal_color};">₹{sel_pred:,.2f}</div>
-            <div class="card-sub">Expected Delta: <b>{diff_sel:+,.2f} INR</b></div>
+        <div class="glass-card card-accent-green" style="height:100%; min-height:160px; display:flex; flex-direction:column; justify-content:space-between; padding:1.1rem 1.2rem; background: linear-gradient(135deg, #FFFFFF 0%, {'#F0FDF4' if is_bullish else '#FEF2F2'} 100%);">
+            <div>
+                <div class="card-label">
+                    <span>Target Forecast (t+1)</span>
+                    <span style="background:{signal_bg}; color:{signal_color}; padding:2px 6px; border-radius:6px; font-weight:800; font-size:0.72rem; white-space:nowrap;">
+                        {signal_icon} {pct_sel:+.2f}%
+                    </span>
+                </div>
+                <div style="font-size: clamp(1.4rem, 2vw, 1.75rem); font-weight:800; color:{signal_color}; font-family:'JetBrains Mono', monospace; word-break:keep-all; white-space:nowrap;">
+                    ₹{sel_pred:,.2f}
+                </div>
+            </div>
+            <div class="card-sub" style="margin-top:auto; padding-top:6px;">Expected Delta: <b>{diff_sel:+,.2f} INR</b></div>
         </div>
         """, unsafe_allow_html=True)
+
     with k3:
         st.markdown(f"""
-        <div class="glass-card card-accent-purple">
-            <div class="card-label"><span>AI Market Signal</span> <span>🧭</span></div>
-            <div class="card-val" style="font-size:1.35rem; color:{signal_color}; line-height:1.4;">
-                {signal_icon} {signal_label}
+        <div class="glass-card card-accent-purple" style="height:100%; min-height:160px; display:flex; flex-direction:column; justify-content:space-between; padding:1.1rem 1.2rem;">
+            <div>
+                <div class="card-label"><span>AI Market Signal</span> <span>🧭</span></div>
+                <div style="font-size: clamp(1.15rem, 1.6vw, 1.35rem); font-weight:800; color:{signal_color}; line-height:1.25; margin-top:4px;">
+                    {signal_icon} {signal_label}
+                </div>
             </div>
-            <div class="card-sub">Engine: {'Stacked GRU' if is_gru_selected else 'Stacked LSTM'}</div>
+            <div class="card-sub" style="margin-top:auto; padding-top:6px;">Engine: {'Stacked GRU' if is_gru_selected else 'Stacked LSTM'}</div>
         </div>
         """, unsafe_allow_html=True)
+
     with k4:
-        # Confidence Band Calculation (+/- RMSE)
         model_rmse = 13.99 if is_gru_selected else 19.71
         conf_low = sel_pred - model_rmse
         conf_high = sel_pred + model_rmse
         st.markdown(f"""
-        <div class="glass-card card-accent-amber">
-            <div class="card-label"><span>68% Confidence Range</span> <span>📊</span></div>
-            <div class="card-val" style="font-size:1.25rem; color:#D97706; line-height:1.4;">
-                ₹{conf_low:,.1f} – ₹{conf_high:,.1f}
+        <div class="glass-card card-accent-amber" style="height:100%; min-height:160px; display:flex; flex-direction:column; justify-content:space-between; padding:1.1rem 1.2rem;">
+            <div>
+                <div class="card-label"><span>68% Confidence</span> <span>📊</span></div>
+                <div style="font-size: clamp(1.05rem, 1.4vw, 1.25rem); font-weight:800; color:#D97706; font-family:'JetBrains Mono', monospace; white-space:nowrap; margin-top:4px;">
+                    ₹{conf_low:,.0f} – ₹{conf_high:,.0f}
+                </div>
             </div>
-            <div class="card-sub">RMSE Uncertainty: ±₹{model_rmse:.2f}</div>
+            <div class="card-sub" style="margin-top:auto; padding-top:6px;">RMSE Uncertainty: ±₹{model_rmse:.2f}</div>
         </div>
         """, unsafe_allow_html=True)
 
