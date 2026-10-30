@@ -842,6 +842,22 @@ elif menu == "📊 Candlestick & Technical Studio":
         hovertemplate="<b>Return:</b> %{y:+.2f}%<extra></extra>"
     ), row=2, col=1)
     
+    # Filter out empty weekends and overnight gaps when showing intraday or daily charts
+    if using_intraday:
+        # Hide weekend gap and overnight non-trading hours (3:30 PM to 9:15 AM)
+        fig_candle.update_xaxes(
+            rangebreaks=[
+                dict(bounds=["sat", "mon"]),  # hide weekends
+                dict(bounds=[15.5, 9.25], pattern="hour")  # hide overnight non-trading gap
+            ]
+        )
+    else:
+        fig_candle.update_xaxes(
+            rangebreaks=[
+                dict(bounds=["sat", "mon"])  # hide weekends
+            ]
+        )
+
     fig_candle.update_layout(
         template="plotly_white",
         xaxis_rangeslider_visible=False,
