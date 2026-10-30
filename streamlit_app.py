@@ -152,13 +152,11 @@ st.markdown("""
         }
     }
 
-    /* Premium FinTech Frosted Glass Sidebar Styling */
+    /* Premium FinTech Sidebar Styling - Clean Obsidian Slate */
     section[data-testid="stSidebar"] {
-        background-color: var(--secondary-background-color, #F8FAFC) !important;
-        background: color-mix(in srgb, var(--secondary-background-color, #F8FAFC) 80%, transparent) !important;
-        backdrop-filter: blur(24px) saturate(180%) !important;
-        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-        border-right: 1px solid color-mix(in srgb, var(--text-color, #94A3B8) 12%, transparent) !important;
+        background: linear-gradient(180deg, #0B0F19 0%, #0F172A 50%, #070B14 100%) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25) !important;
     }
 
     section[data-testid="stSidebar"] > div:first-child,
@@ -174,18 +172,15 @@ st.markdown("""
         padding-bottom: 0.5rem !important;
     }
 
-    /* Frosted Glass Sidebar Cards */
+    /* Sidebar Cards */
     .sidebar-card,
     .sidebar-glass-card {
-        background-color: var(--background-color, #FFFFFF) !important;
-        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 15%, transparent) !important;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
         border-radius: 10px !important;
-        padding: 6px 10px !important;
+        padding: 7px 10px !important;
         margin-bottom: 0.35rem !important;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
         transition: all 0.2s ease !important;
     }
 
@@ -194,7 +189,7 @@ st.markdown("""
         display: flex !important;
         flex-direction: column !important;
         width: 100% !important;
-        gap: 3px !important;
+        gap: 4px !important;
     }
 
     /* Clean uppercase section header for NAVIGATE */
@@ -204,25 +199,21 @@ st.markdown("""
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        padding: 0 0 2px 2px !important;
+        padding: 0 0 3px 2px !important;
         margin: 0 !important;
         font-size: 0.68rem !important;
         font-weight: 800 !important;
-        color: var(--text-color, #475569) !important;
-        opacity: 0.8 !important;
+        color: #94A3B8 !important;
         letter-spacing: 0.08em !important;
         text-transform: uppercase !important;
         display: block !important;
     }
 
-    /* Option Cards - Full width, row flex layout with Frosted Glass */
+    /* Option Cards - Full width, row flex layout with Sleek Slate */
     div[data-testid="stRadio"] div[role="radiogroup"] > label,
     div[data-testid="stRadio"] label {
-        background-color: var(--background-color, #FFFFFF) !important;
-        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
-        backdrop-filter: blur(12px) !important;
-        -webkit-backdrop-filter: blur(12px) !important;
-        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 15%, transparent) !important;
+        background: rgba(30, 41, 59, 0.55) !important;
+        border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 9px !important;
         padding: 6px 10px !important;
         margin: 0 !important;
@@ -233,7 +224,7 @@ st.markdown("""
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
         cursor: pointer !important;
     }
 
@@ -250,10 +241,10 @@ st.markdown("""
         align-items: center !important;
     }
 
-    /* Unselected radio button: clean subtle border with matching background */
+    /* Unselected radio button: crisp slate border with dark center */
     div[data-testid="stRadio"] [data-baseweb="radio"] > div {
-        border: 1.5px solid color-mix(in srgb, var(--text-color, #94A3B8) 35%, transparent) !important;
-        background-color: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
+        border: 1.5px solid #64748B !important;
+        background-color: #0F172A !important;
         width: 14px !important;
         height: 14px !important;
         min-width: 14px !important;
@@ -268,9 +259,9 @@ st.markdown("""
     /* Selected radio button: Royal Blue indicator with white center dot */
     div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div,
     div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div {
-        border-color: #2563EB !important;
+        border-color: #3B82F6 !important;
         background-color: #2563EB !important;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4) !important;
     }
 
     div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div > div,
@@ -284,12 +275,12 @@ st.markdown("""
     /* Selected Card Active State */
     div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked),
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] {
-        background: color-mix(in srgb, #2563EB 15%, var(--background-color, #EFF6FF)) !important;
-        border-color: #3B82F6 !important;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
+        background: linear-gradient(135deg, rgba(37, 99, 235, 0.28) 0%, rgba(30, 58, 138, 0.35) 100%) !important;
+        border: 1px solid #3B82F6 !important;
+        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25) !important;
     }
 
-    /* Option Text Container: Always 100% visible, Theme-Adaptive Text */
+    /* Option Text Container: Always 100% visible, crisp typography */
     div[data-testid="stRadio"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] {
         flex: 1 1 auto !important;
         min-width: 0 !important;
@@ -297,8 +288,8 @@ st.markdown("""
     }
 
     div[data-testid="stRadio"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] p {
-        color: var(--text-color, #0F172A) !important;
-        font-weight: 700 !important;
+        color: #E2E8F0 !important;
+        font-weight: 600 !important;
         font-size: 0.82rem !important;
         line-height: 1.25 !important;
         margin: 0 !important;
@@ -311,14 +302,14 @@ st.markdown("""
 
     div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] p,
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
-        color: #3B82F6 !important;
+        color: #93C5FD !important;
         font-weight: 800 !important;
     }
 
     /* Subtle hover interaction */
     div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
-        background: color-mix(in srgb, #2563EB 8%, var(--background-color, #F8FAFC)) !important;
-        border-color: #3B82F6 !important;
+        background: rgba(30, 41, 59, 0.8) !important;
+        border-color: rgba(96, 165, 250, 0.4) !important;
         transform: translateX(2px) !important;
     }
 
@@ -329,11 +320,9 @@ st.markdown("""
 
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] {
         background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
         border-radius: 9px !important;
         border: 1px solid rgba(255, 255, 255, 0.12) !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
         min-height: 34px !important;
     }
 
@@ -347,53 +336,47 @@ st.markdown("""
         fill: #94A3B8 !important;
     }
 
-    /* Date Input inside Date Inspector - Crisp Clean Input with Frosted Blur */
+    /* Date Input inside Date Inspector - Crisp Clean Input with Blue Icon */
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
-        background-color: var(--background-color, #FFFFFF) !important;
-        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 18%, transparent) !important;
+        background-color: #1E293B !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
         border-radius: 8px !important;
         min-height: 34px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] input {
-        color: var(--text-color, #0F172A) !important;
+        color: #F8FAFC !important;
         font-weight: 700 !important;
         font-size: 0.82rem !important;
         background-color: transparent !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] svg {
-        fill: #3B82F6 !important;
-        stroke: #3B82F6 !important;
-        color: #3B82F6 !important;
+        fill: #60A5FA !important;
+        stroke: #60A5FA !important;
+        color: #60A5FA !important;
     }
 
-    /* Sidebar Download / Export Button - Frosted Adaptive */
+    /* Sidebar Download / Export Button - Sleek Slate */
     section[data-testid="stSidebar"] div.stDownloadButton button {
-        background-color: var(--background-color, #FFFFFF) !important;
-        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 18%, transparent) !important;
-        color: var(--text-color, #1E293B) !important;
+        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #F8FAFC !important;
         font-weight: 700 !important;
         border-radius: 9px !important;
         padding: 7px 12px !important;
         margin-top: 0.3rem !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
         font-size: 0.78rem !important;
     }
 
     section[data-testid="stSidebar"] div.stDownloadButton button:hover {
-        background: color-mix(in srgb, #2563EB 15%, var(--background-color, #EFF6FF)) !important;
-        border-color: #3B82F6 !important;
-        color: #3B82F6 !important;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+        border-color: #60A5FA !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3) !important;
         transform: translateY(-1px) !important;
     }
 
@@ -819,27 +802,28 @@ with st.sidebar:
     pct_diff_gru = (diff_gru / latest_close) * 100.0 if latest_close > 0 else 0.0
 
     # 3. Enhanced Real-Time Quote Card in Sidebar
-    badge_bg = "#DCFCE7" if day_change_val >= 0 else "#FEE2E2"
-    badge_color = "#15803D" if day_change_val >= 0 else "#B91C1C"
+    badge_bg = "rgba(16, 185, 129, 0.2)" if day_change_val >= 0 else "rgba(239, 68, 68, 0.2)"
+    badge_color = "#34D399" if day_change_val >= 0 else "#F87171"
+    badge_border = "rgba(16, 185, 129, 0.35)" if day_change_val >= 0 else "rgba(239, 68, 68, 0.35)"
     feed_tag = "LIVE NSE" if is_live_mode else "HISTORICAL"
 
     st.markdown(f"""
     <div class="sidebar-card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
-            <span style="font-size:0.66rem; font-weight:800; color:var(--text-color, #475569); opacity:0.8; letter-spacing:0.03em;">ADANIPORTS.NS</span>
-            <span style="background:{badge_bg}; color:{badge_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.65rem;">{day_change_pct:+.2f}%</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+            <span style="font-size:0.68rem; font-weight:800; color:#94A3B8; letter-spacing:0.04em;">ADANIPORTS.NS</span>
+            <span style="background:{badge_bg}; color:{badge_color}; border:1px solid {badge_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.66rem;">{day_change_pct:+.2f}%</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:1px 0;">
-            <div style="font-size:1.28rem; font-weight:800; color:var(--text-color, #0F172A); font-family:'JetBrains Mono', monospace;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2px 0;">
+            <div style="font-size:1.32rem; font-weight:800; color:#FFFFFF; font-family:'JetBrains Mono', monospace; letter-spacing:-0.02em;">
                 ₹{latest_close:.2f}
             </div>
-            <div style="font-size:0.72rem; color:var(--text-color, #475569); opacity:0.85;">
-                Target: <b style="color:#3B82F6;">₹{pred_close_gru:.2f}</b>
+            <div style="font-size:0.74rem; color:#94A3B8;">
+                Target: <b style="color:#60A5FA; font-weight:700;">₹{pred_close_gru:.2f}</b>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-color, #64748B); opacity:0.75; border-top:1px dashed color-mix(in srgb, var(--text-color, #CBD5E1) 20%, transparent); padding-top:3px; margin-top:2px;">
-            <span>Feed: <b>{feed_tag}</b></span>
-            <span>Est Delta: <b style="color:{'#15803D' if diff_gru>=0 else '#B91C1C'};">{pct_diff_gru:+.2f}%</b></span>
+        <div style="display:flex; justify-content:space-between; font-size:0.66rem; color:#64748B; border-top:1px dashed rgba(255, 255, 255, 0.1); padding-top:4px; margin-top:3px;">
+            <span>Feed: <b style="color:#CBD5E1;">{feed_tag}</b></span>
+            <span>Est Delta: <b style="color:{'#34D399' if diff_gru>=0 else '#F87171'}; font-weight:700;">{pct_diff_gru:+.2f}%</b></span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -865,8 +849,8 @@ with st.sidebar:
 
     st.markdown("""
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:2px; padding:0 2px;">
-        <span style="font-size:0.68rem; font-weight:800; color:var(--text-color, #475569); opacity:0.8; letter-spacing:0.06em; text-transform:uppercase;">📅 Historical Inspector</span>
-        <span style="font-size:0.62rem; font-weight:700; color:#3B82F6; background:color-mix(in srgb, #3B82F6 15%, transparent); border:1px solid color-mix(in srgb, #3B82F6 30%, transparent); padding:1px 5px; border-radius:4px;">Lookup</span>
+        <span style="font-size:0.68rem; font-weight:800; color:#94A3B8; letter-spacing:0.06em; text-transform:uppercase;">📅 Historical Inspector</span>
+        <span style="font-size:0.62rem; font-weight:700; color:#60A5FA; background:rgba(37,99,235,0.2); border:1px solid rgba(96,165,250,0.3); padding:1px 5px; border-radius:4px;">Lookup</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -882,26 +866,27 @@ with st.sidebar:
     if not match_row.empty:
         r = match_row.iloc[0]
         is_ret_pos = r['Daily_Return'] >= 0
-        ret_color = "#15803D" if is_ret_pos else "#B91C1C"
-        ret_bg = "#DCFCE7" if is_ret_pos else "#FEE2E2"
+        ret_color = "#34D399" if is_ret_pos else "#F87171"
+        ret_bg = "rgba(16, 185, 129, 0.2)" if is_ret_pos else "rgba(239, 68, 68, 0.2)"
+        ret_border = "rgba(16, 185, 129, 0.35)" if is_ret_pos else "rgba(239, 68, 68, 0.35)"
         ret_icon = "↗" if is_ret_pos else "↘"
         
         st.markdown(f"""
         <div class="sidebar-card" style="font-size:0.73rem; margin-top:-6px; margin-bottom:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                <span style="font-weight:800; color:var(--text-color, #0F172A); font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
-                <span style="background:{ret_bg}; color:{ret_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.68rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
+                <span style="font-weight:800; color:#F8FAFC; font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
+                <span style="background:{ret_bg}; color:{ret_color}; border:1px solid {ret_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.68rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span style="color:var(--text-color, #64748B); opacity:0.75;">Close:</span> <b style="color:#3B82F6; font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
+                <span style="color:#94A3B8;">Close:</span> <b style="color:#60A5FA; font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
             </div>
             <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--text-color, #64748B); opacity:0.75;">Range:</span> <span style="font-weight:600; color:var(--text-color, #334155);">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
+                <span style="color:#94A3B8;">Range:</span> <span style="font-weight:600; color:#CBD5E1;">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown("""<div style="background:color-mix(in srgb, #EF4444 15%, transparent); color:#EF4444; border:1px solid color-mix(in srgb, #EF4444 30%, transparent); border-radius:6px; padding:6px; font-size:0.75rem; text-align:center; margin-top:-4px; margin-bottom:4px;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="background:rgba(239, 68, 68, 0.15); color:#FCA5A5; border:1px solid rgba(239, 68, 68, 0.3); border-radius:6px; padding:6px; font-size:0.75rem; text-align:center; margin-top:-4px; margin-bottom:4px;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
 
     # 6. Compact Data Export Button
     csv_bytes = df.to_csv(index=False).encode('utf-8')
