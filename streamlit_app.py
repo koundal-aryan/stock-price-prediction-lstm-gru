@@ -368,8 +368,7 @@ st.markdown("""
         background: transparent !important;
     }
 
-    /* Dynamically adapt all chart text (ticks, titles, legends) to Streamlit's active theme */
-    .js-plotly-plot text,
+    /* Dynamically adapt chart ticks, titles, and legends to Streamlit's active theme */
     .js-plotly-plot .xtick text,
     .js-plotly-plot .ytick text,
     .js-plotly-plot .legendtext,
@@ -381,6 +380,13 @@ st.markdown("""
         fill: var(--text-color, currentColor) !important;
         font-family: 'Inter', -apple-system, sans-serif !important;
         font-weight: 600 !important;
+    }
+
+    /* Preserve rich colors for gauge delta indicators (Red on negative, Green on positive) */
+    .js-plotly-plot g.delta text,
+    .js-plotly-plot g.delta path,
+    .js-plotly-plot .delta-text {
+        fill: inherit;
     }
 
     /* Gradient Hero Banner */
@@ -1557,7 +1563,7 @@ elif "Forecast" in menu or "Target" in menu:
                 'increasing': {'color': "#10B981"},
                 'decreasing': {'color': "#EF4444"},
                 'valueformat': "+.2f",
-                'font': {'size': 18}
+                'font': {'size': 19, 'color': signal_color}
             },
             number={
                 'prefix': "₹",
