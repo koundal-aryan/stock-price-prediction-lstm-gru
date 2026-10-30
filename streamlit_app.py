@@ -101,42 +101,56 @@ st.markdown("""
         padding-bottom: env(safe-area-inset-bottom, 20px) !important;
     }
 
-    /* Ensure Streamlit's native sidebar close button (chevron/X) is always tappable on Safari */
-    [data-testid="collapsedControl"],
-    button[kind="header"],
-    button[data-testid="stSidebarCollapseButton"] {
+    /* Explicit high-visibility close/collapse button styling for mobile & dark mode */
+    [data-testid="stSidebarCollapseButton"],
+    [data-testid="collapsedControl"] {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
-        z-index: 999999 !important;
-        color: #1D4ED8 !important;
+        z-index: 9999999 !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button,
+    [data-testid="collapsedControl"] button {
+        background: #2563EB !important;
+        border: 2px solid #60A5FA !important;
+        border-radius: 10px !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.45) !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
         cursor: pointer !important;
-        -webkit-appearance: none !important;
+    }
+
+    [data-testid="stSidebarCollapseButton"] button svg,
+    [data-testid="collapsedControl"] button svg {
+        fill: #FFFFFF !important;
+        stroke: #FFFFFF !important;
+        color: #FFFFFF !important;
+        stroke-width: 2.5px !important;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="collapsedControl"] button {
+            background: #3B82F6 !important;
+            border: 2px solid #93C5FD !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.6) !important;
+        }
+        [data-testid="stSidebarCollapseButton"] button svg,
+        [data-testid="collapsedControl"] button svg {
+            fill: #FFFFFF !important;
+            stroke: #FFFFFF !important;
+            color: #FFFFFF !important;
+        }
     }
 
     /* On mobile, keep sidebar width comfortable and ensure close button is prominent */
     @media (max-width: 768px) {
         section[data-testid="stSidebar"] {
-            box-shadow: 6px 0 24px rgba(0,0,0,0.2) !important;
+            box-shadow: 6px 0 24px rgba(0,0,0,0.3) !important;
             -webkit-overflow-scrolling: touch !important;
-        }
-
-        /* Prominently surface Streamlit's native sidebar collapse button on mobile */
-        [data-testid="stSidebarCollapseButton"],
-        [data-testid="collapsedControl"] {
-            display: flex !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            z-index: 9999999 !important;
-        }
-
-        [data-testid="stSidebarCollapseButton"] button {
-            background: #EFF6FF !important;
-            border: 1px solid #BFDBFE !important;
-            border-radius: 8px !important;
-            color: #1D4ED8 !important;
-            min-width: 36px !important;
-            min-height: 36px !important;
         }
     }
 
