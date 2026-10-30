@@ -225,16 +225,36 @@ LSTM_MODEL_PATH = os.path.join(MODELS_DIR, "lstm_model.keras")
 @st.cache_data(ttl=60)
 def fetch_live_intraday_data(interval="15m", period="5d"):
     """
-    Fetches real-time intraday market data (15m, 5m, etc.) for ADANIPORTS.NS
+    Fetches real-time intraday market data (3m, 5m, 15m) for ADANIPORTS.NS
     """
     try:
         ticker = yf.Ticker("ADANIPORTS.NS")
-        hist = ticker.history(period=period, interval=interval)
+        if interval == "3m":
+            # Synthesize 3-minute candles from Yahoo 2m feed
+            raw_2m = ticker.history(period="2d", interval="2m")
+            if not raw_2m.empty:
+                raw_2m = raw_2m.reset_index()
+                dt_col = "Datetime" if "Datetime" in raw_2m.columns else "Date"
+                raw_2m[dt_col] = pd.to_datetime(raw_2m[dt_col]).dt.tz_localize(None)
+                raw_2m = raw_2m.set_index(dt_col)
+                hist = raw_2m.resample("3min").agg({
+                    "Open": "first",
+                    "High": "max",
+                    "Low": "min",
+                    "Close": "last",
+                    "Volume": "sum"
+                }).dropna().reset_index()
+                hist["Date"] = hist[dt_col]
+            else:
+                hist = pd.DataFrame()
+        else:
+            hist = ticker.history(period=period, interval=interval)
+            if not hist.empty:
+                hist = hist.reset_index()
+                date_col = "Datetime" if "Datetime" in hist.columns else "Date"
+                hist["Date"] = pd.to_datetime(hist[date_col]).dt.tz_localize(None)
+
         if not hist.empty:
-            hist = hist.reset_index()
-            # Standardize datetime column
-            date_col = "Datetime" if "Datetime" in hist.columns else "Date"
-            hist["Date"] = pd.to_datetime(hist[date_col]).dt.tz_localize(None)
             hist["Daily_Return"] = hist["Close"].pct_change() * 100.0
             hist["Daily_Return"] = hist["Daily_Return"].fillna(0.0)
             hist["SMA_20"] = hist["Close"].rolling(20, min_periods=1).mean()
@@ -696,46 +716,65 @@ elif menu == "📊 Candlestick & Technical Studio":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Timeframe & Horizon Selector (Intraday Live vs Days/Months)
-    t_col1, t_col2 = st.columns([2, 1])
-    with t_col1:
-        timeframe_mode = st.radio(
+    # Sleek Dropdown Selection Bar (Clean panel matching Market Feed dropdown)
+    c_drop1, c_drop2, c_drop3 = st.columns([2, 1.2, 0.8])
+    with c_drop1:
+        timeframe_mode = st.selectbox(
             "Candle Horizon & Frequency",
             [
-                "⚡ Live Intraday (15-Min Candles - Today & Recent 5 Days)",
-                "🔥 Live Intraday (5-Min Candles - High Speed)",
+                "⚡ Live 3-Minute Candles (High Speed Scalp)",
+                "🔥 Live 5-Minute Candles (Intraday Momentum)",
+                "📈 Live 15-Minute Candles (Multi-Day Intraday)",
                 "📅 Daily: Last 3 Months",
                 "📅 Daily: Last 6 Months",
                 "📅 Daily: Last 1 Year",
                 "📜 Full Historical Range"
             ],
-            index=0 if is_live_mode else 2,
-            horizontal=False
+            index=0 if is_live_mode else 3,
+            help="Choose between ultra-fast live intraday candles (3m, 5m, 15m) or macro daily horizons."
         )
-    with t_col2:
-        show_bb = st.checkbox("Show Bollinger Bands (20, 2σ)", value=True)
-        show_ema = st.checkbox("Show 20 Exponential Moving Average (EMA)", value=True)
-        if st.button("🔄 Refresh Live Candles Now", use_container_width=True):
+    with c_drop2:
+        st.markdown("<div style='height:26px;'></div>", unsafe_allow_html=True)
+        show_overlay = st.pills(
+            "Overlays",
+            ["Bollinger Bands", "20 EMA"],
+            default=["Bollinger Bands", "20 EMA"],
+            selection_mode="multi",
+            label_visibility="collapsed"
+        )
+        show_bb = "Bollinger Bands" in show_overlay
+        show_ema = "20 EMA" in show_overlay
+    with c_drop3:
+        st.markdown("<div style='height:26px;'></div>", unsafe_allow_html=True)
+        if st.button("🔄 Refresh", use_container_width=True, help="Fetch latest live market ticks immediately"):
             st.cache_data.clear()
             st.rerun()
 
     # Determine data slice based on chosen horizon
     using_intraday = False
-    if "15-Min" in timeframe_mode:
-        df_intra, success = fetch_live_intraday_data(interval="15m", period="5d")
+    if "3-Minute" in timeframe_mode:
+        df_intra, success = fetch_live_intraday_data(interval="3m", period="2d")
         if success and df_intra is not None and not df_intra.empty:
             df_view = df_intra
             using_intraday = True
         else:
-            st.info("ℹ️ Intraday feed currently market closed or offline. Showing recent daily candles.")
+            st.info("ℹ️ 3-Minute intraday stream closed or offline. Showing recent daily candles.")
             df_view = df.tail(60).copy()
-    elif "5-Min" in timeframe_mode:
+    elif "5-Minute" in timeframe_mode:
         df_intra, success = fetch_live_intraday_data(interval="5m", period="1d")
         if success and df_intra is not None and not df_intra.empty:
             df_view = df_intra
             using_intraday = True
         else:
-            st.info("ℹ️ Intraday feed currently market closed or offline. Showing recent daily candles.")
+            st.info("ℹ️ 5-Minute intraday stream closed or offline. Showing recent daily candles.")
+            df_view = df.tail(60).copy()
+    elif "15-Minute" in timeframe_mode:
+        df_intra, success = fetch_live_intraday_data(interval="15m", period="5d")
+        if success and df_intra is not None and not df_intra.empty:
+            df_view = df_intra
+            using_intraday = True
+        else:
+            st.info("ℹ️ 15-Minute intraday stream closed or offline. Showing recent daily candles.")
             df_view = df.tail(60).copy()
     elif "Last 3 Months" in timeframe_mode:
         df_view = df.tail(63).copy()
@@ -750,52 +789,57 @@ elif menu == "📊 Candlestick & Technical Studio":
     fig_candle = make_subplots(
         rows=2, cols=1,
         shared_xaxes=True,
-        vertical_spacing=0.06,
-        row_heights=[0.76, 0.24]
+        vertical_spacing=0.05,
+        row_heights=[0.78, 0.22]
     )
     
-    # 1. Candlestick Trace
-    hover_fmt = "<b>Time:</b> %{x|%d %b %H:%M}<br>" if using_intraday else "<b>Date:</b> %{x|%d %b %Y}<br>"
+    # 1. High-Clarity Candlestick Trace
+    time_hover = "%{x|%d %b %H:%M}" if using_intraday else "%{x|%d %b %Y}"
     fig_candle.add_trace(go.Candlestick(
         x=df_view["Date"],
         open=df_view["Open"],
         high=df_view["High"],
         low=df_view["Low"],
         close=df_view["Close"],
-        name="OHLC Candles",
+        name="OHLC Price",
         increasing_line_color="#10B981",
         decreasing_line_color="#EF4444",
         increasing_fillcolor="#10B981",
-        decreasing_fillcolor="#EF4444"
+        decreasing_fillcolor="#EF4444",
+        hovertemplate=f"<b>Time:</b> {time_hover}<br><b>Open:</b> ₹%{{open:.2f}}<br><b>High:</b> ₹%{{high:.2f}}<br><b>Low:</b> ₹%{{low:.2f}}<br><b>Close:</b> ₹%{{close:.2f}}<extra></extra>"
     ), row=1, col=1)
     
     # 2. Bollinger Bands
     if show_bb and "BB_Upper" in df_view.columns:
         fig_candle.add_trace(go.Scatter(
             x=df_view["Date"], y=df_view["BB_Upper"],
-            line=dict(color="rgba(148, 163, 184, 0.6)", width=1, dash="dot"),
-            name="BB Upper (2σ)"
+            line=dict(color="rgba(148, 163, 184, 0.7)", width=1.2, dash="dot"),
+            name="BB Upper (2σ)",
+            hovertemplate="<b>BB Upper:</b> ₹%{y:.2f}<extra></extra>"
         ), row=1, col=1)
         fig_candle.add_trace(go.Scatter(
             x=df_view["Date"], y=df_view["BB_Lower"],
-            line=dict(color="rgba(148, 163, 184, 0.6)", width=1, dash="dot"),
-            fill="tonexty", fillcolor="rgba(241, 245, 249, 0.15)",
-            name="BB Band Channel"
+            line=dict(color="rgba(148, 163, 184, 0.7)", width=1.2, dash="dot"),
+            fill="tonexty", fillcolor="rgba(241, 245, 249, 0.18)",
+            name="BB Band",
+            hovertemplate="<b>BB Lower:</b> ₹%{y:.2f}<extra></extra>"
         ), row=1, col=1)
     
     # 3. 20 EMA Line
     if show_ema and "EMA_20" in df_view.columns:
         fig_candle.add_trace(go.Scatter(
             x=df_view["Date"], y=df_view["EMA_20"],
-            line=dict(color="#3B82F6", width=1.8),
-            name="20 EMA"
+            line=dict(color="#2563EB", width=2),
+            name="20 EMA Trend",
+            hovertemplate="<b>20 EMA:</b> ₹%{y:.2f}<extra></extra>"
         ), row=1, col=1)
     
-    # 4. Return Bar Chart below
+    # 4. Period Return % Bar Chart below
     colors_ret = ["#10B981" if r >= 0 else "#EF4444" for r in df_view["Daily_Return"]]
     fig_candle.add_trace(go.Bar(
         x=df_view["Date"], y=df_view["Daily_Return"],
-        marker_color=colors_ret, name="Period Return %"
+        marker_color=colors_ret, name="Period Return %",
+        hovertemplate="<b>Return:</b> %{y:+.2f}%<extra></extra>"
     ), row=2, col=1)
     
     fig_candle.update_layout(
@@ -803,8 +847,10 @@ elif menu == "📊 Candlestick & Technical Studio":
         xaxis_rangeslider_visible=False,
         hovermode="x unified",
         margin=dict(l=15, r=15, t=10, b=10),
-        height=540,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
+        height=520,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+        yaxis_title="Price (₹ INR)",
+        yaxis2_title="Return %"
     )
     st.plotly_chart(fig_candle, use_container_width=True)
 
