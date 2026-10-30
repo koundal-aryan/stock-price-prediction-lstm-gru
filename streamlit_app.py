@@ -34,15 +34,62 @@ st.markdown("""
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
+    /* Compact Main Container Padding to fit screens without scrolling */
+    .block-container {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+        padding-left: 2.5rem !important;
+        padding-right: 2.5rem !important;
+        max-width: 100% !important;
+    }
+
+    /* Ultra-Clean Modern Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background-color: #F8FAFC !important;
+        border-right: 1px solid #E2E8F0 !important;
+    }
+
+    section[data-testid="stSidebar"] .block-container {
+        padding-top: 1.5rem !important;
+        padding-left: 1.1rem !important;
+        padding-right: 1.1rem !important;
+        padding-bottom: 1.5rem !important;
+    }
+
+    /* Sleek Radio Button Navigation styling */
+    div[data-testid="stRadio"] > div {
+        gap: 4px !important;
+    }
+
+    div[data-testid="stRadio"] label {
+        background: #FFFFFF !important;
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 8px !important;
+        padding: 8px 12px !important;
+        margin-bottom: 2px !important;
+        transition: all 0.15s ease !important;
+        font-weight: 600 !important;
+        font-size: 0.84rem !important;
+        color: #334155 !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    div[data-testid="stRadio"] label:hover {
+        background: #EFF6FF !important;
+        border-color: #93C5FD !important;
+        color: #1D4ED8 !important;
+    }
+
     /* Gradient Hero Banner */
     .hero-banner {
         background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0B1329 100%);
         border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 18px;
-        padding: 2.2rem 2.4rem;
+        border-radius: 16px;
+        padding: 1.5rem 1.8rem;
         color: white;
-        margin-bottom: 2rem;
-        box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.4);
+        margin-bottom: 1.4rem;
+        box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.35);
         position: relative;
         overflow: hidden;
     }
@@ -270,31 +317,36 @@ gru_model = load_keras_model(GRU_MODEL_PATH)
 lstm_model = load_keras_model(LSTM_MODEL_PATH)
 
 # ==============================================================================
-# SIDEBAR CONTROLS & STREAMING SELECTOR
+# SIDEBAR CONTROLS & STREAMING SELECTOR (10/10 UX & ZERO SCROLL COMPACT DESIGN)
 # ==============================================================================
 with st.sidebar:
+    # 1. Compact Header Branding
     st.markdown("""
-    <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.2rem;">
-        <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:bold; box-shadow:0 6px 16px rgba(37,99,235,0.35);">
-            ⚡
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:1px solid #E2E8F0;">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; font-weight:bold; box-shadow:0 4px 10px rgba(37,99,235,0.3);">
+                ⚡
+            </div>
+            <div>
+                <div style="font-size:1.05rem; font-weight:800; color:#0F172A; line-height:1.1;">ADANIPORTS AI</div>
+                <div style="font-size:0.65rem; font-weight:700; color:#2563EB; text-transform:uppercase; letter-spacing:0.05em;">Quant Forecaster</div>
+            </div>
         </div>
-        <div>
-            <div style="font-size:1.2rem; font-weight:800; color:#0F172A; line-height:1.2;">ADANIPORTS AI</div>
-            <div style="font-size:0.75rem; font-weight:700; color:#2563EB; text-transform:uppercase; letter-spacing:0.06em;">Quant Terminal</div>
-        </div>
+        <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.68rem; color:#2563EB; font-weight:700; text-decoration:none; background:#EFF6FF; border:1px solid #BFDBFE; padding:3px 7px; border-radius:6px;">
+            Yahoo ↗
+        </a>
     </div>
     """, unsafe_allow_html=True)
 
-    # DATA SOURCE TOGGLE (Live Yahoo Finance vs Academic Historical Dataset)
-    st.markdown("#### 📡 Real-Time Data Feed")
-    data_source_mode = st.radio(
-        "Market Data Feed",
+    # 2. Data Mode Dropdown (Super compact selectbox instead of vertical radio)
+    data_source_mode = st.selectbox(
+        "Market Feed Source",
         [
-            "🟢 Live Yahoo Finance (NSE: ADANIPORTS)",
-            "📁 Historical Dataset (2007–2021 Benchmark)"
+            "🟢 Live Yahoo Finance (NSE)",
+            "📁 Historical Benchmark (2007–2021)"
         ],
         index=0,
-        help="Switch between live market streaming quotes via Yahoo Finance and the curated 13.5-year benchmark dataset."
+        help="Toggle live streaming market data from Yahoo Finance or the curated research dataset."
     )
     
     is_live_mode = "Live Yahoo Finance" in data_source_mode
@@ -306,7 +358,7 @@ with st.sidebar:
         if live_fetch_success and df_live is not None and not df_live.empty:
             df = df_live
         else:
-            st.warning("⚠️ Live Yahoo Finance connection temporarily unreachable. Falling back to historical dataset.")
+            st.warning("⚠️ Live connection unreachable. Using historical data.")
             df = df_historical
             is_live_mode = False
     else:
@@ -331,33 +383,30 @@ with st.sidebar:
     diff_gru = pred_close_gru - latest_close
     pct_diff_gru = (diff_gru / latest_close) * 100.0
 
-    # Real-time Live Price Ticker Card in Sidebar
-    badge_label = "LIVE NSE" if is_live_mode else "HISTORICAL"
+    # 3. Compact Live Ticker Banner
     badge_bg = "#DCFCE7" if day_change_val >= 0 else "#FEE2E2"
     badge_color = "#15803D" if day_change_val >= 0 else "#B91C1C"
 
     st.markdown(f"""
-    <div style="background:linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border:1px solid #E2E8F0; border-radius:12px; padding:12px; margin-bottom:1.2rem; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase;">
-            <span>ADANIPORTS.NS</span>
-            <span style="background:{badge_bg}; color:{badge_color}; padding:2px 6px; border-radius:4px; font-size:0.7rem;">{badge_label} {day_change_pct:+.2f}%</span>
+    <div style="background:white; border:1px solid #E2E8F0; border-radius:10px; padding:8px 10px; margin-bottom:0.75rem; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.68rem; font-weight:700; color:#64748B;">NSE: ADANIPORTS</span>
+            <span style="background:{badge_bg}; color:{badge_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.68rem;">{day_change_pct:+.2f}%</span>
         </div>
-        <div style="font-size:1.55rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace; margin:4px 0;">
-            ₹{latest_close:.2f}
-        </div>
-        <div style="font-size:0.78rem; color:#64748B;">
-            Target (t+1): <b style="color:#2563EB;">₹{pred_close_gru:.2f}</b> ({pct_diff_gru:+.2f}%)
-        </div>
-        <div style="margin-top:8px;">
-            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.72rem; color:#2563EB; text-decoration:none; font-weight:600;">
-                ↗ View on Yahoo Finance
-            </a>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:2px;">
+            <div style="font-size:1.35rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">
+                ₹{latest_close:.2f}
+            </div>
+            <div style="font-size:0.72rem; color:#64748B;">
+                Target: <b style="color:#2563EB;">₹{pred_close_gru:.2f}</b>
+            </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
+    # 4. Navigation Menu
     menu = st.radio(
-        "EXPLORE MODULES",
+        "NAVIGATE",
         [
             "⚡ Executive Dashboard",
             "📊 Candlestick & Technical Studio",
@@ -368,49 +417,36 @@ with st.sidebar:
         index=0
     )
     
-    st.markdown("---")
+    st.markdown("<hr style='margin:0.5rem 0;'>", unsafe_allow_html=True)
     
-    # Enhanced High-Visibility Interactive Date Inspector Card
-    st.markdown("""
-    <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); padding: 12px 14px; border-radius: 12px; margin-top: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 1.25rem;">🔎</span>
-            <div>
-                <div style="font-size: 0.88rem; font-weight: 800; color: #FFFFFF; letter-spacing: 0.02em;">Historical Date Inspector</div>
-                <div style="font-size: 0.72rem; color: #94A3B8;">Select any date to inspect session metrics</div>
-            </div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    min_date = df["Date"].min().to_pydatetime()
-    max_date = df["Date"].max().to_pydatetime()
-    selected_inspect_date = st.date_input(
-        "Select Trading Session",
-        value=max_date,
-        min_value=min_date,
-        max_value=max_date,
-        label_visibility="collapsed"
-    )
-    
-    match_row = df[df["Date"].dt.date == selected_inspect_date]
-    if not match_row.empty:
-        r = match_row.iloc[0]
-        is_ret_pos = r['Daily_Return'] >= 0
-        ret_color = "#15803D" if is_ret_pos else "#B91C1C"
-        ret_bg = "#DCFCE7" if is_ret_pos else "#FEE2E2"
-        ret_icon = "↗" if is_ret_pos else "↘"
+    # 5. Compact, High-Visibility Historical Date Inspector (Expanded by Default)
+    with st.expander("🔎 Historical Date Inspector", expanded=True):
+        min_date = df["Date"].min().to_pydatetime()
+        max_date = df["Date"].max().to_pydatetime()
+        selected_inspect_date = st.date_input(
+            "Jump to Trading Day",
+            value=max_date,
+            min_value=min_date,
+            max_value=max_date,
+            label_visibility="collapsed"
+        )
         
-        st.markdown(f"""<div style="background: #FFFFFF; border: 2px solid #3B82F6; border-radius: 12px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(37,99,235,0.12); margin-top: 6px;"><div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #E2E8F0; padding-bottom:6px; margin-bottom:8px;"><span style="font-weight:800; font-size:0.88rem; color:#0F172A;">📅 {r['Date'].strftime('%d %b %Y')}</span><span style="background:{ret_bg}; color:{ret_color}; padding:2px 7px; border-radius:6px; font-weight:800; font-size:0.75rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:6px;"><div style="background:#F8FAFC; padding:6px 8px; border-radius:8px; border:1px solid #E2E8F0;"><div style="font-size:0.68rem; color:#64748B; font-weight:700; text-transform:uppercase;">Close</div><div style="font-size:1.05rem; font-weight:800; color:#1D4ED8; font-family:'JetBrains Mono', monospace;">₹{r['Close']:.2f}</div></div><div style="background:#F8FAFC; padding:6px 8px; border-radius:8px; border:1px solid #E2E8F0;"><div style="font-size:0.68rem; color:#64748B; font-weight:700; text-transform:uppercase;">VWAP</div><div style="font-size:1.05rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">₹{r['VWAP']:.2f}</div></div></div><div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#64748B; padding-top:2px;"><span>High: <b>₹{r['High']:.2f}</b></span><span>Low: <b>₹{r['Low']:.2f}</b></span></div></div>""", unsafe_allow_html=True)
-    else:
-        st.markdown("""<div style="background:#FEF2F2; border:1px solid #F87171; border-radius:10px; padding:10px; font-size:0.8rem; color:#991B1B; text-align:center; margin-top:6px;">⚠️ <b>Market Closed</b> (Weekend or Holiday)</div>""", unsafe_allow_html=True)
+        match_row = df[df["Date"].dt.date == selected_inspect_date]
+        if not match_row.empty:
+            r = match_row.iloc[0]
+            is_ret_pos = r['Daily_Return'] >= 0
+            ret_color = "#15803D" if is_ret_pos else "#B91C1C"
+            ret_bg = "#DCFCE7" if is_ret_pos else "#FEE2E2"
+            ret_icon = "↗" if is_ret_pos else "↘"
+            
+            st.markdown(f"""<div style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:8px 10px; font-size:0.75rem;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;"><span style="font-weight:700; color:#0F172A;">📅 {r['Date'].strftime('%d %b %Y')}</span><span style="background:{ret_bg}; color:{ret_color}; padding:1px 5px; border-radius:4px; font-weight:700; font-size:0.7rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span></div><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span style="color:#64748B;">Close:</span> <b style="color:#1D4ED8; font-family:'JetBrains Mono', monospace;">₹{r['Close']:.2f}</b></div><div style="display:flex; justify-content:space-between;"><span style="color:#64748B;">Range:</span> <span>₹{r['Low']:.1f} – ₹{r['High']:.1f}</span></div></div>""", unsafe_allow_html=True)
+        else:
+            st.markdown("""<div style="background:#FEF2F2; color:#991B1B; border-radius:6px; padding:6px; font-size:0.75rem; text-align:center;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
 
-    st.markdown("---")
-    
-    # Download Processed Dataset Button
+    # 6. Compact Data Export Button
     csv_bytes = df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label=f"📥 Export Current Data ({'Live' if is_live_mode else 'Historical'} CSV)",
+        label=f"📥 Export Data ({'Live' if is_live_mode else 'Historical'} CSV)",
         data=csv_bytes,
         file_name=f"ADANIPORTS_{'live_yahoo' if is_live_mode else 'historical'}.csv",
         mime="text/csv",
