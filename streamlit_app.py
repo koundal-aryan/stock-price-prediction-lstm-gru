@@ -384,7 +384,8 @@ st.markdown("""
     /* Preserve rich colors for gauge delta indicators and custom callout annotations */
     .js-plotly-plot g.delta text,
     .js-plotly-plot g.delta path,
-    .js-plotly-plot .delta-text {
+    .js-plotly-plot .delta-text,
+    .js-plotly-plot g.annotation text {
         fill: inherit;
     }
 
@@ -1543,8 +1544,12 @@ elif "Forecast" in menu or "Target" in menu:
             hovertemplate=f"<b>Forecast Target (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Projected:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
         ))
 
-        # Clean non-overlapping Callout Annotation Badge (Universal Contrast in Light & Dark Mode)
+        # Condition-based Light Pastel Callout Badge (High-Contrast, Easy Reading)
+        badge_bg = "#F0FDF4" if is_bullish else "#FEF2F2"
+        badge_border = "#10B981" if is_bullish else "#EF4444"
+        badge_text_color = "#15803D" if is_bullish else "#B91C1C"
         arrow_ay = -40 if is_bullish else 40
+
         fig_proj.add_annotation(
             x=next_dt,
             y=sel_pred,
@@ -1553,16 +1558,16 @@ elif "Forecast" in menu or "Target" in menu:
             arrowhead=2,
             arrowsize=1,
             arrowwidth=1.8,
-            arrowcolor=signal_color,
+            arrowcolor=badge_border,
             ax=-65,
             ay=arrow_ay,
             align="center",
-            bgcolor="rgba(15, 23, 42, 0.94)",
-            bordercolor=signal_color,
+            bgcolor=badge_bg,
+            bordercolor=badge_border,
             borderwidth=1.5,
             borderpad=8,
-            font=dict(family="JetBrains Mono, monospace", size=12, color=signal_color),
-            opacity=0.98
+            font=dict(family="JetBrains Mono, monospace", size=12, color=badge_text_color),
+            opacity=1.0
         )
 
         x_min = tail_df["Date"].iloc[0]
