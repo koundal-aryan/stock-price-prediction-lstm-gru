@@ -173,7 +173,9 @@ st.markdown("""
     }
 
     /* Clean uppercase section header for NAVIGATE (prevents awkward box wrapping) */
-    div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] {
+    div[data-testid="stRadio"] [data-testid="stWidgetLabel"],
+    div[data-testid="stRadio"] [data-testid="stWidgetLabel"] *,
+    div[data-testid="stRadio"] [data-testid="stWidgetLabel"] p {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
@@ -181,76 +183,96 @@ st.markdown("""
         margin: 0 !important;
         font-size: 0.72rem !important;
         font-weight: 800 !important;
-        color: #64748B !important;
+        color: #475569 !important;
         letter-spacing: 0.08em !important;
         text-transform: uppercase !important;
         display: block !important;
     }
 
-    /* Option Cards */
-    div[data-testid="stRadio"] label[data-baseweb="radio"] {
+    /* Option Cards - Matches Streamlit radiogroup items */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) {
         background: #FFFFFF !important;
-        border: 1px solid #E2E8F0 !important;
+        border: 1.5px solid #CBD5E1 !important;
         border-radius: 10px !important;
         padding: 9px 12px !important;
+        margin-bottom: 2px !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        font-weight: 600 !important;
-        font-size: 0.84rem !important;
-        color: #1E293B !important;
         display: flex !important;
         align-items: center !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
         cursor: pointer !important;
     }
 
-    /* Distinct color accent combination for each navigation option */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(1) {
-        border-left: 3.5px solid #F59E0B !important; /* Amber for Executive */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(2) {
-        border-left: 3.5px solid #10B981 !important; /* Emerald for Candlestick */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(3) {
-        border-left: 3.5px solid #8B5CF6 !important; /* Purple for Deep Learning */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(4) {
-        border-left: 3.5px solid #3B82F6 !important; /* Electric Blue for Forecast */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(5) {
-        border-left: 3.5px solid #EC4899 !important; /* Rose Pink for Simulator */
-    }
-
-    div[data-testid="stRadio"] label[data-baseweb="radio"]:hover {
-        background: #F8FAFC !important;
-        border-color: #CBD5E1 !important;
+    /* Force Option Text to High-Contrast Bold Slate - Never Camouflage under dark mode */
+    div[data-testid="stRadio"] div[role="radiogroup"] label *,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) *,
+    div[data-testid="stRadio"] div[role="radiogroup"] label p,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) p {
         color: #0F172A !important;
-        transform: translateX(3px) !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05) !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
     }
 
-    div[data-testid="stRadio"] label[data-baseweb="radio"][data-checked="true"] {
+    /* Distinct color accent combination for each navigation option */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(1),
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(1) {
+        border-left: 4px solid #F59E0B !important; /* Amber for Executive */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(2),
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(2) {
+        border-left: 4px solid #10B981 !important; /* Emerald for Candlestick */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(3),
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(3) {
+        border-left: 4px solid #8B5CF6 !important; /* Purple for Deep Learning */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(4),
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(4) {
+        border-left: 4px solid #3B82F6 !important; /* Electric Blue for Forecast */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(5),
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(5) {
+        border-left: 4px solid #EC4899 !important; /* Rose Pink for Simulator */
+    }
+
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:hover,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):hover {
+        background: #F1F5F9 !important;
+        border-color: #94A3B8 !important;
+        transform: translateX(3px) !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08) !important;
+    }
+
+    /* Active / Checked State */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked),
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) {
         background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
-        border-color: #3B82F6 !important;
-        border-left: 4.5px solid #1D4ED8 !important;
+        border-color: #2563EB !important;
+        border-left: 5px solid #1D4ED8 !important;
+        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.18) !important;
+    }
+
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) *,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) *,
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) p,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) p {
         color: #1D4ED8 !important;
-        font-weight: 700 !important;
-        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.14) !important;
+        font-weight: 800 !important;
     }
 
     /* Custom Radio Dot Indicator */
-    div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
-        border-color: #94A3B8 !important;
+    div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) > div:first-child {
+        border-color: #64748B !important;
         background-color: #FFFFFF !important;
     }
 
-    div[data-testid="stRadio"] label[data-baseweb="radio"][data-checked="true"] > div:first-child {
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) > div:first-child,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) > div:first-child {
         border-color: #2563EB !important;
         background-color: #2563EB !important;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22) !important;
-    }
-
-    div[data-testid="stRadio"] label[data-baseweb="radio"][data-checked="true"] > div:first-child > div {
-        background-color: #FFFFFF !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
     }
 
     /* Styled Selectbox for Market Feed - Sleek Slate Pill */
@@ -679,7 +701,8 @@ with st.sidebar:
             "📁 Historical Benchmark (2007–2021)"
         ],
         index=0,
-        help="Toggle live streaming market data from Yahoo Finance or the curated research dataset."
+        help="Toggle live streaming market data from Yahoo Finance or the curated research dataset.",
+        label_visibility="collapsed"
     )
     
     is_live_mode = "Live Yahoo Finance" in data_source_mode
