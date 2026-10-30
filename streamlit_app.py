@@ -34,6 +34,23 @@ st.markdown("""
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
+    /* Safari & WebKit Compatibility Normalization */
+    html, body {
+        -webkit-text-size-adjust: 100%;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+    }
+
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Prevent Safari auto-zoom on input elements */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
     /* Responsive Mobile & Desktop Layout */
     .block-container {
         padding-top: 1.5rem !important;
@@ -45,62 +62,74 @@ st.markdown("""
 
     @media (max-width: 768px) {
         .block-container {
-            padding-top: 1rem !important;
-            padding-bottom: 1.5rem !important;
-            padding-left: 0.8rem !important;
-            padding-right: 0.8rem !important;
+            padding-top: 0.8rem !important;
+            padding-bottom: 1.2rem !important;
+            padding-left: 0.75rem !important;
+            padding-right: 0.75rem !important;
         }
 
         .hero-banner {
-            padding: 1.2rem 1.1rem !important;
+            padding: 1.1rem 1rem !important;
             border-radius: 14px !important;
         }
 
         .hero-title {
-            font-size: 1.5rem !important;
+            font-size: 1.4rem !important;
             line-height: 1.25 !important;
         }
 
         .hero-desc {
-            font-size: 0.85rem !important;
-            line-height: 1.45 !important;
+            font-size: 0.82rem !important;
+            line-height: 1.4 !important;
         }
 
         .glass-card {
-            padding: 1rem !important;
-            margin-bottom: 0.6rem !important;
+            padding: 0.9rem !important;
+            margin-bottom: 0.5rem !important;
         }
 
         .card-val {
-            font-size: 1.4rem !important;
+            font-size: 1.35rem !important;
         }
     }
 
-    /* Ensure Streamlit's native sidebar close (X) and collapse arrows are always visible & accessible on mobile */
+    /* Safari iOS safe-area inset support & Streamlit sidebar overlay */
+    section[data-testid="stSidebar"] {
+        background-color: #F8FAFC !important;
+        border-right: 1px solid #E2E8F0 !important;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: env(safe-area-inset-bottom, 20px) !important;
+    }
+
+    /* Ensure Streamlit's native sidebar close button (chevron/X) is always tappable on Safari */
     [data-testid="collapsedControl"],
-    button[kind="header"] {
+    button[kind="header"],
+    button[data-testid="stSidebarCollapseButton"] {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
         z-index: 999999 !important;
-        color: #0F172A !important;
+        color: #1D4ED8 !important;
+        cursor: pointer !important;
+        -webkit-appearance: none !important;
     }
 
-    /* On mobile, keep sidebar width comfortable and ensure close button is prominent */
     @media (max-width: 768px) {
         section[data-testid="stSidebar"] {
             width: 82vw !important;
-            min-width: 280px !important;
-            box-shadow: 4px 0 24px rgba(0,0,0,0.25) !important;
+            max-width: 320px !important;
+            box-shadow: 6px 0 24px rgba(0,0,0,0.2) !important;
+            position: fixed !important;
+            height: 100vh !important;
+            height: 100dvh !important; /* Dynamic viewport for Safari URL bar */
+            z-index: 99999 !important;
         }
 
-        /* Prominent visible close chevron button */
         button[data-testid="stSidebarCollapseButton"] {
-            display: flex !important;
             background: #EFF6FF !important;
             border: 1px solid #BFDBFE !important;
             border-radius: 8px !important;
-            color: #1D4ED8 !important;
+            padding: 6px !important;
         }
     }
 
