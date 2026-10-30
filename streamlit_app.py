@@ -368,53 +368,19 @@ st.markdown("""
         background: transparent !important;
     }
 
-    /* By default (Light Mode), render high-contrast dark slate text */
+    /* Dynamically adapt all chart text (ticks, titles, legends) to Streamlit's active theme */
     .js-plotly-plot text,
     .js-plotly-plot .xtick text,
     .js-plotly-plot .ytick text,
     .js-plotly-plot .legendtext,
     .js-plotly-plot .gtitle,
+    .js-plotly-plot .xtitle,
+    .js-plotly-plot .ytitle,
     .js-plotly-plot text.title,
     .js-plotly-plot .annotation-text {
-        fill: #1E293B !important;
+        fill: var(--text-color, currentColor) !important;
         font-family: 'Inter', -apple-system, sans-serif !important;
         font-weight: 600 !important;
-    }
-
-    /* In Dark Mode (via OS preference or Streamlit theme), render high-contrast crisp silver text */
-    @media (prefers-color-scheme: dark) {
-        .js-plotly-plot text,
-        .js-plotly-plot .xtick text,
-        .js-plotly-plot .ytick text,
-        .js-plotly-plot .legendtext,
-        .js-plotly-plot .gtitle,
-        .js-plotly-plot text.title,
-        .js-plotly-plot .annotation-text {
-            fill: #E2E8F0 !important;
-        }
-    }
-
-    [data-theme="dark"] .js-plotly-plot text,
-    [data-theme="dark"] .js-plotly-plot .xtick text,
-    [data-theme="dark"] .js-plotly-plot .ytick text,
-    [data-theme="dark"] .js-plotly-plot .legendtext,
-    [data-theme="dark"] .js-plotly-plot .gtitle,
-    [data-theme="dark"] .js-plotly-plot text.title,
-    [data-theme="dark"] .js-plotly-plot .annotation-text,
-    .stApp[data-theme="dark"] .js-plotly-plot text,
-    .stApp:has([data-theme="dark"]) .js-plotly-plot text {
-        fill: #E2E8F0 !important;
-    }
-
-    [data-theme="light"] .js-plotly-plot text,
-    [data-theme="light"] .js-plotly-plot .xtick text,
-    [data-theme="light"] .js-plotly-plot .ytick text,
-    [data-theme="light"] .js-plotly-plot .legendtext,
-    [data-theme="light"] .js-plotly-plot .gtitle,
-    [data-theme="light"] .js-plotly-plot text.title,
-    [data-theme="light"] .js-plotly-plot .annotation-text,
-    .stApp[data-theme="light"] .js-plotly-plot text {
-        fill: #1E293B !important;
     }
 
     /* Gradient Hero Banner */
