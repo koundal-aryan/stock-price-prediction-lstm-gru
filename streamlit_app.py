@@ -167,61 +167,202 @@ st.markdown("""
         padding-bottom: 1.2rem !important;
     }
 
-    /* Modern Navigation Chips with Active Accent Indicator */
+    /* Modern Navigation Chips with Color Accent Combinations */
     div[data-testid="stRadio"] > div {
         gap: 6px !important;
     }
 
-    div[data-testid="stRadio"] label {
+    /* Clean uppercase section header for NAVIGATE (prevents awkward box wrapping) */
+    div[data-testid="stRadio"] label[data-testid="stWidgetLabel"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 0 6px 2px !important;
+        margin: 0 !important;
+        font-size: 0.72rem !important;
+        font-weight: 800 !important;
+        color: #64748B !important;
+        letter-spacing: 0.08em !important;
+        text-transform: uppercase !important;
+        display: block !important;
+    }
+
+    /* Option Cards */
+    div[data-testid="stRadio"] label[data-baseweb="radio"] {
         background: #FFFFFF !important;
         border: 1px solid #E2E8F0 !important;
         border-radius: 10px !important;
         padding: 9px 12px !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         font-weight: 600 !important;
-        font-size: 0.85rem !important;
+        font-size: 0.84rem !important;
         color: #1E293B !important;
         display: flex !important;
         align-items: center !important;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
+        cursor: pointer !important;
     }
 
-    div[data-testid="stRadio"] label:hover {
-        background: #F0F7FF !important;
-        border-color: #93C5FD !important;
-        color: #1D4ED8 !important;
+    /* Distinct color accent combination for each navigation option */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(1) {
+        border-left: 3.5px solid #F59E0B !important; /* Amber for Executive */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(2) {
+        border-left: 3.5px solid #10B981 !important; /* Emerald for Candlestick */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(3) {
+        border-left: 3.5px solid #8B5CF6 !important; /* Purple for Deep Learning */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(4) {
+        border-left: 3.5px solid #3B82F6 !important; /* Electric Blue for Forecast */
+    }
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(5) {
+        border-left: 3.5px solid #EC4899 !important; /* Rose Pink for Simulator */
+    }
+
+    div[data-testid="stRadio"] label[data-baseweb="radio"]:hover {
+        background: #F8FAFC !important;
+        border-color: #CBD5E1 !important;
+        color: #0F172A !important;
         transform: translateX(3px) !important;
-        box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08) !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05) !important;
     }
 
-    div[data-testid="stRadio"] label[data-checked="true"] {
-        background: #EFF6FF !important;
+    div[data-testid="stRadio"] label[data-baseweb="radio"][data-checked="true"] {
+        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
         border-color: #3B82F6 !important;
+        border-left: 4.5px solid #1D4ED8 !important;
         color: #1D4ED8 !important;
         font-weight: 700 !important;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12) !important;
+        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.14) !important;
     }
 
-    /* Styled Selectbox for Market Feed */
-    div[data-testid="stSelectbox"] div[data-baseweb="select"] {
+    /* Custom Radio Dot Indicator */
+    div[data-testid="stRadio"] label[data-baseweb="radio"] > div:first-child {
+        border-color: #94A3B8 !important;
+        background-color: #FFFFFF !important;
+    }
+
+    div[data-testid="stRadio"] label[data-baseweb="radio"][data-checked="true"] > div:first-child {
+        border-color: #2563EB !important;
+        background-color: #2563EB !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22) !important;
+    }
+
+    div[data-testid="stRadio"] label[data-baseweb="radio"][data-checked="true"] > div:first-child > div {
+        background-color: #FFFFFF !important;
+    }
+
+    /* Styled Selectbox for Market Feed - Sleek Slate Pill */
+    div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] {
+        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
         border-radius: 10px !important;
-        border: 1px solid #CBD5E1 !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
     }
 
-    /* Styled Expander for Date Inspector */
+    div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] div {
+        color: #FFFFFF !important;
+        font-weight: 600 !important;
+        font-size: 0.82rem !important;
+    }
+
+    div[data-testid="stSidebar"] div[data-testid="stSelectbox"] svg {
+        fill: #94A3B8 !important;
+    }
+
+    /* Styled Expander for Date Inspector - 100% Anti-Camouflage High-Visibility */
     div[data-testid="stExpander"] {
-        border: 1px solid #E2E8F0 !important;
+        border: 1.5px solid #CBD5E1 !important;
         border-radius: 12px !important;
         background: #FFFFFF !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.02) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+        overflow: hidden !important;
     }
 
     div[data-testid="stExpander"] details summary {
+        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
+        border-radius: 10px !important;
+        padding: 10px 14px !important;
         font-weight: 700 !important;
+        border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+    }
+
+    div[data-testid="stExpander"] details[open] summary {
+        border-bottom-left-radius: 0 !important;
+        border-bottom-right-radius: 0 !important;
+    }
+
+    div[data-testid="stExpander"] details summary:hover {
+        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
+    }
+
+    div[data-testid="stExpander"] details summary span,
+    div[data-testid="stExpander"] details summary p,
+    div[data-testid="stExpander"] details summary div,
+    div[data-testid="stExpander"] details summary {
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        font-size: 0.86rem !important;
+        letter-spacing: 0.02em !important;
+    }
+
+    div[data-testid="stExpander"] details summary svg {
+        fill: #60A5FA !important;
+        stroke: #60A5FA !important;
+        color: #60A5FA !important;
+    }
+
+    /* Expander Content Inner Body */
+    div[data-testid="stExpander"] details > div:last-child {
+        background: #FFFFFF !important;
+        padding: 10px 10px !important;
+        border-radius: 0 0 10px 10px !important;
+    }
+
+    /* Date Input inside Date Inspector - Crisp Light Slate Background & High Contrast Text */
+    div[data-testid="stExpander"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
+        background-color: #F8FAFC !important;
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
+    }
+
+    div[data-testid="stExpander"] div[data-testid="stDateInput"] input {
         color: #0F172A !important;
-        padding: 8px 12px !important;
-        border-radius: 12px !important;
+        font-weight: 700 !important;
+        font-size: 0.88rem !important;
+        background-color: transparent !important;
+    }
+
+    div[data-testid="stExpander"] div[data-testid="stDateInput"] svg {
+        fill: #2563EB !important;
+        stroke: #2563EB !important;
+        color: #2563EB !important;
+    }
+
+    /* Sidebar Download / Export Button */
+    section[data-testid="stSidebar"] div.stDownloadButton button {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        color: #1E293B !important;
+        font-weight: 700 !important;
+        border-radius: 10px !important;
+        padding: 9px 14px !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
+        font-size: 0.82rem !important;
+    }
+
+    section[data-testid="stSidebar"] div.stDownloadButton button:hover {
+        background: #EFF6FF !important;
+        border-color: #3B82F6 !important;
+        color: #1D4ED8 !important;
+        box-shadow: 0 3px 8px rgba(37, 99, 235, 0.12) !important;
+        transform: translateY(-1px) !important;
     }
 
     /* Gradient Hero Banner */
@@ -636,7 +777,20 @@ with st.sidebar:
             ret_bg = "#DCFCE7" if is_ret_pos else "#FEE2E2"
             ret_icon = "↗" if is_ret_pos else "↘"
             
-            st.markdown(f"""<div style="background:#F8FAFC; border:1px solid #CBD5E1; border-radius:8px; padding:8px 10px; font-size:0.75rem;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;"><span style="font-weight:700; color:#0F172A;">📅 {r['Date'].strftime('%d %b %Y')}</span><span style="background:{ret_bg}; color:{ret_color}; padding:1px 5px; border-radius:4px; font-weight:700; font-size:0.7rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span></div><div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span style="color:#64748B;">Close:</span> <b style="color:#1D4ED8; font-family:'JetBrains Mono', monospace;">₹{r['Close']:.2f}</b></div><div style="display:flex; justify-content:space-between;"><span style="color:#64748B;">Range:</span> <span>₹{r['Low']:.1f} – ₹{r['High']:.1f}</span></div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""
+            <div style="background:#F8FAFC; border:1.5px solid #CBD5E1; border-radius:10px; padding:10px 12px; font-size:0.75rem; margin-top:8px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                    <span style="font-weight:800; color:#0F172A; font-size:0.78rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
+                    <span style="background:{ret_bg}; color:{ret_color}; padding:2px 6px; border-radius:5px; font-weight:800; font-size:0.7rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                    <span style="color:#64748B;">Close:</span> <b style="color:#1D4ED8; font-family:'JetBrains Mono', monospace; font-size:0.82rem;">₹{r['Close']:.2f}</b>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span style="color:#64748B;">Range:</span> <span style="font-weight:600; color:#334155;">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
         else:
             st.markdown("""<div style="background:#FEF2F2; color:#991B1B; border-radius:6px; padding:6px; font-size:0.75rem; text-align:center;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
 
