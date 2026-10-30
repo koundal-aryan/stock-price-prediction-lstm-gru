@@ -11,6 +11,7 @@ import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import yfinance as yf
@@ -24,6 +25,32 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="auto"
 )
+
+# Seamless Theme State Synchronizer (Listens to Streamlit 3-dots Light/Dark toggle in real time)
+components.html("""
+<script>
+(function() {
+    function detectTheme() {
+        try {
+            const doc = window.parent.document;
+            const app = doc.querySelector('.stApp');
+            if (!app) return;
+            const bg = window.parent.getComputedStyle(app).backgroundColor;
+            const rgb = bg.match(/\\d+/g);
+            if (rgb) {
+                const lum = 0.299 * parseInt(rgb[0]) + 0.587 * parseInt(rgb[1]) + 0.114 * parseInt(rgb[2]);
+                const theme = lum > 128 ? 'light' : 'dark';
+                doc.documentElement.setAttribute('data-theme', theme);
+                const sidebar = doc.querySelector('section[data-testid="stSidebar"]');
+                if (sidebar) sidebar.setAttribute('data-theme', theme);
+            }
+        } catch(e) {}
+    }
+    detectTheme();
+    setInterval(detectTheme, 300);
+})();
+</script>
+""", height=0, width=0)
 
 # 2. Advanced FinTech Design System
 st.markdown("""
@@ -152,11 +179,126 @@ st.markdown("""
         }
     }
 
-    /* Premium FinTech Sidebar Styling - Clean Obsidian Slate */
+    /* Hidden helper container for theme synchronizer */
+    div[data-testid="stCustomComponentV1"] {
+        display: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Sidebar Theme Variables: Dark Mode by Default (The look you loved) */
+    section[data-testid="stSidebar"],
+    [data-theme="dark"] section[data-testid="stSidebar"] {
+        --sb-bg: linear-gradient(180deg, #0B0F19 0%, #0F172A 50%, #070B14 100%);
+        --sb-border: rgba(255, 255, 255, 0.08);
+        --sb-card-bg: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%);
+        --sb-card-border: rgba(255, 255, 255, 0.1);
+        --sb-card-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        --sb-text-main: #FFFFFF;
+        --sb-text-sub: #94A3B8;
+        --sb-text-muted: #64748B;
+        --sb-target-val: #60A5FA;
+        --sb-divider: rgba(255, 255, 255, 0.1);
+        --sb-radio-bg: rgba(30, 41, 59, 0.55);
+        --sb-radio-border: rgba(255, 255, 255, 0.08);
+        --sb-radio-text: #E2E8F0;
+        --sb-radio-dot-border: #64748B;
+        --sb-radio-dot-bg: #0F172A;
+        --sb-radio-active-bg: linear-gradient(135deg, rgba(37, 99, 235, 0.28) 0%, rgba(30, 58, 138, 0.35) 100%);
+        --sb-radio-active-border: #3B82F6;
+        --sb-radio-active-text: #93C5FD;
+        --sb-input-bg: #1E293B;
+        --sb-input-border: rgba(255, 255, 255, 0.15);
+        --sb-input-text: #F8FAFC;
+        --sb-input-icon: #60A5FA;
+        --sb-btn-bg: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
+        --sb-btn-border: rgba(255, 255, 255, 0.15);
+        --sb-btn-text: #F8FAFC;
+        --sb-badge-pos-bg: rgba(16, 185, 129, 0.2);
+        --sb-badge-pos-color: #34D399;
+        --sb-badge-pos-border: rgba(16, 185, 129, 0.35);
+        --sb-badge-neg-bg: rgba(239, 68, 68, 0.2);
+        --sb-badge-neg-color: #F87171;
+        --sb-badge-neg-border: rgba(239, 68, 68, 0.35);
+    }
+
+    /* Light Mode Theme Variables (Specifically tuned for Light Mode) */
+    [data-theme="light"] section[data-testid="stSidebar"] {
+        --sb-bg: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
+        --sb-border: #CBD5E1;
+        --sb-card-bg: #FFFFFF;
+        --sb-card-border: #CBD5E1;
+        --sb-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        --sb-text-main: #0F172A;
+        --sb-text-sub: #475569;
+        --sb-text-muted: #64748B;
+        --sb-target-val: #1D4ED8;
+        --sb-divider: #E2E8F0;
+        --sb-radio-bg: #FFFFFF;
+        --sb-radio-border: #CBD5E1;
+        --sb-radio-text: #0F172A;
+        --sb-radio-dot-border: #94A3B8;
+        --sb-radio-dot-bg: #FFFFFF;
+        --sb-radio-active-bg: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+        --sb-radio-active-border: #2563EB;
+        --sb-radio-active-text: #1D4ED8;
+        --sb-input-bg: #FFFFFF;
+        --sb-input-border: #CBD5E1;
+        --sb-input-text: #0F172A;
+        --sb-input-icon: #2563EB;
+        --sb-btn-bg: #FFFFFF;
+        --sb-btn-border: #CBD5E1;
+        --sb-btn-text: #1E293B;
+        --sb-badge-pos-bg: #DCFCE7;
+        --sb-badge-pos-color: #15803D;
+        --sb-badge-pos-border: #86EFAC;
+        --sb-badge-neg-bg: #FEE2E2;
+        --sb-badge-neg-color: #B91C1C;
+        --sb-badge-neg-border: #FCA5A5;
+    }
+
+    @media (prefers-color-scheme: light) {
+        section[data-testid="stSidebar"]:not([data-theme="dark"]) {
+            --sb-bg: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
+            --sb-border: #CBD5E1;
+            --sb-card-bg: #FFFFFF;
+            --sb-card-border: #CBD5E1;
+            --sb-card-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+            --sb-text-main: #0F172A;
+            --sb-text-sub: #475569;
+            --sb-text-muted: #64748B;
+            --sb-target-val: #1D4ED8;
+            --sb-divider: #E2E8F0;
+            --sb-radio-bg: #FFFFFF;
+            --sb-radio-border: #CBD5E1;
+            --sb-radio-text: #0F172A;
+            --sb-radio-dot-border: #94A3B8;
+            --sb-radio-dot-bg: #FFFFFF;
+            --sb-radio-active-bg: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+            --sb-radio-active-border: #2563EB;
+            --sb-radio-active-text: #1D4ED8;
+            --sb-input-bg: #FFFFFF;
+            --sb-input-border: #CBD5E1;
+            --sb-input-text: #0F172A;
+            --sb-input-icon: #2563EB;
+            --sb-btn-bg: #FFFFFF;
+            --sb-btn-border: #CBD5E1;
+            --sb-btn-text: #1E293B;
+            --sb-badge-pos-bg: #DCFCE7;
+            --sb-badge-pos-color: #15803D;
+            --sb-badge-pos-border: #86EFAC;
+            --sb-badge-neg-bg: #FEE2E2;
+            --sb-badge-neg-color: #B91C1C;
+            --sb-badge-neg-border: #FCA5A5;
+        }
+    }
+
+    /* Premium FinTech Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #0B0F19 0%, #0F172A 50%, #070B14 100%) !important;
-        border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.25) !important;
+        background: var(--sb-bg) !important;
+        border-right: 1px solid var(--sb-border) !important;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15) !important;
     }
 
     section[data-testid="stSidebar"] > div:first-child,
@@ -175,12 +317,12 @@ st.markdown("""
     /* Sidebar Cards */
     .sidebar-card,
     .sidebar-glass-card {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.85) 100%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        background: var(--sb-card-bg) !important;
+        border: 1px solid var(--sb-card-border) !important;
         border-radius: 10px !important;
         padding: 7px 10px !important;
         margin-bottom: 0.35rem !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: var(--sb-card-shadow) !important;
         transition: all 0.2s ease !important;
     }
 
@@ -203,7 +345,7 @@ st.markdown("""
         margin: 0 !important;
         font-size: 0.68rem !important;
         font-weight: 800 !important;
-        color: #94A3B8 !important;
+        color: var(--sb-text-sub) !important;
         letter-spacing: 0.08em !important;
         text-transform: uppercase !important;
         display: block !important;
@@ -212,8 +354,8 @@ st.markdown("""
     /* Option Cards - Full width, row flex layout with Sleek Slate */
     div[data-testid="stRadio"] div[role="radiogroup"] > label,
     div[data-testid="stRadio"] label {
-        background: rgba(30, 41, 59, 0.55) !important;
-        border: 1px solid rgba(255, 255, 255, 0.08) !important;
+        background: var(--sb-radio-bg) !important;
+        border: 1px solid var(--sb-radio-border) !important;
         border-radius: 9px !important;
         padding: 6px 10px !important;
         margin: 0 !important;
@@ -224,7 +366,7 @@ st.markdown("""
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
         cursor: pointer !important;
     }
 
@@ -241,10 +383,10 @@ st.markdown("""
         align-items: center !important;
     }
 
-    /* Unselected radio button: crisp slate border with dark center */
+    /* Unselected radio button: crisp border with adaptive center */
     div[data-testid="stRadio"] [data-baseweb="radio"] > div {
-        border: 1.5px solid #64748B !important;
-        background-color: #0F172A !important;
+        border: 1.5px solid var(--sb-radio-dot-border) !important;
+        background-color: var(--sb-radio-dot-bg) !important;
         width: 14px !important;
         height: 14px !important;
         min-width: 14px !important;
@@ -275,9 +417,9 @@ st.markdown("""
     /* Selected Card Active State */
     div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked),
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] {
-        background: linear-gradient(135deg, rgba(37, 99, 235, 0.28) 0%, rgba(30, 58, 138, 0.35) 100%) !important;
-        border: 1px solid #3B82F6 !important;
-        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25) !important;
+        background: var(--sb-radio-active-bg) !important;
+        border: 1px solid var(--sb-radio-active-border) !important;
+        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2) !important;
     }
 
     /* Option Text Container: Always 100% visible, crisp typography */
@@ -288,7 +430,7 @@ st.markdown("""
     }
 
     div[data-testid="stRadio"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] p {
-        color: #E2E8F0 !important;
+        color: var(--sb-radio-text) !important;
         font-weight: 600 !important;
         font-size: 0.82rem !important;
         line-height: 1.25 !important;
@@ -302,73 +444,72 @@ st.markdown("""
 
     div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] p,
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
-        color: #93C5FD !important;
+        color: var(--sb-radio-active-text) !important;
         font-weight: 800 !important;
     }
 
     /* Subtle hover interaction */
     div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
-        background: rgba(30, 41, 59, 0.8) !important;
-        border-color: rgba(96, 165, 250, 0.4) !important;
+        border-color: #3B82F6 !important;
         transform: translateX(2px) !important;
     }
 
-    /* Styled Selectbox for Market Feed - Sleek Slate Pill */
+    /* Styled Selectbox for Market Feed - Sleek Pill */
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
         margin-bottom: 0.35rem !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] {
-        background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+        background: var(--sb-input-bg) !important;
         border-radius: 9px !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
+        border: 1px solid var(--sb-input-border) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
         min-height: 34px !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] div {
-        color: #FFFFFF !important;
+        color: var(--sb-input-text) !important;
         font-weight: 600 !important;
         font-size: 0.8rem !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] svg {
-        fill: #94A3B8 !important;
+        fill: var(--sb-text-sub) !important;
     }
 
     /* Date Input inside Date Inspector - Crisp Clean Input with Blue Icon */
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
-        background-color: #1E293B !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        background-color: var(--sb-input-bg) !important;
+        border: 1px solid var(--sb-input-border) !important;
         border-radius: 8px !important;
         min-height: 34px !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.15) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] input {
-        color: #F8FAFC !important;
+        color: var(--sb-input-text) !important;
         font-weight: 700 !important;
         font-size: 0.82rem !important;
         background-color: transparent !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] svg {
-        fill: #60A5FA !important;
-        stroke: #60A5FA !important;
-        color: #60A5FA !important;
+        fill: var(--sb-input-icon) !important;
+        stroke: var(--sb-input-icon) !important;
+        color: var(--sb-input-icon) !important;
     }
 
     /* Sidebar Download / Export Button - Sleek Slate */
     section[data-testid="stSidebar"] div.stDownloadButton button {
-        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
-        border: 1px solid rgba(255, 255, 255, 0.15) !important;
-        color: #F8FAFC !important;
+        background: var(--sb-btn-bg) !important;
+        border: 1px solid var(--sb-btn-border) !important;
+        color: var(--sb-btn-text) !important;
         font-weight: 700 !important;
         border-radius: 9px !important;
         padding: 7px 12px !important;
         margin-top: 0.3rem !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.2) !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
         font-size: 0.78rem !important;
     }
 
@@ -802,28 +943,29 @@ with st.sidebar:
     pct_diff_gru = (diff_gru / latest_close) * 100.0 if latest_close > 0 else 0.0
 
     # 3. Enhanced Real-Time Quote Card in Sidebar
-    badge_bg = "rgba(16, 185, 129, 0.2)" if day_change_val >= 0 else "rgba(239, 68, 68, 0.2)"
-    badge_color = "#34D399" if day_change_val >= 0 else "#F87171"
-    badge_border = "rgba(16, 185, 129, 0.35)" if day_change_val >= 0 else "rgba(239, 68, 68, 0.35)"
+    badge_bg = "var(--sb-badge-pos-bg)" if day_change_val >= 0 else "var(--sb-badge-neg-bg)"
+    badge_color = "var(--sb-badge-pos-color)" if day_change_val >= 0 else "var(--sb-badge-neg-color)"
+    badge_border = "var(--sb-badge-pos-border)" if day_change_val >= 0 else "var(--sb-badge-neg-border)"
+    est_delta_color = "var(--sb-badge-pos-color)" if diff_gru >= 0 else "var(--sb-badge-neg-color)"
     feed_tag = "LIVE NSE" if is_live_mode else "HISTORICAL"
 
     st.markdown(f"""
     <div class="sidebar-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-            <span style="font-size:0.68rem; font-weight:800; color:#94A3B8; letter-spacing:0.04em;">ADANIPORTS.NS</span>
+            <span style="font-size:0.68rem; font-weight:800; color:var(--sb-text-sub); letter-spacing:0.04em;">ADANIPORTS.NS</span>
             <span style="background:{badge_bg}; color:{badge_color}; border:1px solid {badge_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.66rem;">{day_change_pct:+.2f}%</span>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2px 0;">
-            <div style="font-size:1.32rem; font-weight:800; color:#FFFFFF; font-family:'JetBrains Mono', monospace; letter-spacing:-0.02em;">
+            <div style="font-size:1.32rem; font-weight:800; color:var(--sb-text-main); font-family:'JetBrains Mono', monospace; letter-spacing:-0.02em;">
                 ₹{latest_close:.2f}
             </div>
-            <div style="font-size:0.74rem; color:#94A3B8;">
-                Target: <b style="color:#60A5FA; font-weight:700;">₹{pred_close_gru:.2f}</b>
+            <div style="font-size:0.74rem; color:var(--sb-text-sub);">
+                Target: <b style="color:var(--sb-target-val); font-weight:700;">₹{pred_close_gru:.2f}</b>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:0.66rem; color:#64748B; border-top:1px dashed rgba(255, 255, 255, 0.1); padding-top:4px; margin-top:3px;">
-            <span>Feed: <b style="color:#CBD5E1;">{feed_tag}</b></span>
-            <span>Est Delta: <b style="color:{'#34D399' if diff_gru>=0 else '#F87171'}; font-weight:700;">{pct_diff_gru:+.2f}%</b></span>
+        <div style="display:flex; justify-content:space-between; font-size:0.66rem; color:var(--sb-text-muted); border-top:1px dashed var(--sb-divider); padding-top:4px; margin-top:3px;">
+            <span>Feed: <b style="color:var(--sb-text-sub);">{feed_tag}</b></span>
+            <span>Est Delta: <b style="color:{est_delta_color}; font-weight:700;">{pct_diff_gru:+.2f}%</b></span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -849,8 +991,8 @@ with st.sidebar:
 
     st.markdown("""
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:2px; padding:0 2px;">
-        <span style="font-size:0.68rem; font-weight:800; color:#94A3B8; letter-spacing:0.06em; text-transform:uppercase;">📅 Historical Inspector</span>
-        <span style="font-size:0.62rem; font-weight:700; color:#60A5FA; background:rgba(37,99,235,0.2); border:1px solid rgba(96,165,250,0.3); padding:1px 5px; border-radius:4px;">Lookup</span>
+        <span style="font-size:0.68rem; font-weight:800; color:var(--sb-text-sub); letter-spacing:0.06em; text-transform:uppercase;">📅 Historical Inspector</span>
+        <span style="font-size:0.62rem; font-weight:700; color:var(--sb-target-val); background:var(--sb-radio-active-bg); border:1px solid var(--sb-radio-active-border); padding:1px 5px; border-radius:4px;">Lookup</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -866,27 +1008,27 @@ with st.sidebar:
     if not match_row.empty:
         r = match_row.iloc[0]
         is_ret_pos = r['Daily_Return'] >= 0
-        ret_color = "#34D399" if is_ret_pos else "#F87171"
-        ret_bg = "rgba(16, 185, 129, 0.2)" if is_ret_pos else "rgba(239, 68, 68, 0.2)"
-        ret_border = "rgba(16, 185, 129, 0.35)" if is_ret_pos else "rgba(239, 68, 68, 0.35)"
+        ret_color = "var(--sb-badge-pos-color)" if is_ret_pos else "var(--sb-badge-neg-color)"
+        ret_bg = "var(--sb-badge-pos-bg)" if is_ret_pos else "var(--sb-badge-neg-bg)"
+        ret_border = "var(--sb-badge-pos-border)" if is_ret_pos else "var(--sb-badge-neg-border)"
         ret_icon = "↗" if is_ret_pos else "↘"
         
         st.markdown(f"""
         <div class="sidebar-card" style="font-size:0.73rem; margin-top:-6px; margin-bottom:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                <span style="font-weight:800; color:#F8FAFC; font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
+                <span style="font-weight:800; color:var(--sb-text-main); font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
                 <span style="background:{ret_bg}; color:{ret_color}; border:1px solid {ret_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.68rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span style="color:#94A3B8;">Close:</span> <b style="color:#60A5FA; font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
+                <span style="color:var(--sb-text-sub);">Close:</span> <b style="color:var(--sb-target-val); font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
             </div>
             <div style="display:flex; justify-content:space-between;">
-                <span style="color:#94A3B8;">Range:</span> <span style="font-weight:600; color:#CBD5E1;">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
+                <span style="color:var(--sb-text-sub);">Range:</span> <span style="font-weight:600; color:var(--sb-text-main);">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown("""<div style="background:rgba(239, 68, 68, 0.15); color:#FCA5A5; border:1px solid rgba(239, 68, 68, 0.3); border-radius:6px; padding:6px; font-size:0.75rem; text-align:center; margin-top:-4px; margin-bottom:4px;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="background:var(--sb-badge-neg-bg); color:var(--sb-badge-neg-color); border:1px solid var(--sb-badge-neg-border); border-radius:6px; padding:6px; font-size:0.75rem; text-align:center; margin-top:-4px; margin-bottom:4px;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
 
     # 6. Compact Data Export Button
     csv_bytes = df.to_csv(index=False).encode('utf-8')
