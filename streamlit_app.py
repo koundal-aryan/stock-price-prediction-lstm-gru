@@ -222,6 +222,33 @@ GRU_MODEL_PATH = os.path.join(MODELS_DIR, "gru_model.keras")
 LSTM_MODEL_PATH = os.path.join(MODELS_DIR, "lstm_model.keras")
 
 
+@st.cache_data(ttl=60)
+def fetch_live_intraday_data(interval="15m", period="5d"):
+    """
+    Fetches real-time intraday market data (15m, 5m, etc.) for ADANIPORTS.NS
+    """
+    try:
+        ticker = yf.Ticker("ADANIPORTS.NS")
+        hist = ticker.history(period=period, interval=interval)
+        if not hist.empty:
+            hist = hist.reset_index()
+            # Standardize datetime column
+            date_col = "Datetime" if "Datetime" in hist.columns else "Date"
+            hist["Date"] = pd.to_datetime(hist[date_col]).dt.tz_localize(None)
+            hist["Daily_Return"] = hist["Close"].pct_change() * 100.0
+            hist["Daily_Return"] = hist["Daily_Return"].fillna(0.0)
+            hist["SMA_20"] = hist["Close"].rolling(20, min_periods=1).mean()
+            hist["EMA_20"] = hist["Close"].ewm(span=20, adjust=False).mean()
+            rolling_std = hist["Close"].rolling(20, min_periods=1).std().fillna(0.0)
+            hist["BB_Upper"] = hist["SMA_20"] + (rolling_std * 2)
+            hist["BB_Lower"] = hist["SMA_20"] - (rolling_std * 2)
+            hist["VWAP"] = hist["Close"]
+            return hist, True
+    except Exception:
+        pass
+    return None, False
+
+
 @st.cache_data(ttl=180)
 def fetch_live_yahoo_data():
     """
@@ -620,70 +647,173 @@ if menu == "⚡ Executive Dashboard":
 
 
 # ==============================================================================
-# TAB 2: CANDLESTICK & TECHNICAL STUDIO
+# TAB 2: CANDLESTICK & TECHNICAL STUDIO (LIVE INTRADAY + DAILY HORIZONS)
 # ==============================================================================
 elif menu == "📊 Candlestick & Technical Studio":
-    st.markdown('<div class="hero-badge">Interactive Technical Analysis Studio</div>', unsafe_allow_html=True)
-    st.markdown("## Interactive Candlestick & Price Indicators")
-    st.caption("Explore OHLC price action with interactive zoom, range sliders, and Bollinger Bands.")
-    
-    # Timeframe Selector
-    t_filter = st.selectbox(
-        "Select Time Horizon Window",
-        ["Full Range", "Last 1 Year", "Last 6 Months", "Last 3 Months"]
-    )
-    
-    if t_filter == "Last 3 Months":
+    st.markdown('<div class="hero-badge">Real-Time Market Studio</div>', unsafe_allow_html=True)
+    st.markdown("## 📊 Live Interactive Candlestick & Market Flow")
+    st.caption("Live streaming candlestick chart supporting real-time intraday candles (5m/15m) alongside multi-day macro horizons with Bollinger Bands and volume returns.")
+
+    # Live Market Condition Badge Banner
+    c_live1, c_live2, c_live3, c_live4 = st.columns(4)
+    with c_live1:
+        st.markdown(f"""
+        <div class="glass-card card-accent-blue" style="padding:10px 14px;">
+            <div class="card-label"><span>Live Price</span> <span>📍</span></div>
+            <div style="font-size:1.45rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">₹{latest_close:.2f}</div>
+            <div class="card-sub">{latest_date_str}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c_live2:
+        st.markdown(f"""
+        <div class="glass-card card-accent-green" style="padding:10px 14px;">
+            <div class="card-label"><span>Session Move</span> <span class="pill-{'up' if day_change_val>=0 else 'down'}">{day_change_pct:+.2f}%</span></div>
+            <div style="font-size:1.45rem; font-weight:800; color:{'#10B981' if day_change_val>=0 else '#EF4444'}; font-family:'JetBrains Mono', monospace;">{day_change_val:+.2f} ₹</div>
+            <div class="card-sub">Base: Prev Close ₹{prev_close:.2f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c_live3:
+        session_high = float(df["High"].iloc[-1])
+        session_low = float(df["Low"].iloc[-1])
+        st.markdown(f"""
+        <div class="glass-card card-accent-amber" style="padding:10px 14px;">
+            <div class="card-label"><span>Day Range (H / L)</span> <span>↕</span></div>
+            <div style="font-size:1.25rem; font-weight:800; color:#D97706; font-family:'JetBrains Mono', monospace;">₹{session_low:.1f} – ₹{session_high:.1f}</div>
+            <div class="card-sub">Spread: ₹{(session_high - session_low):.2f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with c_live4:
+        bb_upper_curr = float(df["BB_Upper"].iloc[-1])
+        bb_lower_curr = float(df["BB_Lower"].iloc[-1])
+        bb_status = "Overbought (Near Top)" if latest_close >= bb_upper_curr * 0.98 else ("Oversold (Near Bottom)" if latest_close <= bb_lower_curr * 1.02 else "Neutral Band")
+        st.markdown(f"""
+        <div class="glass-card card-accent-purple" style="padding:10px 14px;">
+            <div class="card-label"><span>Bollinger Condition</span> <span>⚡</span></div>
+            <div style="font-size:1.05rem; font-weight:800; color:#8B5CF6; margin-top:4px;">{bb_status}</div>
+            <div class="card-sub">BB: ₹{bb_lower_curr:.0f} - ₹{bb_upper_curr:.0f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Timeframe & Horizon Selector (Intraday Live vs Days/Months)
+    t_col1, t_col2 = st.columns([2, 1])
+    with t_col1:
+        timeframe_mode = st.radio(
+            "Candle Horizon & Frequency",
+            [
+                "⚡ Live Intraday (15-Min Candles - Today & Recent 5 Days)",
+                "🔥 Live Intraday (5-Min Candles - High Speed)",
+                "📅 Daily: Last 3 Months",
+                "📅 Daily: Last 6 Months",
+                "📅 Daily: Last 1 Year",
+                "📜 Full Historical Range"
+            ],
+            index=0 if is_live_mode else 2,
+            horizontal=False
+        )
+    with t_col2:
+        show_bb = st.checkbox("Show Bollinger Bands (20, 2σ)", value=True)
+        show_ema = st.checkbox("Show 20 Exponential Moving Average (EMA)", value=True)
+        if st.button("🔄 Refresh Live Candles Now", use_container_width=True):
+            st.cache_data.clear()
+            st.rerun()
+
+    # Determine data slice based on chosen horizon
+    using_intraday = False
+    if "15-Min" in timeframe_mode:
+        df_intra, success = fetch_live_intraday_data(interval="15m", period="5d")
+        if success and df_intra is not None and not df_intra.empty:
+            df_view = df_intra
+            using_intraday = True
+        else:
+            st.info("ℹ️ Intraday feed currently market closed or offline. Showing recent daily candles.")
+            df_view = df.tail(60).copy()
+    elif "5-Min" in timeframe_mode:
+        df_intra, success = fetch_live_intraday_data(interval="5m", period="1d")
+        if success and df_intra is not None and not df_intra.empty:
+            df_view = df_intra
+            using_intraday = True
+        else:
+            st.info("ℹ️ Intraday feed currently market closed or offline. Showing recent daily candles.")
+            df_view = df.tail(60).copy()
+    elif "Last 3 Months" in timeframe_mode:
         df_view = df.tail(63).copy()
-    elif t_filter == "Last 6 Months":
+    elif "Last 6 Months" in timeframe_mode:
         df_view = df.tail(126).copy()
-    elif t_filter == "Last 1 Year":
+    elif "Last 1 Year" in timeframe_mode:
         df_view = df.tail(252).copy()
     else:
         df_view = df.copy()
 
-    # Candlestick + Volume Chart
-    fig_candle = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.08, row_heights=[0.75, 0.25])
+    # Candlestick + Volume/Return Subplot
+    fig_candle = make_subplots(
+        rows=2, cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.06,
+        row_heights=[0.76, 0.24]
+    )
     
+    # 1. Candlestick Trace
+    hover_fmt = "<b>Time:</b> %{x|%d %b %H:%M}<br>" if using_intraday else "<b>Date:</b> %{x|%d %b %Y}<br>"
     fig_candle.add_trace(go.Candlestick(
         x=df_view["Date"],
         open=df_view["Open"],
         high=df_view["High"],
         low=df_view["Low"],
         close=df_view["Close"],
-        name="OHLC Price",
+        name="OHLC Candles",
         increasing_line_color="#10B981",
-        decreasing_line_color="#EF4444"
+        decreasing_line_color="#EF4444",
+        increasing_fillcolor="#10B981",
+        decreasing_fillcolor="#EF4444"
     ), row=1, col=1)
     
-    # Bollinger Bands
-    fig_candle.add_trace(go.Scatter(x=df_view["Date"], y=df_view["BB_Upper"], line=dict(color="rgba(148, 163, 184, 0.5)", width=1, dash="dot"), name="BB Upper"), row=1, col=1)
-    fig_candle.add_trace(go.Scatter(x=df_view["Date"], y=df_view["BB_Lower"], line=dict(color="rgba(148, 163, 184, 0.5)", width=1, dash="dot"), fill="tonexty", fillcolor="rgba(241, 245, 249, 0.2)", name="BB Band"), row=1, col=1)
-    fig_candle.add_trace(go.Scatter(x=df_view["Date"], y=df_view["EMA_20"], line=dict(color="#3B82F6", width=1.5), name="20 EMA"), row=1, col=1)
+    # 2. Bollinger Bands
+    if show_bb and "BB_Upper" in df_view.columns:
+        fig_candle.add_trace(go.Scatter(
+            x=df_view["Date"], y=df_view["BB_Upper"],
+            line=dict(color="rgba(148, 163, 184, 0.6)", width=1, dash="dot"),
+            name="BB Upper (2σ)"
+        ), row=1, col=1)
+        fig_candle.add_trace(go.Scatter(
+            x=df_view["Date"], y=df_view["BB_Lower"],
+            line=dict(color="rgba(148, 163, 184, 0.6)", width=1, dash="dot"),
+            fill="tonexty", fillcolor="rgba(241, 245, 249, 0.15)",
+            name="BB Band Channel"
+        ), row=1, col=1)
     
-    # Daily Return Bar below
+    # 3. 20 EMA Line
+    if show_ema and "EMA_20" in df_view.columns:
+        fig_candle.add_trace(go.Scatter(
+            x=df_view["Date"], y=df_view["EMA_20"],
+            line=dict(color="#3B82F6", width=1.8),
+            name="20 EMA"
+        ), row=1, col=1)
+    
+    # 4. Return Bar Chart below
     colors_ret = ["#10B981" if r >= 0 else "#EF4444" for r in df_view["Daily_Return"]]
     fig_candle.add_trace(go.Bar(
         x=df_view["Date"], y=df_view["Daily_Return"],
-        marker_color=colors_ret, name="Daily Return %"
+        marker_color=colors_ret, name="Period Return %"
     ), row=2, col=1)
     
     fig_candle.update_layout(
         template="plotly_white",
         xaxis_rangeslider_visible=False,
         hovermode="x unified",
-        margin=dict(l=20, r=20, t=20, b=20),
-        height=560,
+        margin=dict(l=15, r=15, t=10, b=10),
+        height=540,
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5)
     )
     st.plotly_chart(fig_candle, use_container_width=True)
 
     # Return Distribution Statistics
     sc1, sc2, sc3, sc4 = st.columns(4)
-    sc1.metric("Mean Daily Return", f"{df['Daily_Return'].mean():.3f}%")
-    sc2.metric("Daily Volatility (Std Dev)", f"{df['Daily_Return'].std():.3f}%")
-    sc3.metric("Max Single-Day Gain", f"+{df['Daily_Return'].max():.2f}%")
-    sc4.metric("Max Single-Day Drop", f"{df['Daily_Return'].min():.2f}%")
+    sc1.metric("Mean Return", f"{df_view['Daily_Return'].mean():.3f}%")
+    sc2.metric("Period Volatility (Std Dev)", f"{df_view['Daily_Return'].std():.3f}%")
+    sc3.metric("Max Candle Surge", f"+{df_view['Daily_Return'].max():.2f}%")
+    sc4.metric("Max Candle Drop", f"{df_view['Daily_Return'].min():.2f}%")
 
 
 # ==============================================================================
