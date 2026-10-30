@@ -260,8 +260,7 @@ with st.sidebar:
             "📊 Candlestick & Technical Studio",
             "🧠 Deep Learning Benchmark",
             "🔮 Next-Day Forecast Terminal",
-            "💡 Trading Scenario Simulator",
-            "📑 Viva & Methodology Audit"
+            "💡 Trading Scenario Simulator"
         ],
         index=0
     )
@@ -719,36 +718,3 @@ elif menu == "💡 Trading Scenario Simulator":
         """, unsafe_allow_html=True)
         
         st.caption("ℹ️ *Educational Simulation:* Demonstrates how quantitative price point estimates integrate directly with corporate risk management & portfolio allocation rules.")
-
-
-# ==============================================================================
-# TAB 6: VIVA & METHODOLOGY AUDIT
-# ==============================================================================
-else:
-    st.markdown('<div class="hero-badge">Academic Examination Guide</div>', unsafe_allow_html=True)
-    st.markdown("## Methodology & Viva Voce Q&A")
-    st.caption("Key conceptual questions, statistical formulations, and zero-data-leakage architecture explanation.")
-    
-    with st.expander("Q1: Why is stock price prediction formulated as a time-series problem?"):
-        st.write("""
-        Unlike traditional classification or cross-sectional regression where observations are assumed to be independent and identically distributed (i.i.d.), financial asset prices exhibit strong **temporal autocorrelation**. Tomorrow's price is deeply conditioned on historical momentum, volume flows, and market trends. Shuffling data destroys these temporal dependencies and leads to catastrophic data leakage.
-        """)
-
-    with st.expander("Q2: How did you ensure ZERO data leakage in the pipeline?"):
-        st.write("""
-        1. **Strict Chronological Splitting:** The data was partitioned into the first 80% (2007–2018) for training and final 20% (2018–2021) for testing without any random shuffling.
-        2. **Isolated MinMax Scaling:** `MinMaxScaler` was fitted **exclusively on the training dataset**. The test split was only *transformed* using the pre-fitted parameters ($X_{min}, X_{max}$ from training).
-        3. **Lagged Technical Indicators:** All moving averages and return indicators use strictly backward-looking rolling windows.
-        """)
-
-    with st.expander("Q3: What is the mathematical difference between LSTM and GRU?"):
-        st.write("""
-        * **LSTM:** Uses 3 gating mechanisms (*Forget Gate*, *Input Gate*, *Output Gate*) and maintains two separate internal memory vectors (*Cell State* $C_t$ and *Hidden State* $h_t$).
-        * **GRU:** Uses 2 gating mechanisms (*Reset Gate* and *Update Gate*) and merges the cell state and hidden state into a single recurrent state ($h_t$). GRU has ~25% fewer trainable parameters, making it faster to train and less prone to overfitting on noisy financial datasets.
-        """)
-
-    with st.expander("Q4: Why evaluate using both MAE and RMSE?"):
-        st.write("""
-        * **MAE (Mean Absolute Error):** Measures the average magnitude of errors in the actual currency unit (₹ INR). Easily interpretable for corporate managers.
-        * **RMSE (Root Mean Squared Error):** Squares the errors before averaging, heavily penalizing large outlier errors. In capital markets, a single massive forecasting error can trigger a liquidity crisis; hence, minimizing RMSE is paramount for risk management.
-        """)
