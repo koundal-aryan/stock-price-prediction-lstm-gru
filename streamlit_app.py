@@ -370,30 +370,40 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Interactive Quick Market Inspection Tool (Date Picker)
-    st.markdown("#### 📅 Date Inspector")
+    # Enhanced High-Visibility Interactive Date Inspector Card
+    st.markdown("""
+    <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); padding: 12px 14px; border-radius: 12px; margin-top: 8px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 1.25rem;">🔎</span>
+            <div>
+                <div style="font-size: 0.88rem; font-weight: 800; color: #FFFFFF; letter-spacing: 0.02em;">Historical Date Inspector</div>
+                <div style="font-size: 0.72rem; color: #94A3B8;">Select any date to inspect session metrics</div>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     min_date = df["Date"].min().to_pydatetime()
     max_date = df["Date"].max().to_pydatetime()
     selected_inspect_date = st.date_input(
-        "Jump to Trading Day",
+        "Select Trading Session",
         value=max_date,
         min_value=min_date,
-        max_value=max_date
+        max_value=max_date,
+        label_visibility="collapsed"
     )
     
     match_row = df[df["Date"].dt.date == selected_inspect_date]
     if not match_row.empty:
         r = match_row.iloc[0]
-        st.markdown(f"""
-        <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:10px; padding:10px; font-size:0.8rem; margin-top:6px;">
-            <div style="font-weight:700; color:#1E293B; margin-bottom:4px;">📆 {r['Date'].strftime('%d %b %Y')}</div>
-            <div style="display:flex; justify-content:space-between; color:#475569;"><span>Close:</span> <b>₹{r['Close']:.2f}</b></div>
-            <div style="display:flex; justify-content:space-between; color:#475569;"><span>Day Return:</span> <b style="color:{'#16A34A' if r['Daily_Return']>=0 else '#DC2626'};">{r['Daily_Return']:+.2f}%</b></div>
-            <div style="display:flex; justify-content:space-between; color:#475569;"><span>VWAP:</span> <b>₹{r['VWAP']:.2f}</b></div>
-        </div>
-        """, unsafe_allow_html=True)
+        is_ret_pos = r['Daily_Return'] >= 0
+        ret_color = "#15803D" if is_ret_pos else "#B91C1C"
+        ret_bg = "#DCFCE7" if is_ret_pos else "#FEE2E2"
+        ret_icon = "↗" if is_ret_pos else "↘"
+        
+        st.markdown(f"""<div style="background: #FFFFFF; border: 2px solid #3B82F6; border-radius: 12px; padding: 12px 14px; box-shadow: 0 4px 14px rgba(37,99,235,0.12); margin-top: 6px;"><div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #E2E8F0; padding-bottom:6px; margin-bottom:8px;"><span style="font-weight:800; font-size:0.88rem; color:#0F172A;">📅 {r['Date'].strftime('%d %b %Y')}</span><span style="background:{ret_bg}; color:{ret_color}; padding:2px 7px; border-radius:6px; font-weight:800; font-size:0.75rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:6px;"><div style="background:#F8FAFC; padding:6px 8px; border-radius:8px; border:1px solid #E2E8F0;"><div style="font-size:0.68rem; color:#64748B; font-weight:700; text-transform:uppercase;">Close</div><div style="font-size:1.05rem; font-weight:800; color:#1D4ED8; font-family:'JetBrains Mono', monospace;">₹{r['Close']:.2f}</div></div><div style="background:#F8FAFC; padding:6px 8px; border-radius:8px; border:1px solid #E2E8F0;"><div style="font-size:0.68rem; color:#64748B; font-weight:700; text-transform:uppercase;">VWAP</div><div style="font-size:1.05rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">₹{r['VWAP']:.2f}</div></div></div><div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#64748B; padding-top:2px;"><span>High: <b>₹{r['High']:.2f}</b></span><span>Low: <b>₹{r['Low']:.2f}</b></span></div></div>""", unsafe_allow_html=True)
     else:
-        st.caption("ℹ️ Weekend or Market Holiday (No Trading).")
+        st.markdown("""<div style="background:#FEF2F2; border:1px solid #F87171; border-radius:10px; padding:10px; font-size:0.8rem; color:#991B1B; text-align:center; margin-top:6px;">⚠️ <b>Market Closed</b> (Weekend or Holiday)</div>""", unsafe_allow_html=True)
 
     st.markdown("---")
     
