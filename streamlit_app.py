@@ -160,28 +160,11 @@ st.markdown("""
         border-right: 1px solid #E2E8F0 !important;
     }
 
-    /* Completely eliminate Streamlit's default 50px sidebar header dead space */
-    div[data-testid="stSidebarHeader"],
-    header[data-testid="stSidebarHeader"],
-    section[data-testid="stSidebar"] > div:first-child:not([data-testid="stSidebarUserContent"]) {
-        display: none !important;
-        height: 0px !important;
-        min-height: 0px !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        visibility: hidden !important;
-    }
-
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 0.15rem !important;
+        padding-top: 0.5rem !important;
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
         padding-bottom: 0.5rem !important;
-    }
-
-    /* Shift first element flush with very top edge of screen */
-    section[data-testid="stSidebar"] .block-container > div:first-child {
-        margin-top: -0.75rem !important;
     }
 
     /* Full-width clean radio group */
@@ -608,6 +591,10 @@ def fetch_live_intraday_data(interval="15m", period="5d"):
                 hist["Date"] = pd.to_datetime(hist[date_col]).dt.tz_localize(None)
 
         if not hist.empty:
+            hist = hist.dropna(subset=["Close"]).reset_index(drop=True)
+            hist = hist[hist["Close"] > 0]
+
+        if not hist.empty:
             hist["Daily_Return"] = hist["Close"].pct_change() * 100.0
             hist["Daily_Return"] = hist["Daily_Return"].fillna(0.0)
             hist["SMA_20"] = hist["Close"].rolling(20, min_periods=1).mean()
@@ -634,6 +621,10 @@ def fetch_live_yahoo_data():
         if not hist.empty:
             hist = hist.reset_index()
             hist["Date"] = pd.to_datetime(hist["Date"]).dt.tz_localize(None)
+            hist = hist.dropna(subset=["Close"]).reset_index(drop=True)
+            hist = hist[hist["Close"] > 0]
+            if hist.empty:
+                return None, False
             hist["Daily_Return"] = hist["Close"].pct_change() * 100.0
             hist["Daily_Return"] = hist["Daily_Return"].fillna(0.0)
             hist["SMA_20"] = hist["Close"].rolling(20, min_periods=1).mean()
@@ -700,15 +691,20 @@ def run_live_prediction(recent_closes, model_obj):
     """
     Predicts next close price using local min-max scaled 60-day window.
     """
-    if len(recent_closes) < 60 or model_obj is None:
+    if recent_closes is None or len(recent_closes) < 60 or model_obj is None:
         return None
-    seq = recent_closes[-60:].reshape(-1, 1)
+    recent_arr = np.array(recent_closes, dtype=float)
+    recent_arr = recent_arr[~np.isnan(recent_arr)]
+    if len(recent_arr) < 60:
+        return None
+    seq = recent_arr[-60:].reshape(-1, 1)
     local_scaler = MinMaxScaler(feature_range=(0, 1))
     scaled = local_scaler.fit_transform(seq)
     inp = scaled.reshape(1, 60, 1)
     pred_scaled = model_obj.predict(inp, verbose=0)
     pred_actual = local_scaler.inverse_transform(pred_scaled)[0, 0]
-    return float(pred_actual)
+    res = float(pred_actual)
+    return res if not np.isnan(res) else None
 
 
 df_historical = load_historical_data()
@@ -759,7 +755,8 @@ with st.sidebar:
     if is_live_mode:
         df_live, live_fetch_success = fetch_live_yahoo_data()
         if live_fetch_success and df_live is not None and not df_live.empty:
-            df = df_live
+            df = df_live.dropna(subset=["Close"]).reset_index(drop=True)
+            df = df[df["Close"] > 0].reset_index(drop=True)
         else:
             st.warning("⚠️ Live connection unreachable. Using historical data.")
             df = df_historical
@@ -767,8 +764,21 @@ with st.sidebar:
     else:
         df = df_historical
 
+    # Ensure valid non-empty DataFrame with clean numeric Close values
+    df = df.dropna(subset=["Close"]).reset_index(drop=True)
+    df = df[df["Close"] > 0].reset_index(drop=True)
+    if df.empty or len(df) == 0:
+        df = df_historical.copy()
+
     latest_close = float(df["Close"].iloc[-1])
+    if np.isnan(latest_close) or latest_close <= 0:
+        valid_closes = df["Close"].dropna()
+        latest_close = float(valid_closes.iloc[-1]) if not valid_closes.empty else 1850.0
+
     prev_close = float(df["Close"].iloc[-2]) if len(df) > 1 else latest_close
+    if np.isnan(prev_close) or prev_close <= 0:
+        prev_close = latest_close
+
     day_change_val = latest_close - prev_close
     day_change_pct = (day_change_val / prev_close) * 100.0 if prev_close else 0.0
 
@@ -776,15 +786,16 @@ with st.sidebar:
     if is_live_mode and gru_model is not None:
         pred_close_gru = run_live_prediction(df["Close"].values, gru_model)
         pred_close_lstm = run_live_prediction(df["Close"].values, lstm_model)
-        if pred_close_gru is None:
+        if pred_close_gru is None or np.isnan(pred_close_gru):
             pred_close_gru = latest_close * 1.008
+        if pred_close_lstm is None or np.isnan(pred_close_lstm):
             pred_close_lstm = latest_close * 1.004
     else:
         pred_close_gru = 724.93
         pred_close_lstm = 703.61
 
     diff_gru = pred_close_gru - latest_close
-    pct_diff_gru = (diff_gru / latest_close) * 100.0
+    pct_diff_gru = (diff_gru / latest_close) * 100.0 if latest_close > 0 else 0.0
 
     # 3. Enhanced Real-Time Quote Card in Sidebar
     badge_bg = "#DCFCE7" if day_change_val >= 0 else "#FEE2E2"
