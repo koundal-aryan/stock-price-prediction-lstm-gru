@@ -593,6 +593,21 @@ def fetch_live_yahoo_data():
         if not hist.empty:
             hist = hist.reset_index()
             hist["Date"] = pd.to_datetime(hist["Date"]).dt.tz_localize(None)
+
+            # If latest session has NaN in Close (unfinalized daily candle from Yahoo), populate from live fast_info
+            if pd.isna(hist["Close"].iloc[-1]) or hist["Close"].iloc[-1] <= 0:
+                try:
+                    fi = ticker.fast_info
+                    last_p = fi.get("lastPrice", fi.get("regularMarketPrice", None))
+                    if last_p is not None and not np.isnan(last_p) and last_p > 0:
+                        hist.loc[hist.index[-1], "Close"] = float(last_p)
+                        hist.loc[hist.index[-1], "Open"] = float(fi.get("open", last_p))
+                        hist.loc[hist.index[-1], "High"] = float(fi.get("dayHigh", last_p))
+                        hist.loc[hist.index[-1], "Low"] = float(fi.get("dayLow", last_p))
+                        hist.loc[hist.index[-1], "Volume"] = float(fi.get("lastVolume", 1000000))
+                except Exception:
+                    pass
+
             hist = hist.dropna(subset=["Close"]).reset_index(drop=True)
             hist = hist[hist["Close"] > 0]
             if hist.empty:
@@ -1472,14 +1487,16 @@ elif "Forecast" in menu or "Target" in menu:
 
         fig_proj = go.Figure()
         
-        # Trailing Historical/Live Close - High Contrast Royal Blue
+        # Trailing Historical/Live Close with soft area fill
         fig_proj.add_trace(go.Scatter(
             x=tail_df["Date"],
             y=tail_df["Close"],
             mode="lines+markers",
-            name="Recent Actual Close",
+            name="Actual Close",
             line=dict(color="#2563EB", width=2.8),
-            marker=dict(size=6, color="#2563EB", line=dict(color="#FFFFFF", width=1.5)),
+            marker=dict(size=5, color="#2563EB", line=dict(color="#FFFFFF", width=1)),
+            fill="tozeroy",
+            fillcolor="rgba(37, 99, 235, 0.06)",
             hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
         ))
 
@@ -1494,6 +1511,17 @@ elif "Forecast" in menu or "Target" in menu:
                 hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
             ))
 
+        # Horizontal dotted baseline reference for Current Close
+        fig_proj.add_hline(
+            y=latest_close,
+            line_dash="dot",
+            line_color="rgba(148, 163, 184, 0.6)",
+            line_width=1.2,
+            annotation_text=f"Base: ₹{latest_close:.2f}",
+            annotation_position="bottom left",
+            annotation_font=dict(size=10, color="#64748B")
+        )
+
         # Dotted Projective Bridge Line from Last Close to Forecast Point
         bridge_x = [tail_df["Date"].iloc[-1], next_dt]
         bridge_y = [latest_close, sel_pred]
@@ -1502,22 +1530,46 @@ elif "Forecast" in menu or "Target" in menu:
             y=bridge_y,
             mode="lines",
             name="Forecast Trajectory",
-            line=dict(color=signal_color, width=3.2, dash="dash"),
+            line=dict(color=signal_color, width=3, dash="dash"),
             showlegend=False
         ))
 
-        # Distinct Forecast Target Marker with Bright Star and Text
+        # Distinct Forecast Target Marker (Prominent Star)
         fig_proj.add_trace(go.Scatter(
             x=[next_dt],
             y=[sel_pred],
-            mode="markers+text",
+            mode="markers",
             name=f"Target: ₹{sel_pred:.2f}",
-            marker=dict(size=16, color=signal_color, symbol="star", line=dict(color="white", width=2.5)),
-            text=[f" 🎯 <b>₹{sel_pred:.2f}</b><br>({pct_sel:+.2f}%)"],
-            textposition="top center",
-            textfont=dict(size=13, color=signal_color, family="JetBrains Mono"),
-            hovertemplate=f"<b>Forecast Session (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Predicted:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
+            marker=dict(size=18, color=signal_color, symbol="star", line=dict(color="white", width=2)),
+            hovertemplate=f"<b>Forecast Target (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Projected:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
         ))
+
+        # Clean non-overlapping Callout Annotation Badge
+        arrow_ay = -38 if is_bullish else 38
+        fig_proj.add_annotation(
+            x=next_dt,
+            y=sel_pred,
+            text=f"<b>AI Target: ₹{sel_pred:.2f}</b><br><span style='font-size:11px;'>{diff_sel:+.2f} ({pct_sel:+.2f}%)</span>",
+            showarrow=True,
+            arrowhead=2,
+            arrowsize=1,
+            arrowwidth=1.8,
+            arrowcolor=signal_color,
+            ax=0,
+            ay=arrow_ay,
+            bgcolor="white",
+            bordercolor=signal_color,
+            borderwidth=1.5,
+            borderpad=6,
+            font=dict(family="JetBrains Mono, monospace", size=12, color=signal_color),
+            opacity=0.98
+        )
+
+        x_min = tail_df["Date"].iloc[0]
+        x_max = next_dt + pd.Timedelta(days=3)
+        y_vals = list(tail_df["Close"].values) + [sel_pred, latest_close]
+        y_min = min(y_vals) - (latest_close * 0.02)
+        y_max = max(y_vals) + (latest_close * 0.02)
 
         fig_proj.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
@@ -1527,12 +1579,14 @@ elif "Forecast" in menu or "Target" in menu:
             xaxis=dict(
                 title=dict(text="Trading Session Date", font=dict(size=12)),
                 tickfont=dict(size=11),
+                range=[x_min, x_max],
                 gridcolor="rgba(148, 163, 184, 0.2)",
                 zerolinecolor="rgba(148, 163, 184, 0.25)"
             ),
             yaxis=dict(
                 title=dict(text="Price (₹ INR)", font=dict(size=12)),
                 tickfont=dict(size=11),
+                range=[y_min, y_max],
                 gridcolor="rgba(148, 163, 184, 0.2)",
                 zerolinecolor="rgba(148, 163, 184, 0.25)"
             ),
@@ -1544,7 +1598,7 @@ elif "Forecast" in menu or "Target" in menu:
                 x=0.5,
                 font=dict(size=12)
             ),
-            margin=dict(l=10, r=10, t=10, b=10),
+            margin=dict(l=10, r=15, t=10, b=10),
             height=370
         )
         st.plotly_chart(fig_proj, use_container_width=True)
