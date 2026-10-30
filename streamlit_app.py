@@ -222,22 +222,43 @@ results = load_results()
 with st.sidebar:
     st.markdown("""
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.2rem;">
-        <div style="background:#2563EB; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:22px; font-weight:bold; box-shadow:0 4px 12px rgba(37,99,235,0.4);">
+        <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; color:white; font-size:24px; font-weight:bold; box-shadow:0 6px 16px rgba(37,99,235,0.35);">
             ⚡
         </div>
         <div>
-            <div style="font-size:1.15rem; font-weight:800; color:#0F172A; line-height:1.2;">ADANIPORTS AI</div>
-            <div style="font-size:0.75rem; font-weight:600; color:#64748B; text-transform:uppercase; letter-spacing:0.05em;">Quant Deep Learning</div>
+            <div style="font-size:1.2rem; font-weight:800; color:#0F172A; line-height:1.2;">ADANIPORTS AI</div>
+            <div style="font-size:0.75rem; font-weight:700; color:#2563EB; text-transform:uppercase; letter-spacing:0.06em;">Quant Terminal</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
+    # 1. Real-time Live Price Ticker Card in Sidebar
+    latest_close_val = float(df["Close"].iloc[-1])
+    pred_val_sidebar = 724.93
+    delta_val = pred_val_sidebar - latest_close_val
+    delta_pct = (delta_val / latest_close_val) * 100
+    
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border:1px solid #E2E8F0; border-radius:12px; padding:12px; margin-bottom:1.2rem; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase;">
+            <span>NSE: ADANIPORTS</span>
+            <span style="background:{'#DCFCE7' if delta_val>=0 else '#FEE2E2'}; color:{'#15803D' if delta_val>=0 else '#B91C1C'}; padding:2px 6px; border-radius:4px; font-size:0.7rem;">{delta_pct:+.2f}% EST</span>
+        </div>
+        <div style="font-size:1.5rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace; margin:4px 0;">
+            ₹{latest_close_val:.2f}
+        </div>
+        <div style="font-size:0.78rem; color:#64748B;">
+            Target (t+1): <b style="color:#2563EB;">₹{pred_val_sidebar:.2f}</b> (GRU)
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
     menu = st.radio(
-        "NAVIGATION MENU",
+        "EXPLORE MODULES",
         [
             "⚡ Executive Dashboard",
             "📊 Candlestick & Technical Studio",
-            "🧠 Deep Learning Benchmark (LSTM vs GRU)",
+            "🧠 Deep Learning Benchmark",
             "🔮 Next-Day Forecast Terminal",
             "💡 Trading Scenario Simulator",
             "📑 Viva & Methodology Audit"
@@ -246,11 +267,59 @@ with st.sidebar:
     )
     
     st.markdown("---")
-    st.markdown("### ⚙️ Quick Market Stats")
-    st.caption(f"**Asset:** ADANIPORTS (NSE: ADANIPORTS)")
-    st.caption(f"**Data Span:** {df['Date'].min().strftime('%d %b %Y')} – {df['Date'].max().strftime('%d %b %Y')}")
-    st.caption(f"**Sessions Evaluated:** {len(df):,} Days")
-    st.caption(f"**Best Architecture:** GRU (R² = 0.9832)")
+    
+    # 2. Interactive Chart Filters Control inside Sidebar
+    st.markdown("#### 🎛️ Chart Display Controls")
+    show_ma = st.toggle("Show Moving Averages (20/50/100)", value=True)
+    show_vol = st.toggle("Highlight Volatility Shocks", value=True)
+    
+    st.markdown("---")
+    
+    # 3. Interactive Quick Market Inspection Tool (Date Picker)
+    st.markdown("#### 📅 Historical Date Inspector")
+    min_date = df["Date"].min().to_pydatetime()
+    max_date = df["Date"].max().to_pydatetime()
+    selected_inspect_date = st.date_input(
+        "Jump to Trading Day",
+        value=max_date,
+        min_value=min_date,
+        max_value=max_date
+    )
+    
+    # Look up selected date
+    match_row = df[df["Date"].dt.date == selected_inspect_date]
+    if not match_row.empty:
+        r = match_row.iloc[0]
+        st.markdown(f"""
+        <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:10px; padding:10px; font-size:0.8rem; margin-top:6px;">
+            <div style="font-weight:700; color:#1E293B; margin-bottom:4px;">📆 {r['Date'].strftime('%d %b %Y')}</div>
+            <div style="display:flex; justify-content:space-between; color:#475569;"><span>Close:</span> <b>₹{r['Close']:.2f}</b></div>
+            <div style="display:flex; justify-content:space-between; color:#475569;"><span>Day Return:</span> <b style="color:{'#16A34A' if r['Daily_Return']>=0 else '#DC2626'};">{r['Daily_Return']:+.2f}%</b></div>
+            <div style="display:flex; justify-content:space-between; color:#475569;"><span>VWAP:</span> <b>₹{r['VWAP']:.2f}</b></div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.caption("ℹ️ Weekend or Market Holiday (No Trading).")
+
+    st.markdown("---")
+    
+    # 4. Interactive Quick Model Switcher
+    st.markdown("#### 🧠 Model Engine Switcher")
+    active_engine = st.selectbox(
+        "Active Architecture",
+        ["GRU (Best Performer - 98.32% R²)", "LSTM (Baseline - 96.66% R²)"],
+        index=0
+    )
+    
+    # 5. Download Processed Dataset Button
+    csv_bytes = df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Export Cleaned Dataset (CSV)",
+        data=csv_bytes,
+        file_name="ADANIPORTS_clean_features.csv",
+        mime="text/csv",
+        use_container_width=True
+    )
 
 latest_close = float(df["Close"].iloc[-1])
 latest_date = df["Date"].iloc[-1].strftime("%d %B %Y")
