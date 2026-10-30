@@ -95,8 +95,6 @@ st.markdown("""
 
     /* Safari iOS safe-area inset support & Streamlit sidebar overlay */
     section[data-testid="stSidebar"] {
-        background-color: #F8FAFC !important;
-        border-right: 1px solid #E2E8F0 !important;
         -webkit-overflow-scrolling: touch;
         padding-bottom: env(safe-area-inset-bottom, 20px) !important;
     }
@@ -154,10 +152,19 @@ st.markdown("""
         }
     }
 
-    /* Premium FinTech Sidebar Styling - Zero Top Gap Compact Design */
+    /* Premium FinTech Frosted Glass Sidebar Styling */
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%) !important;
-        border-right: 1px solid #E2E8F0 !important;
+        background-color: var(--secondary-background-color, #F8FAFC) !important;
+        background: color-mix(in srgb, var(--secondary-background-color, #F8FAFC) 80%, transparent) !important;
+        backdrop-filter: blur(24px) saturate(180%) !important;
+        -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+        border-right: 1px solid color-mix(in srgb, var(--text-color, #94A3B8) 12%, transparent) !important;
+    }
+
+    section[data-testid="stSidebar"] > div:first-child,
+    section[data-testid="stSidebar"] div[data-testid="stSidebarUserContent"],
+    section[data-testid="stSidebar"] div[data-testid="stSidebarContent"] {
+        background: transparent !important;
     }
 
     section[data-testid="stSidebar"] .block-container {
@@ -165,6 +172,21 @@ st.markdown("""
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
         padding-bottom: 0.5rem !important;
+    }
+
+    /* Frosted Glass Sidebar Cards */
+    .sidebar-card,
+    .sidebar-glass-card {
+        background-color: var(--background-color, #FFFFFF) !important;
+        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 15%, transparent) !important;
+        border-radius: 10px !important;
+        padding: 6px 10px !important;
+        margin-bottom: 0.35rem !important;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04) !important;
+        transition: all 0.2s ease !important;
     }
 
     /* Full-width clean radio group */
@@ -186,17 +208,21 @@ st.markdown("""
         margin: 0 !important;
         font-size: 0.68rem !important;
         font-weight: 800 !important;
-        color: #475569 !important;
+        color: var(--text-color, #475569) !important;
+        opacity: 0.8 !important;
         letter-spacing: 0.08em !important;
         text-transform: uppercase !important;
         display: block !important;
     }
 
-    /* Option Cards - Full width, row flex layout */
+    /* Option Cards - Full width, row flex layout with Frosted Glass */
     div[data-testid="stRadio"] div[role="radiogroup"] > label,
     div[data-testid="stRadio"] label {
-        background: #FFFFFF !important;
-        border: 1.5px solid #CBD5E1 !important;
+        background-color: var(--background-color, #FFFFFF) !important;
+        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 15%, transparent) !important;
         border-radius: 9px !important;
         padding: 6px 10px !important;
         margin: 0 !important;
@@ -207,7 +233,7 @@ st.markdown("""
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
         cursor: pointer !important;
     }
 
@@ -224,10 +250,10 @@ st.markdown("""
         align-items: center !important;
     }
 
-    /* Unselected radio button: clean subtle slate border with white center (NO BLACK CIRCLE!) */
+    /* Unselected radio button: clean subtle border with matching background */
     div[data-testid="stRadio"] [data-baseweb="radio"] > div {
-        border: 1.5px solid #94A3B8 !important;
-        background-color: #FFFFFF !important;
+        border: 1.5px solid color-mix(in srgb, var(--text-color, #94A3B8) 35%, transparent) !important;
+        background-color: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
         width: 14px !important;
         height: 14px !important;
         min-width: 14px !important;
@@ -239,7 +265,7 @@ st.markdown("""
         background-color: transparent !important;
     }
 
-    /* Selected radio button: Royal Blue indicator with white center dot (NO RED CIRCLE!) */
+    /* Selected radio button: Royal Blue indicator with white center dot */
     div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div,
     div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div {
         border-color: #2563EB !important;
@@ -258,12 +284,12 @@ st.markdown("""
     /* Selected Card Active State */
     div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked),
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] {
-        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
-        border-color: #2563EB !important;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15) !important;
+        background: color-mix(in srgb, #2563EB 15%, var(--background-color, #EFF6FF)) !important;
+        border-color: #3B82F6 !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
     }
 
-    /* Option Text Container: Always 100% visible, NEVER collapsed */
+    /* Option Text Container: Always 100% visible, Theme-Adaptive Text */
     div[data-testid="stRadio"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] {
         flex: 1 1 auto !important;
         min-width: 0 !important;
@@ -271,7 +297,7 @@ st.markdown("""
     }
 
     div[data-testid="stRadio"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] p {
-        color: #0F172A !important;
+        color: var(--text-color, #0F172A) !important;
         font-weight: 700 !important;
         font-size: 0.82rem !important;
         line-height: 1.25 !important;
@@ -285,14 +311,14 @@ st.markdown("""
 
     div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] p,
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
-        color: #1D4ED8 !important;
+        color: #3B82F6 !important;
         font-weight: 800 !important;
     }
 
     /* Subtle hover interaction */
     div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
-        background: #F8FAFC !important;
-        border-color: #94A3B8 !important;
+        background: color-mix(in srgb, #2563EB 8%, var(--background-color, #F8FAFC)) !important;
+        border-color: #3B82F6 !important;
         transform: translateX(2px) !important;
     }
 
@@ -302,7 +328,9 @@ st.markdown("""
     }
 
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] {
-        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
+        background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
         border-radius: 9px !important;
         border: 1px solid rgba(255, 255, 255, 0.12) !important;
         box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
@@ -319,33 +347,39 @@ st.markdown("""
         fill: #94A3B8 !important;
     }
 
-    /* Date Input inside Date Inspector - Crisp Clean Input with Blue Icon */
+    /* Date Input inside Date Inspector - Crisp Clean Input with Frosted Blur */
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
-        background-color: #FFFFFF !important;
-        border: 1.5px solid #CBD5E1 !important;
+        background-color: var(--background-color, #FFFFFF) !important;
+        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 18%, transparent) !important;
         border-radius: 8px !important;
         min-height: 34px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] input {
-        color: #0F172A !important;
+        color: var(--text-color, #0F172A) !important;
         font-weight: 700 !important;
         font-size: 0.82rem !important;
         background-color: transparent !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stDateInput"] svg {
-        fill: #2563EB !important;
-        stroke: #2563EB !important;
-        color: #2563EB !important;
+        fill: #3B82F6 !important;
+        stroke: #3B82F6 !important;
+        color: #3B82F6 !important;
     }
 
-    /* Sidebar Download / Export Button */
+    /* Sidebar Download / Export Button - Frosted Adaptive */
     section[data-testid="stSidebar"] div.stDownloadButton button {
-        background: #FFFFFF !important;
-        border: 1.5px solid #CBD5E1 !important;
-        color: #1E293B !important;
+        background-color: var(--background-color, #FFFFFF) !important;
+        background: color-mix(in srgb, var(--background-color, #FFFFFF) 80%, transparent) !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        border: 1px solid color-mix(in srgb, var(--text-color, #CBD5E1) 18%, transparent) !important;
+        color: var(--text-color, #1E293B) !important;
         font-weight: 700 !important;
         border-radius: 9px !important;
         padding: 7px 12px !important;
@@ -356,10 +390,10 @@ st.markdown("""
     }
 
     section[data-testid="stSidebar"] div.stDownloadButton button:hover {
-        background: #EFF6FF !important;
+        background: color-mix(in srgb, #2563EB 15%, var(--background-color, #EFF6FF)) !important;
         border-color: #3B82F6 !important;
-        color: #1D4ED8 !important;
-        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12) !important;
+        color: #3B82F6 !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2) !important;
         transform: translateY(-1px) !important;
     }
 
@@ -705,7 +739,7 @@ lstm_model = load_keras_model(LSTM_MODEL_PATH)
 with st.sidebar:
     # 1. Compact Header Branding with Live Market Status Badge (Zero Waste Space)
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 7px 10px; margin-bottom: 0.35rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 23, 42, 0.96) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 7px 10px; margin-bottom: 0.35rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
         <div style="display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:7px;">
                 <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; color:white; font-size:15px; font-weight:bold; box-shadow:0 2px 6px rgba(37,99,235,0.4);">
@@ -716,7 +750,7 @@ with st.sidebar:
                     <div style="font-size:0.6rem; font-weight:700; color:#60A5FA; text-transform:uppercase; letter-spacing:0.05em;">Quant Terminal</div>
                 </div>
             </div>
-            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.65rem; color:#60A5FA; font-weight:700; text-decoration:none; background:rgba(37,99,235,0.2); border:1px solid rgba(96,165,250,0.3); padding:2px 6px; border-radius:5px;">
+            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.65rem; color:#60A5FA; font-weight:700; text-decoration:none; background:rgba(37,99,235,0.25); border:1px solid rgba(96,165,250,0.35); padding:2px 6px; border-radius:5px;">
                 Yahoo ↗
             </a>
         </div>
@@ -790,20 +824,20 @@ with st.sidebar:
     feed_tag = "LIVE NSE" if is_live_mode else "HISTORICAL"
 
     st.markdown(f"""
-    <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:10px; padding:6px 10px; margin-bottom:0.35rem; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+    <div class="sidebar-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
-            <span style="font-size:0.66rem; font-weight:800; color:#475569; letter-spacing:0.03em;">ADANIPORTS.NS</span>
+            <span style="font-size:0.66rem; font-weight:800; color:var(--text-color, #475569); opacity:0.8; letter-spacing:0.03em;">ADANIPORTS.NS</span>
             <span style="background:{badge_bg}; color:{badge_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.65rem;">{day_change_pct:+.2f}%</span>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin:1px 0;">
-            <div style="font-size:1.28rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">
+            <div style="font-size:1.28rem; font-weight:800; color:var(--text-color, #0F172A); font-family:'JetBrains Mono', monospace;">
                 ₹{latest_close:.2f}
             </div>
-            <div style="font-size:0.72rem; color:#475569;">
-                Target: <b style="color:#2563EB;">₹{pred_close_gru:.2f}</b>
+            <div style="font-size:0.72rem; color:var(--text-color, #475569); opacity:0.85;">
+                Target: <b style="color:#3B82F6;">₹{pred_close_gru:.2f}</b>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:#64748B; border-top:1px dashed #E2E8F0; padding-top:3px; margin-top:2px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-color, #64748B); opacity:0.75; border-top:1px dashed color-mix(in srgb, var(--text-color, #CBD5E1) 20%, transparent); padding-top:3px; margin-top:2px;">
             <span>Feed: <b>{feed_tag}</b></span>
             <span>Est Delta: <b style="color:{'#15803D' if diff_gru>=0 else '#B91C1C'};">{pct_diff_gru:+.2f}%</b></span>
         </div>
@@ -831,8 +865,8 @@ with st.sidebar:
 
     st.markdown("""
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:2px; padding:0 2px;">
-        <span style="font-size:0.68rem; font-weight:800; color:#475569; letter-spacing:0.06em; text-transform:uppercase;">📅 Historical Inspector</span>
-        <span style="font-size:0.62rem; font-weight:700; color:#2563EB; background:#EFF6FF; border:1px solid #BFDBFE; padding:1px 5px; border-radius:4px;">Lookup</span>
+        <span style="font-size:0.68rem; font-weight:800; color:var(--text-color, #475569); opacity:0.8; letter-spacing:0.06em; text-transform:uppercase;">📅 Historical Inspector</span>
+        <span style="font-size:0.62rem; font-weight:700; color:#3B82F6; background:color-mix(in srgb, #3B82F6 15%, transparent); border:1px solid color-mix(in srgb, #3B82F6 30%, transparent); padding:1px 5px; border-radius:4px;">Lookup</span>
     </div>
     """, unsafe_allow_html=True)
 
@@ -853,21 +887,21 @@ with st.sidebar:
         ret_icon = "↗" if is_ret_pos else "↘"
         
         st.markdown(f"""
-        <div style="background:#FFFFFF; border:1.5px solid #CBD5E1; border-radius:8px; padding:7px 10px; font-size:0.73rem; margin-top:-6px; margin-bottom:4px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+        <div class="sidebar-card" style="font-size:0.73rem; margin-top:-6px; margin-bottom:4px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                <span style="font-weight:800; color:#0F172A; font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
+                <span style="font-weight:800; color:var(--text-color, #0F172A); font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
                 <span style="background:{ret_bg}; color:{ret_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.68rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span style="color:#64748B;">Close:</span> <b style="color:#1D4ED8; font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
+                <span style="color:var(--text-color, #64748B); opacity:0.75;">Close:</span> <b style="color:#3B82F6; font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
             </div>
             <div style="display:flex; justify-content:space-between;">
-                <span style="color:#64748B;">Range:</span> <span style="font-weight:600; color:#334155;">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
+                <span style="color:var(--text-color, #64748B); opacity:0.75;">Range:</span> <span style="font-weight:600; color:var(--text-color, #334155);">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown("""<div style="background:#FEF2F2; color:#991B1B; border-radius:6px; padding:6px; font-size:0.75rem; text-align:center; margin-top:-4px; margin-bottom:4px;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
+        st.markdown("""<div style="background:color-mix(in srgb, #EF4444 15%, transparent); color:#EF4444; border:1px solid color-mix(in srgb, #EF4444 30%, transparent); border-radius:6px; padding:6px; font-size:0.75rem; text-align:center; margin-top:-4px; margin-bottom:4px;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
 
     # 6. Compact Data Export Button
     csv_bytes = df.to_csv(index=False).encode('utf-8')
