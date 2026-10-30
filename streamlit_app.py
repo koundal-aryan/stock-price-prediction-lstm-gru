@@ -823,8 +823,8 @@ elif menu == "🔮 Next-Day Forecast Terminal":
                 x=tail_df["Date"],
                 y=tail_df["SMA_20"],
                 mode="lines",
-                name="20-Day SMA (Average Price)",
-                line=dict(color="#64748B", width=1.8, dash="dot"),
+                name="20-Day SMA",
+                line=dict(color="#94A3B8", width=1.5, dash="dot"),
                 hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
             ))
 
@@ -835,7 +835,7 @@ elif menu == "🔮 Next-Day Forecast Terminal":
             x=bridge_x,
             y=bridge_y,
             mode="lines",
-            name="Forecast Step",
+            name="Forecast Trajectory",
             line=dict(color=signal_color, width=3, dash="dash"),
             showlegend=False
         ))
@@ -845,49 +845,30 @@ elif menu == "🔮 Next-Day Forecast Terminal":
             x=[next_dt],
             y=[sel_pred],
             mode="markers+text",
-            name=f"Predicted Target: ₹{sel_pred:.2f}",
-            marker=dict(size=15, color=signal_color, symbol="star", line=dict(color="white", width=2)),
+            name=f"Target: ₹{sel_pred:.2f}",
+            marker=dict(size=14, color=signal_color, symbol="star", line=dict(color="white", width=2)),
             text=[f" 🎯 <b>₹{sel_pred:.2f}</b><br>({pct_sel:+.2f}%)"],
             textposition="top center",
             textfont=dict(size=12, color=signal_color),
             hovertemplate=f"<b>Forecast Session (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Predicted:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
         ))
 
-        # Annotation Callout to make chart instantly crystal clear to anyone
-        fig_proj.add_annotation(
-            x=next_dt,
-            y=sel_pred,
-            text=f"<b>Next Close: ₹{sel_pred:.2f}</b><br>({signal_label})",
-            showarrow=True,
-            arrowhead=2,
-            arrowsize=1,
-            arrowwidth=2,
-            arrowcolor=signal_color,
-            ax=-70,
-            ay=-55,
-            bgcolor="#FFFFFF",
-            bordercolor=signal_color,
-            borderwidth=1.5,
-            borderpad=6,
-            font=dict(size=11, color="#0F172A")
-        )
-
         fig_proj.update_layout(
             template="plotly_white",
             hovermode="x unified",
             xaxis_title="Trading Session Date",
-            yaxis_title="Stock Price (₹ INR)",
+            yaxis_title="Price (₹ INR)",
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
             margin=dict(l=10, r=10, t=10, b=10),
-            height=390
+            height=370
         )
         st.plotly_chart(fig_proj, use_container_width=True)
 
     with c_gauge:
-        st.markdown("#### 🎯 Target Meter & Signal")
+        st.markdown("#### 🎯 Target Delta Meter")
         st.caption(f"Relative target deflection from base close (₹{latest_close:.2f}).")
         
-        range_span = max(latest_close * 0.08, abs(diff_sel) * 1.5)
+        range_span = latest_close * 0.08
         fig_gauge = go.Figure(go.Indicator(
             mode="gauge+number+delta",
             value=sel_pred,
@@ -911,82 +892,32 @@ elif menu == "🔮 Next-Day Forecast Terminal":
                 }
             }
         ))
-        fig_gauge.update_layout(height=280, margin=dict(l=15, r=15, t=25, b=10))
+        fig_gauge.update_layout(height=320, margin=dict(l=15, r=15, t=25, b=10))
         st.plotly_chart(fig_gauge, use_container_width=True)
 
-        # Clear interpretation text banner below gauge
-        st.markdown(f"""
-        <div style="background:{'#ECFDF5' if is_bullish else '#FEF2F2'}; border:1px solid {'#A7F3D0' if is_bullish else '#FECACA'}; border-radius:10px; padding:10px 14px; text-align:center;">
-            <div style="font-weight:700; color:{signal_color}; font-size:0.9rem;">
-                {signal_icon} {signal_label}
-            </div>
-            <div style="font-size:0.78rem; color:#475569; margin-top:3px;">
-                Model anticipates <b>₹{abs(diff_sel):.2f} ({pct_sel:+.2f}%)</b> {'increase' if is_bullish else 'drop'} in the next session.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    # 1. SIDE-BY-SIDE MODEL COMPARISON TABLE
-    st.markdown("### 📊 Next-Day Forecast Summary & Model Comparison")
-    st.caption("Side-by-side breakdown comparing the predictions of both deep learning architectures against the current market price.")
-    
-    comp_df = pd.DataFrame([
-        {
-            "Metric / Attribute": "Target Forecast Price (t+1)",
-            "GRU Engine (Best Model)": f"₹{pred_close_gru:,.2f}",
-            "LSTM Engine (Baseline)": f"₹{pred_close_lstm:,.2f}",
-            "Current Benchmark": f"₹{latest_close:,.2f}"
-        },
-        {
-            "Metric / Attribute": "Expected Absolute Delta (₹)",
-            "GRU Engine (Best Model)": f"{(pred_close_gru - latest_close):+,.2f} INR",
-            "LSTM Engine (Baseline)": f"{(pred_close_lstm - latest_close):+,.2f} INR",
-            "Current Benchmark": "Base Level (₹0.00)"
-        },
-        {
-            "Metric / Attribute": "Expected Percentage Return (%)",
-            "GRU Engine (Best Model)": f"{((pred_close_gru - latest_close) / latest_close * 100):+.2f}%",
-            "LSTM Engine (Baseline)": f"{((pred_close_lstm - latest_close) / latest_close * 100):+.2f}%",
-            "Current Benchmark": "0.00%"
-        },
-        {
-            "Metric / Attribute": "Directional AI Stance",
-            "GRU Engine (Best Model)": "🟢 Bullish Upside" if (pred_close_gru >= latest_close) else "🔴 Bearish Correction",
-            "LSTM Engine (Baseline)": "🟢 Bullish Upside" if (pred_close_lstm >= latest_close) else "🔴 Bearish Correction",
-            "Current Benchmark": "Neutral (Pivot Point)"
-        },
-        {
-            "Metric / Attribute": "Model Test Accuracy (R²)",
-            "GRU Engine (Best Model)": "98.32% (Champion)",
-            "LSTM Engine (Baseline)": "96.66%",
-            "Current Benchmark": "N/A"
-        },
-        {
-            "Metric / Attribute": "Root Mean Squared Error (RMSE)",
-            "GRU Engine (Best Model)": "₹13.99 (Lower error)",
-            "LSTM Engine (Baseline)": "₹19.71",
-            "Current Benchmark": "N/A"
-        },
-        {
-            "Metric / Attribute": "68% Price Confidence Band",
-            "GRU Engine (Best Model)": f"₹{pred_close_gru - 13.99:.1f} – ₹{pred_close_gru + 13.99:.1f}",
-            "LSTM Engine (Baseline)": f"₹{pred_close_lstm - 19.71:.1f} – ₹{pred_close_lstm + 19.71:.1f}",
-            "Current Benchmark": "N/A"
-        }
-    ])
-    st.table(comp_df)
-
-    # 2. NEURAL NETWORK LOOKBACK SEQUENCE (DETAILED DATA TABLE)
-    st.markdown("### 📋 Recent 15 Trading Sessions Fed Into Recurrent Memory (Lookback Input)")
-    st.caption("These recent chronological trading sessions serve as the input tensor to project the next session closing price.")
+    # Last 10 Days Lookback Sequence Table with Rich Color Styling
+    st.markdown("### 📋 Last 10 Days Lookback")
+    st.caption("Recent 10 trading sessions from the 60-day historical window with key price points and return indicators.")
     display_cols = [c for c in ["Date", "Prev Close", "Open", "High", "Low", "Close", "VWAP", "Daily_Return"] if c in df.columns]
     
-    formatted_table = df.tail(15)[display_cols].copy()
+    formatted_table = df.tail(10)[display_cols].copy().reset_index(drop=True)
     if "Date" in formatted_table.columns:
         formatted_table["Date"] = pd.to_datetime(formatted_table["Date"]).dt.strftime("%d %b %Y")
-    
-    st.dataframe(
-        formatted_table.style.format({
+
+    def style_return_pill(val):
+        if pd.isna(val):
+            return ""
+        if val >= 0:
+            return "color: #15803D; background-color: #DCFCE7; font-weight: 700; border-radius: 4px;"
+        else:
+            return "color: #B91C1C; background-color: #FEE2E2; font-weight: 700; border-radius: 4px;"
+
+    def highlight_close_cell(val):
+        return "color: #1D4ED8; font-weight: 800; background-color: #EFF6FF;"
+
+    styled_df = (
+        formatted_table.style
+        .format({
             "Prev Close": "₹{:.2f}",
             "Open": "₹{:.2f}",
             "High": "₹{:.2f}",
@@ -994,7 +925,13 @@ elif menu == "🔮 Next-Day Forecast Terminal":
             "Close": "₹{:.2f}",
             "VWAP": "₹{:.2f}",
             "Daily_Return": "{:+.2f}%"
-        }),
+        })
+        .map(style_return_pill, subset=["Daily_Return"])
+        .map(highlight_close_cell, subset=["Close"])
+    )
+
+    st.dataframe(
+        styled_df,
         use_container_width=True,
         hide_index=True
     )
