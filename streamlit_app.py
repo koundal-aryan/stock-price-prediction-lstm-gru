@@ -34,13 +34,46 @@ st.markdown("""
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    /* Compact Main Container Padding to fit screens without scrolling */
+    /* Responsive Mobile & Desktop Layout */
     .block-container {
-        padding-top: 2rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 2rem !important;
-        padding-left: 2.5rem !important;
-        padding-right: 2.5rem !important;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
         max-width: 100% !important;
+    }
+
+    @media (max-width: 768px) {
+        .block-container {
+            padding-top: 1rem !important;
+            padding-bottom: 1.5rem !important;
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
+        }
+
+        .hero-banner {
+            padding: 1.2rem 1.1rem !important;
+            border-radius: 14px !important;
+        }
+
+        .hero-title {
+            font-size: 1.5rem !important;
+            line-height: 1.25 !important;
+        }
+
+        .hero-desc {
+            font-size: 0.85rem !important;
+            line-height: 1.45 !important;
+        }
+
+        .glass-card {
+            padding: 1rem !important;
+            margin-bottom: 0.6rem !important;
+        }
+
+        .card-val {
+            font-size: 1.4rem !important;
+        }
     }
 
     /* Ultra-Clean Modern Sidebar Styling */
