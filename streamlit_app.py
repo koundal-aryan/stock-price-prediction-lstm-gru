@@ -167,12 +167,12 @@ st.markdown("""
         padding-bottom: 1.2rem !important;
     }
 
-    /* Modern Navigation Chips with Color Accent Combinations */
+    /* Modern Humanized Navigation Segmented Cards */
     div[data-testid="stRadio"] > div {
         gap: 6px !important;
     }
 
-    /* Clean uppercase section header for NAVIGATE (prevents awkward box wrapping) */
+    /* Clean uppercase section header for NAVIGATE */
     div[data-testid="stRadio"] [data-testid="stWidgetLabel"],
     div[data-testid="stRadio"] [data-testid="stWidgetLabel"] *,
     div[data-testid="stRadio"] [data-testid="stWidgetLabel"] p {
@@ -189,68 +189,58 @@ st.markdown("""
         display: block !important;
     }
 
-    /* Option Cards - Matches Streamlit radiogroup items */
+    /* Modern Humanized Card Tabs - Hide Clunky Radio Circles */
     div[data-testid="stRadio"] div[role="radiogroup"] > label,
     div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) {
         background: #FFFFFF !important;
-        border: 1.5px solid #CBD5E1 !important;
-        border-radius: 10px !important;
-        padding: 9px 12px !important;
-        margin-bottom: 2px !important;
+        border: 1.5px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        padding: 10px 14px !important;
+        margin-bottom: 4px !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         display: flex !important;
         align-items: center !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
         cursor: pointer !important;
+        user-select: none !important;
     }
 
-    /* Force Option Text to High-Contrast Bold Slate - Never Camouflage under dark mode */
+    /* Completely hide clumsy radio input circles for a clean, humanized tab look */
+    div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) > div:first-child,
+    div[data-testid="stRadio"] input[type="radio"] {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        opacity: 0 !important;
+    }
+
+    /* High-contrast, clean typography for navigation text */
     div[data-testid="stRadio"] div[role="radiogroup"] label *,
     div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) *,
     div[data-testid="stRadio"] div[role="radiogroup"] label p,
     div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) p {
         color: #0F172A !important;
-        font-weight: 700 !important;
-        font-size: 0.85rem !important;
+        font-weight: 650 !important;
+        font-size: 0.86rem !important;
+        letter-spacing: 0.01em !important;
     }
 
-    /* Distinct color accent combination for each navigation option */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(1),
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(1) {
-        border-left: 4px solid #F59E0B !important; /* Amber for Executive */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(2),
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(2) {
-        border-left: 4px solid #10B981 !important; /* Emerald for Candlestick */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(3),
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(3) {
-        border-left: 4px solid #8B5CF6 !important; /* Purple for Deep Learning */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(4),
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(4) {
-        border-left: 4px solid #3B82F6 !important; /* Electric Blue for Forecast */
-    }
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:nth-child(5),
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):nth-of-type(5) {
-        border-left: 4px solid #EC4899 !important; /* Rose Pink for Simulator */
-    }
-
+    /* Subtle hover interaction */
     div[data-testid="stRadio"] div[role="radiogroup"] > label:hover,
     div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):hover {
-        background: #F1F5F9 !important;
+        background: #F8FAFC !important;
         border-color: #94A3B8 !important;
         transform: translateX(3px) !important;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
     }
 
-    /* Active / Checked State */
+    /* Selected Active State - Crisp Royal Blue Accent */
     div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked),
     div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) {
         background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
-        border-color: #2563EB !important;
-        border-left: 5px solid #1D4ED8 !important;
-        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.18) !important;
+        border: 2px solid #2563EB !important;
+        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.16) !important;
     }
 
     div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) *,
@@ -261,18 +251,14 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* Custom Radio Dot Indicator */
-    div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) > div:first-child {
-        border-color: #64748B !important;
-        background-color: #FFFFFF !important;
-    }
-
-    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) > div:first-child,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) > div:first-child {
-        border-color: #2563EB !important;
-        background-color: #2563EB !important;
-        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25) !important;
+    /* Subtle active pill indicator on the right */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked)::after,
+    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked)::after {
+        content: "●";
+        margin-left: auto;
+        color: #2563EB;
+        font-size: 0.72rem;
+        padding-left: 6px;
     }
 
     /* Styled Selectbox for Market Feed - Sleek Slate Pill */
@@ -765,15 +751,15 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    # 4. Navigation Menu
+    # 4. Navigation Menu (Humanized, Professional FinTech Navigation)
     menu = st.radio(
         "NAVIGATE",
         [
-            "⚡ Executive Dashboard",
-            "📊 Candlestick & Technical Studio",
-            "🧠 Deep Learning Benchmark",
-            "🔮 Next-Day Forecast Terminal",
-            "💡 Trading Scenario Simulator"
+            "📈 Executive Overview",
+            "🕯️ Candlestick Studio",
+            "⚖️ Model Benchmark",
+            "🎯 Price Forecast Desk",
+            "🧪 Scenario Simulator"
         ],
         index=0
     )
@@ -833,7 +819,7 @@ latest_date_str = df["Date"].iloc[-1].strftime("%d %B %Y")
 # ==============================================================================
 # TAB 1: EXECUTIVE DASHBOARD
 # ==============================================================================
-if menu == "⚡ Executive Dashboard":
+if "Executive" in menu:
     mode_badge_text = "Real-Time Yahoo Finance Stream • NSE: ADANIPORTS" if is_live_mode else "Historical Research Dataset (2007–2021)"
     st.markdown(f"""
     <div class="hero-banner">
@@ -996,9 +982,9 @@ if menu == "⚡ Executive Dashboard":
 # ==============================================================================
 # TAB 2: CANDLESTICK & TECHNICAL STUDIO (LIVE INTRADAY + DAILY HORIZONS)
 # ==============================================================================
-elif menu == "📊 Candlestick & Technical Studio":
+elif "Candlestick" in menu:
     st.markdown('<div class="hero-badge">Real-Time Market Studio</div>', unsafe_allow_html=True)
-    st.markdown("## 📊 Live Interactive Candlestick & Market Flow")
+    st.markdown("## 🕯️ Live Interactive Candlestick & Market Flow")
     st.caption("Live streaming candlestick chart supporting real-time intraday candles (5m/15m) alongside multi-day macro horizons with Bollinger Bands and volume returns.")
 
     # Live Market Condition Badge Banner
@@ -1208,9 +1194,9 @@ elif menu == "📊 Candlestick & Technical Studio":
 # ==============================================================================
 # TAB 3: DEEP LEARNING BENCHMARK
 # ==============================================================================
-elif menu == "🧠 Deep Learning Benchmark":
+elif "Benchmark" in menu:
     st.markdown('<div class="hero-badge">Model Architecture Benchmark</div>', unsafe_allow_html=True)
-    st.markdown("## Head-to-Head Evaluation: LSTM vs. GRU")
+    st.markdown("## ⚖️ Head-to-Head Evaluation: LSTM vs. GRU")
     st.caption("Rigorous quantitative assessment on the unseen 665-day test dataset (2018–2021).")
     
     bench_df = pd.DataFrame({
@@ -1280,9 +1266,9 @@ elif menu == "🧠 Deep Learning Benchmark":
 # ==============================================================================
 # TAB 4: NEXT-DAY FORECASTER TERMINAL
 # ==============================================================================
-elif menu == "🔮 Next-Day Forecast Terminal":
+elif "Forecast" in menu or "Target" in menu:
     st.markdown('<div class="hero-badge">Deep Learning Time-Series Forecaster</div>', unsafe_allow_html=True)
-    st.markdown("## 🔮 Next-Day Price Target & Signal Terminal")
+    st.markdown("## 🎯 Next-Day Price Target & Signal Terminal")
     st.caption(f"Real-time point-estimate and directional trajectory powered by {'Yahoo Finance Live Stream' if is_live_mode else 'Historical Sequence'} using the 60-day recurrent memory window.")
     
     # Responsive Top Filter Row
@@ -1524,9 +1510,9 @@ elif menu == "🔮 Next-Day Forecast Terminal":
 # ==============================================================================
 # TAB 5: TRADING SCENARIO SIMULATOR
 # ==============================================================================
-elif menu == "💡 Trading Scenario Simulator":
+elif "Simulator" in menu:
     st.markdown('<div class="hero-badge">Interactive Strategy Sandbox</div>', unsafe_allow_html=True)
-    st.markdown("## 💡 Next-Day Trading Scenario Simulator")
+    st.markdown("## 🧪 Next-Day Trading Scenario Simulator")
     st.caption("Plan and test portfolio allocation based on the AI price projection, complete with dates, entry targets, and downside protection.")
 
     # Calculate Entry Date and Target Exit Date
