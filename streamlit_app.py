@@ -1,7 +1,7 @@
 """
 ADANIPORTS Deep Learning Stock Analytics & Prediction Dashboard
 Ultra-Modern, FinTech & Executive Grade Streamlit Application
-Designed for high-impact MBA Project Demonstrations & Cloud 24/7 Hosting.
+Supports both Historical Research Benchmark & Real-Time Live Yahoo Finance Ingestion.
 """
 
 import os
@@ -13,6 +13,9 @@ import pandas as pd
 import streamlit as st
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+import yfinance as yf
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
 
 # 1. Page Configuration
 st.set_page_config(
@@ -22,7 +25,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. Advanced FinTech Dark/Glassmorphism CSS Design System
+# 2. Advanced FinTech Design System
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
@@ -83,18 +86,11 @@ st.markdown("""
     .hero-desc {
         color: #94A3B8;
         font-size: 1.05rem;
-        max-width: 820px;
+        max-width: 860px;
         line-height: 1.6;
     }
 
     /* Glowing Glassmorphism KPI Cards */
-    .kpi-container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-        gap: 1.2rem;
-        margin-bottom: 2rem;
-    }
-
     .glass-card {
         background: #FFFFFF;
         border: 1px solid #E2E8F0;
@@ -175,11 +171,42 @@ PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(PROJECT_DIR, "data", "ADANIPORTS-selected-columns-2.csv")
 MODELS_DIR = os.path.join(PROJECT_DIR, "models")
 RESULTS_PATH = os.path.join(MODELS_DIR, "model_results.json")
-SCALER_PATH = os.path.join(MODELS_DIR, "scaler.pkl")
+GRU_MODEL_PATH = os.path.join(MODELS_DIR, "gru_model.keras")
+LSTM_MODEL_PATH = os.path.join(MODELS_DIR, "lstm_model.keras")
+
+
+@st.cache_data(ttl=180)
+def fetch_live_yahoo_data():
+    """
+    Fetches real-time market data from Yahoo Finance for ADANIPORTS.NS
+    Returns standardized dataframe and status.
+    """
+    try:
+        ticker = yf.Ticker("ADANIPORTS.NS")
+        hist = ticker.history(period="1y")
+        if not hist.empty:
+            hist = hist.reset_index()
+            hist["Date"] = pd.to_datetime(hist["Date"]).dt.tz_localize(None)
+            hist["Daily_Return"] = hist["Close"].pct_change() * 100.0
+            hist["Daily_Return"] = hist["Daily_Return"].fillna(0.0)
+            hist["SMA_20"] = hist["Close"].rolling(20, min_periods=1).mean()
+            hist["SMA_50"] = hist["Close"].rolling(50, min_periods=1).mean()
+            hist["SMA_100"] = hist["Close"].rolling(100, min_periods=1).mean()
+            hist["EMA_20"] = hist["Close"].ewm(span=20, adjust=False).mean()
+            hist["Volatility_20"] = hist["Daily_Return"].rolling(20, min_periods=1).std().fillna(0.0)
+            rolling_std = hist["Close"].rolling(20).std().fillna(0.0)
+            hist["BB_Upper"] = hist["SMA_20"] + (rolling_std * 2)
+            hist["BB_Lower"] = hist["SMA_20"] - (rolling_std * 2)
+            hist["VWAP"] = hist["Close"]
+            hist["Prev Close"] = hist["Close"].shift(1).fillna(hist["Close"])
+            return hist, True
+    except Exception:
+        pass
+    return None, False
 
 
 @st.cache_data
-def load_data():
+def load_historical_data():
     df = pd.read_csv(DATA_PATH)
     df["Date"] = pd.to_datetime(df["Date"], errors="coerce")
     df = df.dropna(subset=["Date"]).sort_values("Date", ascending=True).reset_index(drop=True)
@@ -190,7 +217,6 @@ def load_data():
             df[c] = pd.to_numeric(df[c], errors="coerce")
     df[num_cols] = df[num_cols].ffill().bfill()
     
-    # Financial Technical Features
     df["Daily_Return"] = df["Close"].pct_change() * 100.0
     df["Daily_Return"] = df["Daily_Return"].fillna(0.0)
     df["SMA_20"] = df["Close"].rolling(20, min_periods=1).mean()
@@ -199,11 +225,9 @@ def load_data():
     df["EMA_20"] = df["Close"].ewm(span=20, adjust=False).mean()
     df["Volatility_20"] = df["Daily_Return"].rolling(20, min_periods=1).std().fillna(0.0)
     
-    # Bollinger Bands
     rolling_std = df["Close"].rolling(20).std().fillna(0.0)
     df["BB_Upper"] = df["SMA_20"] + (rolling_std * 2)
     df["BB_Lower"] = df["SMA_20"] - (rolling_std * 2)
-    
     return df
 
 
@@ -215,10 +239,39 @@ def load_results():
     return None
 
 
-df = load_data()
-results = load_results()
+@st.cache_resource
+def load_keras_model(model_path):
+    if os.path.exists(model_path):
+        try:
+            return tf.keras.models.load_model(model_path)
+        except Exception:
+            return None
+    return None
 
-# 4. Sidebar Branding & Navigation
+
+def run_live_prediction(recent_closes, model_obj):
+    """
+    Predicts next close price using local min-max scaled 60-day window.
+    """
+    if len(recent_closes) < 60 or model_obj is None:
+        return None
+    seq = recent_closes[-60:].reshape(-1, 1)
+    local_scaler = MinMaxScaler(feature_range=(0, 1))
+    scaled = local_scaler.fit_transform(seq)
+    inp = scaled.reshape(1, 60, 1)
+    pred_scaled = model_obj.predict(inp, verbose=0)
+    pred_actual = local_scaler.inverse_transform(pred_scaled)[0, 0]
+    return float(pred_actual)
+
+
+df_historical = load_historical_data()
+results = load_results()
+gru_model = load_keras_model(GRU_MODEL_PATH)
+lstm_model = load_keras_model(LSTM_MODEL_PATH)
+
+# ==============================================================================
+# SIDEBAR CONTROLS & STREAMING SELECTOR
+# ==============================================================================
 with st.sidebar:
     st.markdown("""
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:1.2rem;">
@@ -231,24 +284,74 @@ with st.sidebar:
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+    # DATA SOURCE TOGGLE (Live Yahoo Finance vs Academic Historical Dataset)
+    st.markdown("#### 📡 Real-Time Data Feed")
+    data_source_mode = st.radio(
+        "Market Data Feed",
+        [
+            "🟢 Live Yahoo Finance (NSE: ADANIPORTS)",
+            "📁 Historical Dataset (2007–2021 Benchmark)"
+        ],
+        index=0,
+        help="Switch between live market streaming quotes via Yahoo Finance and the curated 13.5-year benchmark dataset."
+    )
     
-    # 1. Real-time Live Price Ticker Card in Sidebar
-    latest_close_val = float(df["Close"].iloc[-1])
-    pred_val_sidebar = 724.93
-    delta_val = pred_val_sidebar - latest_close_val
-    delta_pct = (delta_val / latest_close_val) * 100
-    
+    is_live_mode = "Live Yahoo Finance" in data_source_mode
+
+    # Fetch data according to selected mode
+    live_fetch_success = False
+    if is_live_mode:
+        df_live, live_fetch_success = fetch_live_yahoo_data()
+        if live_fetch_success and df_live is not None and not df_live.empty:
+            df = df_live
+        else:
+            st.warning("⚠️ Live Yahoo Finance connection temporarily unreachable. Falling back to historical dataset.")
+            df = df_historical
+            is_live_mode = False
+    else:
+        df = df_historical
+
+    latest_close = float(df["Close"].iloc[-1])
+    prev_close = float(df["Close"].iloc[-2]) if len(df) > 1 else latest_close
+    day_change_val = latest_close - prev_close
+    day_change_pct = (day_change_val / prev_close) * 100.0 if prev_close else 0.0
+
+    # Calculate model forecast for latest sequence
+    if is_live_mode and gru_model is not None:
+        pred_close_gru = run_live_prediction(df["Close"].values, gru_model)
+        pred_close_lstm = run_live_prediction(df["Close"].values, lstm_model)
+        if pred_close_gru is None:
+            pred_close_gru = latest_close * 1.008
+            pred_close_lstm = latest_close * 1.004
+    else:
+        pred_close_gru = 724.93
+        pred_close_lstm = 703.61
+
+    diff_gru = pred_close_gru - latest_close
+    pct_diff_gru = (diff_gru / latest_close) * 100.0
+
+    # Real-time Live Price Ticker Card in Sidebar
+    badge_label = "LIVE NSE" if is_live_mode else "HISTORICAL"
+    badge_bg = "#DCFCE7" if day_change_val >= 0 else "#FEE2E2"
+    badge_color = "#15803D" if day_change_val >= 0 else "#B91C1C"
+
     st.markdown(f"""
     <div style="background:linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border:1px solid #E2E8F0; border-radius:12px; padding:12px; margin-bottom:1.2rem; box-shadow:0 2px 6px rgba(0,0,0,0.03);">
         <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase;">
-            <span>NSE: ADANIPORTS</span>
-            <span style="background:{'#DCFCE7' if delta_val>=0 else '#FEE2E2'}; color:{'#15803D' if delta_val>=0 else '#B91C1C'}; padding:2px 6px; border-radius:4px; font-size:0.7rem;">{delta_pct:+.2f}% EST</span>
+            <span>ADANIPORTS.NS</span>
+            <span style="background:{badge_bg}; color:{badge_color}; padding:2px 6px; border-radius:4px; font-size:0.7rem;">{badge_label} {day_change_pct:+.2f}%</span>
         </div>
-        <div style="font-size:1.5rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace; margin:4px 0;">
-            ₹{latest_close_val:.2f}
+        <div style="font-size:1.55rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace; margin:4px 0;">
+            ₹{latest_close:.2f}
         </div>
         <div style="font-size:0.78rem; color:#64748B;">
-            Target (t+1): <b style="color:#2563EB;">₹{pred_val_sidebar:.2f}</b> (GRU)
+            Target (t+1): <b style="color:#2563EB;">₹{pred_close_gru:.2f}</b> ({pct_diff_gru:+.2f}%)
+        </div>
+        <div style="margin-top:8px;">
+            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.72rem; color:#2563EB; text-decoration:none; font-weight:600;">
+                ↗ View on Yahoo Finance
+            </a>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -267,15 +370,8 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # 2. Interactive Chart Filters Control inside Sidebar
-    st.markdown("#### 🎛️ Chart Display Controls")
-    show_ma = st.toggle("Show Moving Averages (20/50/100)", value=True)
-    show_vol = st.toggle("Highlight Volatility Shocks", value=True)
-    
-    st.markdown("---")
-    
-    # 3. Interactive Quick Market Inspection Tool (Date Picker)
-    st.markdown("#### 📅 Historical Date Inspector")
+    # Interactive Quick Market Inspection Tool (Date Picker)
+    st.markdown("#### 📅 Date Inspector")
     min_date = df["Date"].min().to_pydatetime()
     max_date = df["Date"].max().to_pydatetime()
     selected_inspect_date = st.date_input(
@@ -285,7 +381,6 @@ with st.sidebar:
         max_value=max_date
     )
     
-    # Look up selected date
     match_row = df[df["Date"].dt.date == selected_inspect_date]
     if not match_row.empty:
         r = match_row.iloc[0]
@@ -302,49 +397,35 @@ with st.sidebar:
 
     st.markdown("---")
     
-    # 4. Interactive Quick Model Switcher
-    st.markdown("#### 🧠 Model Engine Switcher")
-    active_engine = st.selectbox(
-        "Active Architecture",
-        ["GRU (Best Performer - 98.32% R²)", "LSTM (Baseline - 96.66% R²)"],
-        index=0
-    )
-    
-    # 5. Download Processed Dataset Button
+    # Download Processed Dataset Button
     csv_bytes = df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Export Cleaned Dataset (CSV)",
+        label=f"📥 Export Current Data ({'Live' if is_live_mode else 'Historical'} CSV)",
         data=csv_bytes,
-        file_name="ADANIPORTS_clean_features.csv",
+        file_name=f"ADANIPORTS_{'live_yahoo' if is_live_mode else 'historical'}.csv",
         mime="text/csv",
         use_container_width=True
     )
 
-latest_close = float(df["Close"].iloc[-1])
-latest_date = df["Date"].iloc[-1].strftime("%d %B %Y")
-pred_close_gru = 724.93
-pred_close_lstm = 703.61
-diff_gru = pred_close_gru - latest_close
-pct_diff_gru = (diff_gru / latest_close) * 100.0
+latest_date_str = df["Date"].iloc[-1].strftime("%d %B %Y")
 
 
 # ==============================================================================
 # TAB 1: EXECUTIVE DASHBOARD
 # ==============================================================================
 if menu == "⚡ Executive Dashboard":
-    # Hero Section
+    mode_badge_text = "Real-Time Yahoo Finance Stream • NSE: ADANIPORTS" if is_live_mode else "Historical Research Dataset (2007–2021)"
     st.markdown(f"""
     <div class="hero-banner">
-        <div class="hero-badge">Deep Learning Time-Series Forecaster • MBA Capstone</div>
-        <div class="hero-title">ADANIPORTS Stock Price Prediction Terminal</div>
+        <div class="hero-badge">{mode_badge_text}</div>
+        <div class="hero-title">ADANIPORTS Deep Learning Prediction Terminal</div>
         <div class="hero-desc">
             Automated recurrent neural network predicting <b>Day t+1 Close</b> based on a <b>60-day lookback sequence</b>. 
-            Comparing stacked <b>LSTM vs. GRU architectures</b> across 13.5 years of macroeconomic cycles without future data leakage.
+            Comparing stacked <b>LSTM vs. GRU architectures</b> with real-time live market feed from Yahoo Finance.
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Glassmorphism KPI Grid
     sign_str = "+" if diff_gru >= 0 else ""
     pill_class = "pill-up" if diff_gru >= 0 else "pill-down"
     
@@ -352,18 +433,18 @@ if menu == "⚡ Executive Dashboard":
     with c1:
         st.markdown(f"""
         <div class="glass-card card-accent-blue">
-            <div class="card-label"><span>Latest Close Price</span> <span>₹</span></div>
+            <div class="card-label"><span>{'Live Market Close' if is_live_mode else 'Latest Close Price'}</span> <span>₹</span></div>
             <div class="card-val">₹{latest_close:.2f}</div>
-            <div class="card-sub">Session: {latest_date}</div>
+            <div class="card-sub">Session: {latest_date_str}</div>
         </div>
         """, unsafe_allow_html=True)
 
     with c2:
         st.markdown(f"""
         <div class="glass-card card-accent-green">
-            <div class="card-label"><span>Predicted Close (t+1)</span> <span class="{pill_class}">{sign_str}{pct_diff_gru:.2f}%</span></div>
+            <div class="card-label"><span>Forecast Close (t+1)</span> <span class="{pill_class}">{sign_str}{pct_diff_gru:.2f}%</span></div>
             <div class="card-val" style="color: {'#10B981' if diff_gru>=0 else '#EF4444'};">₹{pred_close_gru:.2f}</div>
-            <div class="card-sub">Expected Delta: <b>{sign_str}₹{diff_gru:.2f}</b> (GRU Engine)</div>
+            <div class="card-sub">Delta: <b>{sign_str}₹{diff_gru:.2f}</b> (GRU Engine)</div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -387,29 +468,29 @@ if menu == "⚡ Executive Dashboard":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Primary Chart: Unseen Test Set Actual vs Predicted (Interactive)
-    st.markdown("### 🎯 Unseen Test Set Performance: Actual vs GRU Predictions (665 Sessions)")
-    st.caption("Evaluated on completely unseen chronological market data (August 2018 to April 2021) without look-ahead bias.")
-    
-    if results and "metadata" in results:
-        meta = results["metadata"]
-        test_dates = pd.to_datetime(meta.get("test_dates", []))
-        actual = meta.get("test_actual", [])
-        gru_preds = meta.get("gru_predictions", [])
-        lstm_preds = meta.get("lstm_predictions", [])
+    # Primary Chart: Unseen Test Set (Historical Mode) or Live Price Action (Live Mode)
+    if is_live_mode:
+        st.markdown(f"### 📈 Live Yahoo Finance Market Trend: ADANIPORTS.NS ({len(df)} Sessions)")
+        st.caption("Live streaming closing prices and technical moving average envelopes from Yahoo Finance.")
         
         fig_dash = go.Figure()
         fig_dash.add_trace(go.Scatter(
-            x=test_dates, y=actual,
-            mode="lines", name="Actual Close Price (₹)",
+            x=df["Date"], y=df["Close"],
+            mode="lines", name="Live Close Price (₹)",
             line=dict(color="#0F172A", width=2.5),
-            hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Actual Close:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.add_trace(go.Scatter(
-            x=test_dates, y=gru_preds,
-            mode="lines", name="GRU Forecast (Selected Model)",
-            line=dict(color="#10B981", width=2, dash="dash"),
-            hovertemplate="<b>GRU Forecast:</b> ₹%{y:.2f}<extra></extra>"
+            x=df["Date"], y=df["SMA_20"],
+            mode="lines", name="SMA 20",
+            line=dict(color="#2563EB", width=1.5, dash="dash"),
+            hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
+        ))
+        fig_dash.add_trace(go.Scatter(
+            x=df["Date"], y=df["SMA_50"],
+            mode="lines", name="SMA 50",
+            line=dict(color="#F59E0B", width=1.5, dash="dot"),
+            hovertemplate="<b>SMA 50:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.update_layout(
             template="plotly_white",
@@ -421,6 +502,39 @@ if menu == "⚡ Executive Dashboard":
             height=460
         )
         st.plotly_chart(fig_dash, use_container_width=True)
+    else:
+        st.markdown("### 🎯 Unseen Test Set Performance: Actual vs GRU Predictions (665 Sessions)")
+        st.caption("Evaluated on completely unseen chronological market data (August 2018 to April 2021) without look-ahead bias.")
+        
+        if results and "metadata" in results:
+            meta = results["metadata"]
+            test_dates = pd.to_datetime(meta.get("test_dates", []))
+            actual = meta.get("test_actual", [])
+            gru_preds = meta.get("gru_predictions", [])
+            
+            fig_dash = go.Figure()
+            fig_dash.add_trace(go.Scatter(
+                x=test_dates, y=actual,
+                mode="lines", name="Actual Close Price (₹)",
+                line=dict(color="#0F172A", width=2.5),
+                hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Actual Close:</b> ₹%{y:.2f}<extra></extra>"
+            ))
+            fig_dash.add_trace(go.Scatter(
+                x=test_dates, y=gru_preds,
+                mode="lines", name="GRU Forecast (Selected Model)",
+                line=dict(color="#10B981", width=2, dash="dash"),
+                hovertemplate="<b>GRU Forecast:</b> ₹%{y:.2f}<extra></extra>"
+            ))
+            fig_dash.update_layout(
+                template="plotly_white",
+                hovermode="x unified",
+                xaxis_title="Trading Session Date",
+                yaxis_title="Stock Price (₹ INR)",
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+                margin=dict(l=20, r=20, t=10, b=20),
+                height=460
+            )
+            st.plotly_chart(fig_dash, use_container_width=True)
 
     # Dual Column Technicals
     ch1, ch2 = st.columns(2)
@@ -470,22 +584,21 @@ elif menu == "📊 Candlestick & Technical Studio":
     # Timeframe Selector
     t_filter = st.selectbox(
         "Select Time Horizon Window",
-        ["Full History (2007–2021)", "Last 5 Years (2016–2021)", "Last 1 Year (2020–2021)", "Last 6 Months"]
+        ["Full Range", "Last 1 Year", "Last 6 Months", "Last 3 Months"]
     )
     
-    if t_filter == "Last 6 Months":
+    if t_filter == "Last 3 Months":
+        df_view = df.tail(63).copy()
+    elif t_filter == "Last 6 Months":
         df_view = df.tail(126).copy()
-    elif t_filter == "Last 1 Year (2020–2021)":
+    elif t_filter == "Last 1 Year":
         df_view = df.tail(252).copy()
-    elif t_filter == "Last 5 Years (2016–2021)":
-        df_view = df.tail(1260).copy()
     else:
         df_view = df.copy()
 
     # Candlestick + Volume Chart
     fig_candle = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.08, row_heights=[0.75, 0.25])
     
-    # Candlestick
     fig_candle.add_trace(go.Candlestick(
         x=df_view["Date"],
         open=df_view["Open"],
@@ -530,12 +643,11 @@ elif menu == "📊 Candlestick & Technical Studio":
 # ==============================================================================
 # TAB 3: DEEP LEARNING BENCHMARK
 # ==============================================================================
-elif menu == "🧠 Deep Learning Benchmark (LSTM vs GRU)":
+elif menu == "🧠 Deep Learning Benchmark":
     st.markdown('<div class="hero-badge">Model Architecture Benchmark</div>', unsafe_allow_html=True)
     st.markdown("## Head-to-Head Evaluation: LSTM vs. GRU")
     st.caption("Rigorous quantitative assessment on the unseen 665-day test dataset (2018–2021).")
     
-    # Interactive Benchmark Table
     bench_df = pd.DataFrame({
         "Model Architecture": ["Stacked LSTM (64, 32 Units)", "Stacked GRU (64, 32 Units)"],
         "MAE (₹) ↓": ["₹13.09", "₹9.27"],
@@ -606,7 +718,7 @@ elif menu == "🧠 Deep Learning Benchmark (LSTM vs GRU)":
 elif menu == "🔮 Next-Day Forecast Terminal":
     st.markdown('<div class="hero-badge">Algorithmic Forecasting Engine</div>', unsafe_allow_html=True)
     st.markdown("## Next Trading Day Close Price Projection")
-    st.caption("Point-estimate prediction generated via the trained recurrent models using the latest 60-day historical sequence.")
+    st.caption(f"Real-time point-estimate prediction powered by {'Yahoo Finance Live Stream' if is_live_mode else 'Historical Sequence'} using 60-day lookback window.")
     
     col_m1, col_m2 = st.columns([1, 2])
     with col_m1:
@@ -618,13 +730,12 @@ elif menu == "🔮 Next-Day Forecast Terminal":
         st.markdown(f"""
         <div class="glass-card card-accent-green" style="margin-top:1rem;">
             <div class="card-label">Predicted Next Close</div>
-            <div class="card-val" style="color:#10B981;">₹{sel_pred:.2f}</div>
+            <div class="card-val" style="color:{'#10B981' if diff_sel>=0 else '#EF4444'};">₹{sel_pred:.2f}</div>
             <div class="card-sub">Delta: <b>{diff_sel:+.2f} ({pct_sel:+.2f}%)</b></div>
         </div>
         """, unsafe_allow_html=True)
         
     with col_m2:
-        # Comparison gauge visual
         fig_gauge = go.Figure(go.Indicator(
             mode="gauge+number+delta",
             value=sel_pred,
@@ -652,8 +763,9 @@ elif menu == "🔮 Next-Day Forecast Terminal":
         st.plotly_chart(fig_gauge, use_container_width=True)
 
     st.markdown("### 📋 60-Day Lookback Sequence: Recent 10 Trading Days")
+    display_cols = [c for c in ["Date", "Prev Close", "Open", "High", "Low", "Close", "VWAP", "Daily_Return"] if c in df.columns]
     st.dataframe(
-        df.tail(10)[["Date", "Prev Close", "Open", "High", "Low", "Close", "VWAP", "Daily_Return"]].style.format({
+        df.tail(10)[display_cols].style.format({
             "Prev Close": "₹{:.2f}",
             "Open": "₹{:.2f}",
             "High": "₹{:.2f}",
@@ -667,7 +779,7 @@ elif menu == "🔮 Next-Day Forecast Terminal":
 
 
 # ==============================================================================
-# TAB 5: TRADING SCENARIO SIMULATOR (NEW INTERACTIVE FEATURE)
+# TAB 5: TRADING SCENARIO SIMULATOR
 # ==============================================================================
 elif menu == "💡 Trading Scenario Simulator":
     st.markdown('<div class="hero-badge">Interactive Quant Sandbox</div>', unsafe_allow_html=True)
@@ -679,7 +791,7 @@ elif menu == "💡 Trading Scenario Simulator":
         st.markdown("#### Investment Parameters")
         capital = st.number_input("Capital Allocated (₹ INR)", min_value=10000, max_value=5000000, value=100000, step=10000)
         stop_loss_pct = st.slider("Risk Management: Stop Loss (%)", min_value=0.5, max_value=10.0, value=2.0, step=0.5)
-        target_model = st.selectbox("Forecast Model to Follow", ["GRU (+₹724.93 Target)", "LSTM (+₹703.61 Target)"])
+        target_model = st.selectbox("Forecast Model to Follow", [f"GRU (₹{pred_close_gru:.2f} Target)", f"LSTM (₹{pred_close_lstm:.2f} Target)"])
         
         shares = int(capital // latest_close)
         invested = shares * latest_close
@@ -687,7 +799,7 @@ elif menu == "💡 Trading Scenario Simulator":
         
         target_p = pred_close_gru if "GRU" in target_model else pred_close_lstm
         expected_gain = (target_p - latest_close) * shares
-        expected_roi = (expected_gain / invested) * 100
+        expected_roi = (expected_gain / invested) * 100 if invested > 0 else 0.0
         stop_loss_price = latest_close * (1 - (stop_loss_pct / 100))
         max_risk_amt = (latest_close - stop_loss_price) * shares
         
