@@ -154,26 +154,41 @@ st.markdown("""
         }
     }
 
-    /* Premium FinTech Sidebar Styling - Compact Zero Scroll Design */
+    /* Premium FinTech Sidebar Styling - Zero Top Gap Compact Design */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%) !important;
         border-right: 1px solid #E2E8F0 !important;
     }
 
+    /* Completely eliminate Streamlit's default 50px sidebar header dead space */
+    div[data-testid="stSidebarHeader"],
+    header[data-testid="stSidebarHeader"],
+    section[data-testid="stSidebar"] > div:first-child:not([data-testid="stSidebarUserContent"]) {
+        display: none !important;
+        height: 0px !important;
+        min-height: 0px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        visibility: hidden !important;
+    }
+
     section[data-testid="stSidebar"] .block-container {
         padding-top: 0.15rem !important;
-        padding-left: 0.8rem !important;
-        padding-right: 0.8rem !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
         padding-bottom: 0.5rem !important;
     }
 
-    /* Shift content higher up to utilize top screen space */
+    /* Shift first element flush with very top edge of screen */
     section[data-testid="stSidebar"] .block-container > div:first-child {
-        margin-top: -0.65rem !important;
+        margin-top: -0.75rem !important;
     }
 
-    /* Navigation Radio Container */
-    div[data-testid="stRadio"] > div {
+    /* Full-width clean radio group */
+    div[data-testid="stRadio"] div[role="radiogroup"] {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
         gap: 3px !important;
     }
 
@@ -194,31 +209,101 @@ st.markdown("""
         display: block !important;
     }
 
-    /* Option Cards - Matches Streamlit radiogroup items */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label {
+    /* Option Cards - Full width, row flex layout */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label,
+    div[data-testid="stRadio"] label {
         background: #FFFFFF !important;
         border: 1.5px solid #CBD5E1 !important;
         border-radius: 9px !important;
         padding: 6px 10px !important;
-        margin-bottom: 2px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-width: 100% !important;
+        box-sizing: border-box !important;
         transition: all 0.15s ease !important;
         display: flex !important;
+        flex-direction: row !important;
         align-items: center !important;
         box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
         cursor: pointer !important;
     }
 
-    /* Force Option Text to High-Contrast Bold Slate - 100% VISIBLE ALWAYS */
-    div[data-testid="stRadio"] div[role="radiogroup"] label *,
-    div[data-testid="stRadio"] div[role="radiogroup"] label p,
-    div[data-testid="stRadio"] div[role="radiogroup"] label span {
+    /* Replace Streamlit's red radio button completely with Royal Blue */
+    div[data-testid="stRadio"] input[type="radio"] {
+        accent-color: #2563EB !important;
+    }
+
+    /* BaseWeb Radio Container */
+    div[data-testid="stRadio"] [data-baseweb="radio"] {
+        margin-right: 8px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    /* Unselected radio button: clean subtle slate border with white center (NO BLACK CIRCLE!) */
+    div[data-testid="stRadio"] [data-baseweb="radio"] > div {
+        border: 1.5px solid #94A3B8 !important;
+        background-color: #FFFFFF !important;
+        width: 14px !important;
+        height: 14px !important;
+        min-width: 14px !important;
+        border-radius: 50% !important;
+        box-sizing: border-box !important;
+    }
+
+    div[data-testid="stRadio"] [data-baseweb="radio"] > div > div {
+        background-color: transparent !important;
+    }
+
+    /* Selected radio button: Royal Blue indicator with white center dot (NO RED CIRCLE!) */
+    div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div,
+    div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div {
+        border-color: #2563EB !important;
+        background-color: #2563EB !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
+    }
+
+    div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div > div,
+    div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div > div {
+        background-color: #FFFFFF !important;
+        width: 6px !important;
+        height: 6px !important;
+        border-radius: 50% !important;
+    }
+
+    /* Selected Card Active State */
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked),
+    div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] {
+        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
+        border-color: #2563EB !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15) !important;
+    }
+
+    /* Option Text Container: Always 100% visible, NEVER collapsed */
+    div[data-testid="stRadio"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        display: block !important;
+    }
+
+    div[data-testid="stRadio"] div[role="radiogroup"] label [data-testid="stMarkdownContainer"] p {
         color: #0F172A !important;
         font-weight: 700 !important;
         font-size: 0.82rem !important;
         line-height: 1.25 !important;
-        display: inline-block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        display: block !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) [data-testid="stMarkdownContainer"] p,
+    div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
+        color: #1D4ED8 !important;
+        font-weight: 800 !important;
     }
 
     /* Subtle hover interaction */
@@ -226,37 +311,6 @@ st.markdown("""
         background: #F8FAFC !important;
         border-color: #94A3B8 !important;
         transform: translateX(2px) !important;
-    }
-
-    /* Active / Checked State */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
-        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
-        border-color: #2563EB !important;
-        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15) !important;
-    }
-
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) *,
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) p {
-        color: #1D4ED8 !important;
-        font-weight: 800 !important;
-    }
-
-    /* Clean subtle radio dot */
-    div[data-testid="stRadio"] div[role="radiogroup"] label input[type="radio"] + div,
-    div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
-        border-color: #94A3B8 !important;
-        background-color: #FFFFFF !important;
-        width: 14px !important;
-        height: 14px !important;
-        margin-right: 6px !important;
-        flex-shrink: 0 !important;
-    }
-
-    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) input[type="radio"] + div,
-    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) > div:first-child {
-        border-color: #2563EB !important;
-        background-color: #2563EB !important;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
     }
 
     /* Styled Selectbox for Market Feed - Sleek Slate Pill */
@@ -282,75 +336,23 @@ st.markdown("""
         fill: #94A3B8 !important;
     }
 
-    /* Styled Expander for Date Inspector - Compact Design */
-    div[data-testid="stExpander"] {
+    /* Date Input inside Date Inspector - Crisp Clean Input with Blue Icon */
+    div[data-testid="stSidebar"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
+        background-color: #FFFFFF !important;
         border: 1.5px solid #CBD5E1 !important;
-        border-radius: 10px !important;
-        background: #FFFFFF !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
-        overflow: hidden !important;
-        margin-top: 0.2rem !important;
+        border-radius: 8px !important;
+        min-height: 34px !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
     }
 
-    div[data-testid="stExpander"] details summary {
-        background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
-        border-radius: 9px !important;
-        padding: 8px 11px !important;
-        font-weight: 700 !important;
-        border: 1px solid rgba(255, 255, 255, 0.12) !important;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
-        cursor: pointer !important;
-        transition: all 0.2s ease !important;
-    }
-
-    div[data-testid="stExpander"] details[open] summary {
-        border-bottom-left-radius: 0 !important;
-        border-bottom-right-radius: 0 !important;
-    }
-
-    div[data-testid="stExpander"] details summary:hover {
-        background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%) !important;
-    }
-
-    div[data-testid="stExpander"] details summary span,
-    div[data-testid="stExpander"] details summary p,
-    div[data-testid="stExpander"] details summary div,
-    div[data-testid="stExpander"] details summary {
-        color: #FFFFFF !important;
-        font-weight: 700 !important;
-        font-size: 0.83rem !important;
-        letter-spacing: 0.02em !important;
-    }
-
-    div[data-testid="stExpander"] details summary svg {
-        fill: #60A5FA !important;
-        stroke: #60A5FA !important;
-        color: #60A5FA !important;
-    }
-
-    /* Expander Content Inner Body */
-    div[data-testid="stExpander"] details > div:last-child {
-        background: #FFFFFF !important;
-        padding: 8px 9px !important;
-        border-radius: 0 0 9px 9px !important;
-    }
-
-    /* Date Input inside Date Inspector - Crisp Light Slate Background & High Contrast Text */
-    div[data-testid="stExpander"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
-        background-color: #F8FAFC !important;
-        border: 1.5px solid #CBD5E1 !important;
-        border-radius: 7px !important;
-        box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
-    }
-
-    div[data-testid="stExpander"] div[data-testid="stDateInput"] input {
+    div[data-testid="stSidebar"] div[data-testid="stDateInput"] input {
         color: #0F172A !important;
         font-weight: 700 !important;
-        font-size: 0.84rem !important;
+        font-size: 0.82rem !important;
         background-color: transparent !important;
     }
 
-    div[data-testid="stExpander"] div[data-testid="stDateInput"] svg {
+    div[data-testid="stSidebar"] div[data-testid="stDateInput"] svg {
         fill: #2563EB !important;
         stroke: #2563EB !important;
         color: #2563EB !important;
@@ -376,6 +378,60 @@ st.markdown("""
         color: #1D4ED8 !important;
         box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12) !important;
         transform: translateY(-1px) !important;
+    }
+
+    /* Plotly Chart High-Contrast Light / Dark Adaptive Text */
+    .js-plotly-plot {
+        background: transparent !important;
+    }
+
+    /* By default (Light Mode), render high-contrast dark slate text */
+    .js-plotly-plot text,
+    .js-plotly-plot .xtick text,
+    .js-plotly-plot .ytick text,
+    .js-plotly-plot .legendtext,
+    .js-plotly-plot .gtitle,
+    .js-plotly-plot text.title,
+    .js-plotly-plot .annotation-text {
+        fill: #1E293B !important;
+        font-family: 'Inter', -apple-system, sans-serif !important;
+        font-weight: 600 !important;
+    }
+
+    /* In Dark Mode (via OS preference or Streamlit theme), render high-contrast crisp silver text */
+    @media (prefers-color-scheme: dark) {
+        .js-plotly-plot text,
+        .js-plotly-plot .xtick text,
+        .js-plotly-plot .ytick text,
+        .js-plotly-plot .legendtext,
+        .js-plotly-plot .gtitle,
+        .js-plotly-plot text.title,
+        .js-plotly-plot .annotation-text {
+            fill: #E2E8F0 !important;
+        }
+    }
+
+    [data-theme="dark"] .js-plotly-plot text,
+    [data-theme="dark"] .js-plotly-plot .xtick text,
+    [data-theme="dark"] .js-plotly-plot .ytick text,
+    [data-theme="dark"] .js-plotly-plot .legendtext,
+    [data-theme="dark"] .js-plotly-plot .gtitle,
+    [data-theme="dark"] .js-plotly-plot text.title,
+    [data-theme="dark"] .js-plotly-plot .annotation-text,
+    .stApp[data-theme="dark"] .js-plotly-plot text,
+    .stApp:has([data-theme="dark"]) .js-plotly-plot text {
+        fill: #E2E8F0 !important;
+    }
+
+    [data-theme="light"] .js-plotly-plot text,
+    [data-theme="light"] .js-plotly-plot .xtick text,
+    [data-theme="light"] .js-plotly-plot .ytick text,
+    [data-theme="light"] .js-plotly-plot .legendtext,
+    [data-theme="light"] .js-plotly-plot .gtitle,
+    [data-theme="light"] .js-plotly-plot text.title,
+    [data-theme="light"] .js-plotly-plot .annotation-text,
+    .stApp[data-theme="light"] .js-plotly-plot text {
+        fill: #1E293B !important;
     }
 
     /* Gradient Hero Banner */
@@ -771,42 +827,49 @@ with st.sidebar:
     
     st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
     
-    # 5. Compact, High-Visibility Historical Date Inspector (Expanded by Default)
-    with st.expander("🔎 Historical Date Inspector", expanded=True):
-        min_date = df["Date"].min().to_pydatetime()
-        max_date = df["Date"].max().to_pydatetime()
-        selected_inspect_date = st.date_input(
-            "Jump to Trading Day",
-            value=max_date,
-            min_value=min_date,
-            max_value=max_date,
-            label_visibility="collapsed"
-        )
+    # 5. Clean, Integrated Historical Date Inspector Widget Card (No Clunky Expander)
+    min_date = df["Date"].min().to_pydatetime()
+    max_date = df["Date"].max().to_pydatetime()
+
+    st.markdown("""
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:2px; padding:0 2px;">
+        <span style="font-size:0.68rem; font-weight:800; color:#475569; letter-spacing:0.06em; text-transform:uppercase;">📅 Historical Inspector</span>
+        <span style="font-size:0.62rem; font-weight:700; color:#2563EB; background:#EFF6FF; border:1px solid #BFDBFE; padding:1px 5px; border-radius:4px;">Lookup</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+    selected_inspect_date = st.date_input(
+        "Jump to Trading Day",
+        value=max_date,
+        min_value=min_date,
+        max_value=max_date,
+        label_visibility="collapsed"
+    )
+    
+    match_row = df[df["Date"].dt.date == selected_inspect_date]
+    if not match_row.empty:
+        r = match_row.iloc[0]
+        is_ret_pos = r['Daily_Return'] >= 0
+        ret_color = "#15803D" if is_ret_pos else "#B91C1C"
+        ret_bg = "#DCFCE7" if is_ret_pos else "#FEE2E2"
+        ret_icon = "↗" if is_ret_pos else "↘"
         
-        match_row = df[df["Date"].dt.date == selected_inspect_date]
-        if not match_row.empty:
-            r = match_row.iloc[0]
-            is_ret_pos = r['Daily_Return'] >= 0
-            ret_color = "#15803D" if is_ret_pos else "#B91C1C"
-            ret_bg = "#DCFCE7" if is_ret_pos else "#FEE2E2"
-            ret_icon = "↗" if is_ret_pos else "↘"
-            
-            st.markdown(f"""
-            <div style="background:#F8FAFC; border:1.5px solid #CBD5E1; border-radius:10px; padding:10px 12px; font-size:0.75rem; margin-top:8px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <span style="font-weight:800; color:#0F172A; font-size:0.78rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
-                    <span style="background:{ret_bg}; color:{ret_color}; padding:2px 6px; border-radius:5px; font-weight:800; font-size:0.7rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
-                    <span style="color:#64748B;">Close:</span> <b style="color:#1D4ED8; font-family:'JetBrains Mono', monospace; font-size:0.82rem;">₹{r['Close']:.2f}</b>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span style="color:#64748B;">Range:</span> <span style="font-weight:600; color:#334155;">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
-                </div>
+        st.markdown(f"""
+        <div style="background:#FFFFFF; border:1.5px solid #CBD5E1; border-radius:8px; padding:7px 10px; font-size:0.73rem; margin-top:-6px; margin-bottom:4px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                <span style="font-weight:800; color:#0F172A; font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
+                <span style="background:{ret_bg}; color:{ret_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.68rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
             </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown("""<div style="background:#FEF2F2; color:#991B1B; border-radius:6px; padding:6px; font-size:0.75rem; text-align:center;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                <span style="color:#64748B;">Close:</span> <b style="color:#1D4ED8; font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+                <span style="color:#64748B;">Range:</span> <span style="font-weight:600; color:#334155;">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""<div style="background:#FEF2F2; color:#991B1B; border-radius:6px; padding:6px; font-size:0.75rem; text-align:center; margin-top:-4px; margin-bottom:4px;">⚠️ Weekend / Holiday (Closed)</div>""", unsafe_allow_html=True)
 
     # 6. Compact Data Export Button
     csv_bytes = df.to_csv(index=False).encode('utf-8')
@@ -888,39 +951,39 @@ if "Executive" in menu:
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["Close"],
             mode="lines", name="Live Close Price (₹)",
-            line=dict(color="#38BDF8", width=2.5),
+            line=dict(color="#2563EB", width=2.8),
             hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["SMA_20"],
             mode="lines", name="SMA 20",
-            line=dict(color="#60A5FA", width=1.8, dash="dash"),
+            line=dict(color="#D97706", width=2, dash="dash"),
             hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["SMA_50"],
             mode="lines", name="SMA 50",
-            line=dict(color="#F59E0B", width=1.8, dash="dot"),
+            line=dict(color="#7C3AED", width=2, dash="dot"),
             hovertemplate="<b>SMA 50:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
+            font=dict(family="Inter, sans-serif"),
             hovermode="x unified",
             xaxis=dict(
-                title=dict(text="Trading Session Date", font=dict(color="#CBD5E1", size=12)),
-                tickfont=dict(color="#CBD5E1", size=11),
-                gridcolor="rgba(255, 255, 255, 0.08)",
-                zerolinecolor="rgba(255, 255, 255, 0.12)"
+                title=dict(text="Trading Session Date", font=dict(size=12)),
+                tickfont=dict(size=11),
+                gridcolor="rgba(148, 163, 184, 0.2)",
+                zerolinecolor="rgba(148, 163, 184, 0.25)"
             ),
             yaxis=dict(
-                title=dict(text="Stock Price (₹ INR)", font=dict(color="#CBD5E1", size=12)),
-                tickfont=dict(color="#CBD5E1", size=11),
-                gridcolor="rgba(255, 255, 255, 0.08)",
-                zerolinecolor="rgba(255, 255, 255, 0.12)"
+                title=dict(text="Stock Price (₹ INR)", font=dict(size=12)),
+                tickfont=dict(size=11),
+                gridcolor="rgba(148, 163, 184, 0.2)",
+                zerolinecolor="rgba(148, 163, 184, 0.25)"
             ),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=12)),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(size=12)),
             margin=dict(l=20, r=20, t=10, b=20),
             height=460
         )
@@ -939,33 +1002,33 @@ if "Executive" in menu:
             fig_dash.add_trace(go.Scatter(
                 x=test_dates, y=actual,
                 mode="lines", name="Actual Close Price (₹)",
-                line=dict(color="#38BDF8", width=2.5),
+                line=dict(color="#2563EB", width=2.8),
                 hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Actual Close:</b> ₹%{y:.2f}<extra></extra>"
             ))
             fig_dash.add_trace(go.Scatter(
                 x=test_dates, y=gru_preds,
                 mode="lines", name="GRU Forecast (Selected Model)",
-                line=dict(color="#10B981", width=2, dash="dash"),
+                line=dict(color="#059669", width=2.2, dash="dash"),
                 hovertemplate="<b>GRU Forecast:</b> ₹%{y:.2f}<extra></extra>"
             ))
             fig_dash.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#E2E8F0", family="Inter, sans-serif"),
+                font=dict(family="Inter, sans-serif"),
                 hovermode="x unified",
                 xaxis=dict(
-                    title=dict(text="Trading Session Date", font=dict(color="#CBD5E1", size=12)),
-                    tickfont=dict(color="#CBD5E1", size=11),
-                    gridcolor="rgba(255, 255, 255, 0.08)",
-                    zerolinecolor="rgba(255, 255, 255, 0.12)"
+                    title=dict(text="Trading Session Date", font=dict(size=12)),
+                    tickfont=dict(size=11),
+                    gridcolor="rgba(148, 163, 184, 0.2)",
+                    zerolinecolor="rgba(148, 163, 184, 0.25)"
                 ),
                 yaxis=dict(
-                    title=dict(text="Stock Price (₹ INR)", font=dict(color="#CBD5E1", size=12)),
-                    tickfont=dict(color="#CBD5E1", size=11),
-                    gridcolor="rgba(255, 255, 255, 0.08)",
-                    zerolinecolor="rgba(255, 255, 255, 0.12)"
+                    title=dict(text="Stock Price (₹ INR)", font=dict(size=12)),
+                    tickfont=dict(size=11),
+                    gridcolor="rgba(148, 163, 184, 0.2)",
+                    zerolinecolor="rgba(148, 163, 184, 0.25)"
                 ),
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=12)),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(size=12)),
                 margin=dict(l=20, r=20, t=10, b=20),
                 height=460
             )
@@ -976,18 +1039,18 @@ if "Executive" in menu:
     with ch1:
         st.markdown("#### 📈 Multi-Timeframe Trend Crossover")
         fig_cross = go.Figure()
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["Close"], name="Close", line=dict(color="#38BDF8", width=1.8)))
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_20"], name="SMA 20 (Short-term)", line=dict(color="#2563EB", width=1.5)))
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_50"], name="SMA 50 (Medium-term)", line=dict(color="#F59E0B", width=1.5)))
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_100"], name="SMA 100 (Long-term)", line=dict(color="#EF4444", width=1.8)))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["Close"], name="Close", line=dict(color="#2563EB", width=2.2)))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_20"], name="SMA 20 (Short-term)", line=dict(color="#0284C7", width=1.6)))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_50"], name="SMA 50 (Medium-term)", line=dict(color="#D97706", width=1.6)))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_100"], name="SMA 100 (Long-term)", line=dict(color="#DC2626", width=1.8)))
         fig_cross.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
+            font=dict(family="Inter, sans-serif"),
             hovermode="x unified",
-            xaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
-            yaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=11)),
+            xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+            yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(size=11)),
             margin=dict(l=10, r=10, t=10, b=20),
             height=340
         )
@@ -999,16 +1062,17 @@ if "Executive" in menu:
         fig_risk.add_trace(go.Scatter(
             x=df["Date"], y=df["Volatility_20"],
             fill="tozeroy",
-            line=dict(color="#A78BFA", width=2),
+            line=dict(color="#7C3AED", width=2.2),
+            fillcolor="rgba(124, 58, 237, 0.18)",
             name="20d Volatility (%)"
         ))
         fig_risk.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
+            font=dict(family="Inter, sans-serif"),
             hovermode="x unified",
-            xaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
-            yaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
+            xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+            yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
             yaxis_title="Volatility (%)",
             margin=dict(l=10, r=10, t=10, b=20),
             height=340
@@ -1211,16 +1275,16 @@ elif "Candlestick" in menu:
     fig_candle.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#E2E8F0", family="Inter, sans-serif"),
+        font=dict(family="Inter, sans-serif"),
         xaxis_rangeslider_visible=False,
         hovermode="x unified",
-        xaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
-        xaxis2=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
-        yaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1"), title=dict(text="Price (₹ INR)", font=dict(color="#CBD5E1"))),
-        yaxis2=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1"), title=dict(text="Return %", font=dict(color="#CBD5E1"))),
+        xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+        xaxis2=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+        yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)", title=dict(text="Price (₹ INR)")),
+        yaxis2=dict(gridcolor="rgba(148, 163, 184, 0.2)", title=dict(text="Return %")),
         margin=dict(l=15, r=15, t=10, b=10),
         height=520,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=12))
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(size=12))
     )
     st.plotly_chart(fig_candle, use_container_width=True)
 
@@ -1272,9 +1336,13 @@ elif "Benchmark" in menu:
             fig_loss.add_trace(go.Scatter(y=gru_h.get("loss", []), mode="lines", name="GRU Train Loss", line=dict(color="#EF4444")))
             fig_loss.add_trace(go.Scatter(y=gru_h.get("val_loss", []), mode="lines", name="GRU Val Loss", line=dict(color="#EF4444", dash="dash")))
             fig_loss.update_layout(
-                template="plotly_white",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(family="Inter, sans-serif"),
                 xaxis_title="Epoch",
                 yaxis_title="Mean Squared Error",
+                xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+                yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
                 margin=dict(l=10, r=10, t=10, b=20),
                 height=340
@@ -1294,9 +1362,13 @@ elif "Benchmark" in menu:
             fig_err.add_trace(go.Histogram(x=actual - gru_p, name="GRU Residuals", marker_color="#10B981", opacity=0.6, nbinsx=40))
             fig_err.update_layout(
                 barmode="overlay",
-                template="plotly_white",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(family="Inter, sans-serif"),
                 xaxis_title="Error in ₹ INR (Actual - Predicted)",
                 yaxis_title="Count",
+                xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+                yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
                 margin=dict(l=10, r=10, t=10, b=20),
                 height=340
@@ -1417,14 +1489,14 @@ elif "Forecast" in menu or "Target" in menu:
 
         fig_proj = go.Figure()
         
-        # Trailing Historical/Live Close - Vibrant Sky Blue for high dark-mode contrast
+        # Trailing Historical/Live Close - High Contrast Royal Blue
         fig_proj.add_trace(go.Scatter(
             x=tail_df["Date"],
             y=tail_df["Close"],
             mode="lines+markers",
             name="Recent Actual Close",
-            line=dict(color="#38BDF8", width=3),
-            marker=dict(size=6, color="#38BDF8", line=dict(color="#FFFFFF", width=1.5)),
+            line=dict(color="#2563EB", width=2.8),
+            marker=dict(size=6, color="#2563EB", line=dict(color="#FFFFFF", width=1.5)),
             hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
         ))
 
@@ -1435,7 +1507,7 @@ elif "Forecast" in menu or "Target" in menu:
                 y=tail_df["SMA_20"],
                 mode="lines",
                 name="20-Day SMA",
-                line=dict(color="#F59E0B", width=2, dash="dash"),
+                line=dict(color="#D97706", width=2, dash="dash"),
                 hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
             ))
 
@@ -1447,7 +1519,7 @@ elif "Forecast" in menu or "Target" in menu:
             y=bridge_y,
             mode="lines",
             name="Forecast Trajectory",
-            line=dict(color=signal_color, width=3.5, dash="dash"),
+            line=dict(color=signal_color, width=3.2, dash="dash"),
             showlegend=False
         ))
 
@@ -1460,26 +1532,26 @@ elif "Forecast" in menu or "Target" in menu:
             marker=dict(size=16, color=signal_color, symbol="star", line=dict(color="white", width=2.5)),
             text=[f" 🎯 <b>₹{sel_pred:.2f}</b><br>({pct_sel:+.2f}%)"],
             textposition="top center",
-            textfont=dict(size=13, color="#FFFFFF", family="JetBrains Mono"),
+            textfont=dict(size=13, color=signal_color, family="JetBrains Mono"),
             hovertemplate=f"<b>Forecast Session (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Predicted:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
         ))
 
         fig_proj.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
+            font=dict(family="Inter, sans-serif"),
             hovermode="x unified",
             xaxis=dict(
-                title=dict(text="Trading Session Date", font=dict(color="#CBD5E1", size=12)),
-                tickfont=dict(color="#CBD5E1", size=11),
-                gridcolor="rgba(255, 255, 255, 0.08)",
-                zerolinecolor="rgba(255, 255, 255, 0.12)"
+                title=dict(text="Trading Session Date", font=dict(size=12)),
+                tickfont=dict(size=11),
+                gridcolor="rgba(148, 163, 184, 0.2)",
+                zerolinecolor="rgba(148, 163, 184, 0.25)"
             ),
             yaxis=dict(
-                title=dict(text="Price (₹ INR)", font=dict(color="#CBD5E1", size=12)),
-                tickfont=dict(color="#CBD5E1", size=11),
-                gridcolor="rgba(255, 255, 255, 0.08)",
-                zerolinecolor="rgba(255, 255, 255, 0.12)"
+                title=dict(text="Price (₹ INR)", font=dict(size=12)),
+                tickfont=dict(size=11),
+                gridcolor="rgba(148, 163, 184, 0.2)",
+                zerolinecolor="rgba(148, 163, 184, 0.25)"
             ),
             legend=dict(
                 orientation="h",
@@ -1487,7 +1559,7 @@ elif "Forecast" in menu or "Target" in menu:
                 y=1.02,
                 xanchor="center",
                 x=0.5,
-                font=dict(color="#F1F5F9", size=12)
+                font=dict(size=12)
             ),
             margin=dict(l=10, r=10, t=10, b=10),
             height=370
@@ -1513,7 +1585,7 @@ elif "Forecast" in menu or "Target" in menu:
             number={
                 'prefix': "₹",
                 'valueformat': ".2f",
-                'font': {'size': 32, 'color': '#FFFFFF', 'family': 'JetBrains Mono'}
+                'font': {'size': 32, 'color': signal_color, 'family': 'JetBrains Mono'}
             },
             gauge={
                 'axis': {
@@ -1521,7 +1593,7 @@ elif "Forecast" in menu or "Target" in menu:
                     'tickwidth': 1.5,
                     'tickcolor': "#94A3B8",
                     'tickprefix': "₹",
-                    'tickfont': {'color': "#E2E8F0", 'size': 12}
+                    'tickfont': {'color': "#64748B", 'size': 11}
                 },
                 'bar': {'color': signal_color, 'thickness': 0.35},
                 'bgcolor': "rgba(255, 255, 255, 0.06)",
@@ -1532,7 +1604,7 @@ elif "Forecast" in menu or "Target" in menu:
                     {'range': [latest_close, latest_close + range_span], 'color': 'rgba(16, 185, 129, 0.35)'}
                 ],
                 'threshold': {
-                    'line': {'color': "#FFFFFF", 'width': 3.5},
+                    'line': {'color': "#2563EB", 'width': 3.5},
                     'thickness': 0.85,
                     'value': latest_close
                 }
