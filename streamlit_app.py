@@ -22,7 +22,7 @@ st.set_page_config(
     page_title="ADANIPORTS AI | Deep Learning Terminal",
     page_icon="📈",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="auto"
 )
 
 # 2. Advanced FinTech Design System
@@ -76,10 +76,32 @@ st.markdown("""
         }
     }
 
-    /* Ultra-Clean Modern Sidebar Styling */
-    section[data-testid="stSidebar"] {
-        background-color: #F8FAFC !important;
-        border-right: 1px solid #E2E8F0 !important;
+    /* Ensure Streamlit's native sidebar close (X) and collapse arrows are always visible & accessible on mobile */
+    [data-testid="collapsedControl"],
+    button[kind="header"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 999999 !important;
+        color: #0F172A !important;
+    }
+
+    /* On mobile, keep sidebar width comfortable and ensure close button is prominent */
+    @media (max-width: 768px) {
+        section[data-testid="stSidebar"] {
+            width: 82vw !important;
+            min-width: 280px !important;
+            box-shadow: 4px 0 24px rgba(0,0,0,0.25) !important;
+        }
+
+        /* Prominent visible close chevron button */
+        button[data-testid="stSidebarCollapseButton"] {
+            display: flex !important;
+            background: #EFF6FF !important;
+            border: 1px solid #BFDBFE !important;
+            border-radius: 8px !important;
+            color: #1D4ED8 !important;
+        }
     }
 
     section[data-testid="stSidebar"] .block-container {
