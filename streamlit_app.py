@@ -154,36 +154,74 @@ st.markdown("""
         }
     }
 
-    section[data-testid="stSidebar"] .block-container {
-        padding-top: 1.5rem !important;
-        padding-left: 1.1rem !important;
-        padding-right: 1.1rem !important;
-        padding-bottom: 1.5rem !important;
+    /* Premium FinTech Sidebar Styling */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%) !important;
+        border-right: 1px solid #E2E8F0 !important;
     }
 
-    /* Sleek Radio Button Navigation styling */
+    section[data-testid="stSidebar"] .block-container {
+        padding-top: 1.2rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-bottom: 1.2rem !important;
+    }
+
+    /* Modern Navigation Chips with Active Accent Indicator */
     div[data-testid="stRadio"] > div {
-        gap: 4px !important;
+        gap: 6px !important;
     }
 
     div[data-testid="stRadio"] label {
         background: #FFFFFF !important;
         border: 1px solid #E2E8F0 !important;
-        border-radius: 8px !important;
-        padding: 8px 12px !important;
-        margin-bottom: 2px !important;
-        transition: all 0.15s ease !important;
+        border-radius: 10px !important;
+        padding: 9px 12px !important;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         font-weight: 600 !important;
-        font-size: 0.84rem !important;
-        color: #334155 !important;
+        font-size: 0.85rem !important;
+        color: #1E293B !important;
         display: flex !important;
         align-items: center !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02) !important;
     }
 
     div[data-testid="stRadio"] label:hover {
-        background: #EFF6FF !important;
+        background: #F0F7FF !important;
         border-color: #93C5FD !important;
         color: #1D4ED8 !important;
+        transform: translateX(3px) !important;
+        box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08) !important;
+    }
+
+    div[data-testid="stRadio"] label[data-checked="true"] {
+        background: #EFF6FF !important;
+        border-color: #3B82F6 !important;
+        color: #1D4ED8 !important;
+        font-weight: 700 !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12) !important;
+    }
+
+    /* Styled Selectbox for Market Feed */
+    div[data-testid="stSelectbox"] div[data-baseweb="select"] {
+        border-radius: 10px !important;
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.04) !important;
+    }
+
+    /* Styled Expander for Date Inspector */
+    div[data-testid="stExpander"] {
+        border: 1px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+        background: #FFFFFF !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.02) !important;
+    }
+
+    div[data-testid="stExpander"] details summary {
+        font-weight: 700 !important;
+        color: #0F172A !important;
+        padding: 8px 12px !important;
+        border-radius: 12px !important;
     }
 
     /* Gradient Hero Banner */
@@ -472,21 +510,23 @@ lstm_model = load_keras_model(LSTM_MODEL_PATH)
 # SIDEBAR CONTROLS & STREAMING SELECTOR (10/10 UX & ZERO SCROLL COMPACT DESIGN)
 # ==============================================================================
 with st.sidebar:
-    # 1. Compact Header Branding with Explicit Close Action
+    # 1. Compact Header Branding with Live Market Status Badge
     st.markdown("""
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:1px solid #E2E8F0;">
-        <div style="display:flex; align-items:center; gap:8px;">
-            <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; font-weight:bold; box-shadow:0 4px 10px rgba(37,99,235,0.3);">
-                ⚡
+    <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px; margin-bottom: 0.85rem; box-shadow: 0 4px 14px rgba(0,0,0,0.12);">
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; font-weight:bold; box-shadow:0 3px 8px rgba(37,99,235,0.4);">
+                    ⚡
+                </div>
+                <div>
+                    <div style="font-size:1.05rem; font-weight:800; color:#FFFFFF; line-height:1.1;">ADANIPORTS AI</div>
+                    <div style="font-size:0.65rem; font-weight:700; color:#60A5FA; text-transform:uppercase; letter-spacing:0.06em;">Quant Terminal</div>
+                </div>
             </div>
-            <div>
-                <div style="font-size:1.05rem; font-weight:800; color:#0F172A; line-height:1.1;">ADANIPORTS AI</div>
-                <div style="font-size:0.65rem; font-weight:700; color:#2563EB; text-transform:uppercase; letter-spacing:0.05em;">Quant Forecaster</div>
-            </div>
+            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.68rem; color:#60A5FA; font-weight:700; text-decoration:none; background:rgba(37,99,235,0.2); border:1px solid rgba(96,165,250,0.3); padding:3px 7px; border-radius:6px;">
+                Yahoo ↗
+            </a>
         </div>
-        <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.68rem; color:#2563EB; font-weight:700; text-decoration:none; background:#EFF6FF; border:1px solid #BFDBFE; padding:3px 7px; border-radius:6px;">
-            Yahoo ↗
-        </a>
     </div>
     """, unsafe_allow_html=True)
 
@@ -535,23 +575,28 @@ with st.sidebar:
     diff_gru = pred_close_gru - latest_close
     pct_diff_gru = (diff_gru / latest_close) * 100.0
 
-    # 3. Compact Live Ticker Banner
+    # 3. Enhanced Real-Time Quote Card in Sidebar
     badge_bg = "#DCFCE7" if day_change_val >= 0 else "#FEE2E2"
     badge_color = "#15803D" if day_change_val >= 0 else "#B91C1C"
+    feed_tag = "LIVE NSE" if is_live_mode else "HISTORICAL"
 
     st.markdown(f"""
-    <div style="background:white; border:1px solid #E2E8F0; border-radius:10px; padding:8px 10px; margin-bottom:0.75rem; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.68rem; font-weight:700; color:#64748B;">NSE: ADANIPORTS</span>
-            <span style="background:{badge_bg}; color:{badge_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.68rem;">{day_change_pct:+.2f}%</span>
+    <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:12px; padding:10px 12px; margin-bottom:0.85rem; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+            <span style="font-size:0.68rem; font-weight:800; color:#475569; letter-spacing:0.04em;">ADANIPORTS.NS</span>
+            <span style="background:{badge_bg}; color:{badge_color}; padding:2px 6px; border-radius:5px; font-weight:800; font-size:0.68rem;">{day_change_pct:+.2f}%</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-top:2px;">
-            <div style="font-size:1.35rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:3px 0;">
+            <div style="font-size:1.45rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">
                 ₹{latest_close:.2f}
             </div>
-            <div style="font-size:0.72rem; color:#64748B;">
+            <div style="font-size:0.75rem; color:#475569;">
                 Target: <b style="color:#2563EB;">₹{pred_close_gru:.2f}</b>
             </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:#64748B; border-top:1px dashed #E2E8F0; padding-top:4px; margin-top:4px;">
+            <span>Feed: <b>{feed_tag}</b></span>
+            <span>Est Delta: <b style="color:{'#15803D' if diff_gru>=0 else '#B91C1C'};">{pct_diff_gru:+.2f}%</b></span>
         </div>
     </div>
     """, unsafe_allow_html=True)
