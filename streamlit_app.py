@@ -716,56 +716,195 @@ elif menu == "🧠 Deep Learning Benchmark":
 # TAB 4: NEXT-DAY FORECASTER TERMINAL
 # ==============================================================================
 elif menu == "🔮 Next-Day Forecast Terminal":
-    st.markdown('<div class="hero-badge">Algorithmic Forecasting Engine</div>', unsafe_allow_html=True)
-    st.markdown("## Next Trading Day Close Price Projection")
-    st.caption(f"Real-time point-estimate prediction powered by {'Yahoo Finance Live Stream' if is_live_mode else 'Historical Sequence'} using 60-day lookback window.")
+    st.markdown('<div class="hero-badge">Deep Learning Time-Series Forecaster</div>', unsafe_allow_html=True)
+    st.markdown("## 🔮 Next-Day Price Target & Signal Terminal")
+    st.caption(f"Real-time point-estimate and directional trajectory powered by {'Yahoo Finance Live Stream' if is_live_mode else 'Historical Sequence'} using the 60-day recurrent memory window.")
     
-    col_m1, col_m2 = st.columns([1, 2])
-    with col_m1:
-        chosen_m = st.radio("Select Prediction Architecture", ["GRU (Recommended - Champion)", "LSTM (Baseline Model)"])
-        sel_pred = pred_close_gru if "GRU" in chosen_m else pred_close_lstm
-        diff_sel = sel_pred - latest_close
-        pct_sel = (diff_sel / latest_close) * 100.0
-        
+    # Model Selector Toggle
+    col_sel_arch, col_mode_info = st.columns([1.5, 2])
+    with col_sel_arch:
+        chosen_m = st.radio(
+            "Select Prediction Engine",
+            ["GRU Engine (Recommended - 98.32% R²)", "LSTM Engine (Baseline - 96.66% R²)"],
+            horizontal=True
+        )
+    with col_mode_info:
+        feed_txt = "🟢 Yahoo Finance Live (NSE: ADANIPORTS)" if is_live_mode else "📁 Curated Historical Benchmark (NSE)"
         st.markdown(f"""
-        <div class="glass-card card-accent-green" style="margin-top:1rem;">
-            <div class="card-label">Predicted Next Close</div>
-            <div class="card-val" style="color:{'#10B981' if diff_sel>=0 else '#EF4444'};">₹{sel_pred:.2f}</div>
-            <div class="card-sub">Delta: <b>{diff_sel:+.2f} ({pct_sel:+.2f}%)</b></div>
+        <div style="background:#F1F5F9; border-radius:10px; padding:10px 14px; font-size:0.82rem; color:#475569; margin-top:10px;">
+            Active Feed: <b style="color:#0F172A;">{feed_txt}</b> | As of: <b>{latest_date_str}</b>
         </div>
         """, unsafe_allow_html=True)
+
+    is_gru_selected = "GRU" in chosen_m
+    sel_pred = pred_close_gru if is_gru_selected else pred_close_lstm
+    diff_sel = sel_pred - latest_close
+    pct_sel = (diff_sel / latest_close) * 100.0
+    is_bullish = diff_sel >= 0
+    signal_label = "BULLISH UPSIDE" if is_bullish else "BEARISH CORRECTION"
+    signal_color = "#10B981" if is_bullish else "#EF4444"
+    signal_bg = "#DCFCE7" if is_bullish else "#FEE2E2"
+    signal_icon = "↗" if is_bullish else "↘"
+
+    # High-Impact Hero Comparison Cards
+    k1, k2, k3, k4 = st.columns(4)
+    with k1:
+        st.markdown(f"""
+        <div class="glass-card card-accent-blue">
+            <div class="card-label"><span>Current Close</span> <span>📍</span></div>
+            <div class="card-val">₹{latest_close:,.2f}</div>
+            <div class="card-sub">Session: {latest_date_str}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k2:
+        st.markdown(f"""
+        <div class="glass-card card-accent-green" style="background: linear-gradient(135deg, #FFFFFF 0%, {'#F0FDF4' if is_bullish else '#FEF2F2'} 100%);">
+            <div class="card-label"><span>Target Forecast (t+1)</span> <span style="background:{signal_bg}; color:{signal_color}; padding:2px 8px; border-radius:6px; font-weight:800; font-size:0.75rem;">{signal_icon} {pct_sel:+.2f}%</span></div>
+            <div class="card-val" style="color:{signal_color};">₹{sel_pred:,.2f}</div>
+            <div class="card-sub">Expected Delta: <b>{diff_sel:+,.2f} INR</b></div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k3:
+        st.markdown(f"""
+        <div class="glass-card card-accent-purple">
+            <div class="card-label"><span>AI Market Signal</span> <span>🧭</span></div>
+            <div class="card-val" style="font-size:1.35rem; color:{signal_color}; line-height:1.4;">
+                {signal_icon} {signal_label}
+            </div>
+            <div class="card-sub">Engine: {'Stacked GRU' if is_gru_selected else 'Stacked LSTM'}</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with k4:
+        # Confidence Band Calculation (+/- RMSE)
+        model_rmse = 13.99 if is_gru_selected else 19.71
+        conf_low = sel_pred - model_rmse
+        conf_high = sel_pred + model_rmse
+        st.markdown(f"""
+        <div class="glass-card card-accent-amber">
+            <div class="card-label"><span>68% Confidence Range</span> <span>📊</span></div>
+            <div class="card-val" style="font-size:1.25rem; color:#D97706; line-height:1.4;">
+                ₹{conf_low:,.1f} – ₹{conf_high:,.1f}
+            </div>
+            <div class="card-sub">RMSE Uncertainty: ±₹{model_rmse:.2f}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Visual Forecast Trajectory Chart + Speedometer Gauge
+    c_chart, c_gauge = st.columns([1.6, 1])
+
+    with c_chart:
+        st.markdown("#### 📈 Price Sequence & Next-Day Projected Target")
+        st.caption("Trailing 30 trading sessions seamlessly connected to the neural network projection point.")
         
-    with col_m2:
+        # Build 30-day lookback + next-day step
+        tail_df = df.tail(30).copy()
+        next_dt = tail_df["Date"].iloc[-1] + pd.Timedelta(days=1)
+        if next_dt.weekday() >= 5:  # weekend forward to Monday
+            next_dt += pd.Timedelta(days=(7 - next_dt.weekday()))
+
+        fig_proj = go.Figure()
+        
+        # Trailing Historical/Live Close
+        fig_proj.add_trace(go.Scatter(
+            x=tail_df["Date"],
+            y=tail_df["Close"],
+            mode="lines+markers",
+            name="Recent Actual Close",
+            line=dict(color="#0F172A", width=3),
+            marker=dict(size=5, color="#0F172A"),
+            hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
+        ))
+
+        # 20-Day SMA for trend reference
+        if "SMA_20" in tail_df.columns:
+            fig_proj.add_trace(go.Scatter(
+                x=tail_df["Date"],
+                y=tail_df["SMA_20"],
+                mode="lines",
+                name="20-Day SMA",
+                line=dict(color="#94A3B8", width=1.5, dash="dot"),
+                hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
+            ))
+
+        # Dotted Projective Bridge Line from Last Close to Forecast Point
+        bridge_x = [tail_df["Date"].iloc[-1], next_dt]
+        bridge_y = [latest_close, sel_pred]
+        fig_proj.add_trace(go.Scatter(
+            x=bridge_x,
+            y=bridge_y,
+            mode="lines",
+            name="Forecast Trajectory",
+            line=dict(color=signal_color, width=3, dash="dash"),
+            showlegend=False
+        ))
+
+        # Distinct Forecast Target Marker
+        fig_proj.add_trace(go.Scatter(
+            x=[next_dt],
+            y=[sel_pred],
+            mode="markers+text",
+            name=f"Target: ₹{sel_pred:.2f}",
+            marker=dict(size=14, color=signal_color, symbol="star", line=dict(color="white", width=2)),
+            text=[f" 🎯 <b>₹{sel_pred:.2f}</b><br>({pct_sel:+.2f}%)"],
+            textposition="top center",
+            textfont=dict(size=12, color=signal_color),
+            hovertemplate=f"<b>Forecast Session (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Predicted:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
+        ))
+
+        fig_proj.update_layout(
+            template="plotly_white",
+            hovermode="x unified",
+            xaxis_title="Trading Session Date",
+            yaxis_title="Price (₹ INR)",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+            margin=dict(l=10, r=10, t=10, b=10),
+            height=370
+        )
+        st.plotly_chart(fig_proj, use_container_width=True)
+
+    with c_gauge:
+        st.markdown("#### 🎯 Target Delta Meter")
+        st.caption(f"Relative target deflection from base close (₹{latest_close:.2f}).")
+        
+        range_span = latest_close * 0.08
         fig_gauge = go.Figure(go.Indicator(
             mode="gauge+number+delta",
             value=sel_pred,
             domain={'x': [0, 1], 'y': [0, 1]},
-            title={'text': f"Next-Day Forecast vs Latest Close (₹{latest_close:.2f})", 'font': {'size': 18, 'weight': 'bold'}},
-            delta={'reference': latest_close, 'increasing': {'color': "#10B981"}, 'decreasing': {'color': "#EF4444"}},
+            delta={'reference': latest_close, 'increasing': {'color': "#10B981"}, 'decreasing': {'color': "#EF4444"}, 'valueformat': "+.2f"},
+            number={'prefix': "₹", 'valueformat': ".2f", 'font': {'size': 26, 'color': '#0F172A', 'family': 'JetBrains Mono'}},
             gauge={
-                'axis': {'range': [latest_close * 0.85, latest_close * 1.15], 'tickwidth': 1, 'tickcolor': "darkblue"},
-                'bar': {'color': "#2563EB"},
-                'bgcolor': "white",
-                'borderwidth': 2,
-                'bordercolor': "#CBD5E1",
+                'axis': {'range': [latest_close - range_span, latest_close + range_span], 'tickwidth': 1, 'tickcolor': "#64748B", 'tickprefix': "₹"},
+                'bar': {'color': signal_color, 'thickness': 0.3},
+                'bgcolor': "#F8FAFC",
+                'borderwidth': 1,
+                'bordercolor': "#E2E8F0",
                 'steps': [
-                    {'range': [latest_close * 0.85, latest_close], 'color': '#FEE2E2'},
-                    {'range': [latest_close, latest_close * 1.15], 'color': '#DCFCE7'}
+                    {'range': [latest_close - range_span, latest_close], 'color': '#FEE2E2'},
+                    {'range': [latest_close, latest_close + range_span], 'color': '#DCFCE7'}
                 ],
                 'threshold': {
                     'line': {'color': "#0F172A", 'width': 3},
-                    'thickness': 0.75,
+                    'thickness': 0.8,
                     'value': latest_close
                 }
             }
         ))
-        fig_gauge.update_layout(height=280, margin=dict(l=20, r=20, t=40, b=20))
+        fig_gauge.update_layout(height=320, margin=dict(l=15, r=15, t=25, b=10))
         st.plotly_chart(fig_gauge, use_container_width=True)
 
-    st.markdown("### 📋 60-Day Lookback Sequence: Recent 10 Trading Days")
+    # 60-Day Lookback Sequence Inspector (Formatted & Collapsible)
+    st.markdown("### 📋 Neural Network Lookback Sequence (Last 10 of 60 Memory Days)")
     display_cols = [c for c in ["Date", "Prev Close", "Open", "High", "Low", "Close", "VWAP", "Daily_Return"] if c in df.columns]
+    
+    formatted_table = df.tail(10)[display_cols].copy()
+    if "Date" in formatted_table.columns:
+        formatted_table["Date"] = pd.to_datetime(formatted_table["Date"]).dt.strftime("%d %b %Y")
+    
     st.dataframe(
-        df.tail(10)[display_cols].style.format({
+        formatted_table.style.format({
             "Prev Close": "₹{:.2f}",
             "Open": "₹{:.2f}",
             "High": "₹{:.2f}",
@@ -774,7 +913,8 @@ elif menu == "🔮 Next-Day Forecast Terminal":
             "VWAP": "₹{:.2f}",
             "Daily_Return": "{:+.2f}%"
         }),
-        use_container_width=True
+        use_container_width=True,
+        hide_index=True
     )
 
 
