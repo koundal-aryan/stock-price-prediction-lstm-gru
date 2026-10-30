@@ -8,13 +8,6 @@
 
 ---
 
-> ### 🚀 Quick Access:
-> * 🌐 **Live Cloud Dashboard (24x7 Online):** **[https://stock-price-prediction-lstm-gru-kfsvz4hfpur9atid684app7.streamlit.app](https://stock-price-prediction-lstm-gru-kfsvz4hfpur9atid684app7.streamlit.app)**
-> * 📊 **Interactive Jupyter Notebook (All Executed Visuals):** [View Notebook with Outputs](notebooks/stock_prediction_analysis.ipynb) | [Open in Google Colab](https://colab.research.google.com/github/koundal-aryan/stock-price-prediction-lstm-gru/blob/main/notebooks/stock_prediction_analysis.ipynb)
-> * 💻 **Local Flask Dashboard (When running locally):** [http://127.0.0.1:5001/dashboard](http://127.0.0.1:5001/dashboard)
-
----
-
 ## 1. Introduction
 This project implements an end-to-end, production-grade Deep Learning system engineered to forecast stock prices using historical time-series data. Specifically centered on **ADANIPORTS (Adani Ports and Special Economic Zone Ltd.)**, the application processes 13.5 years of market transactions (2007–2021) to forecast the next trading day's closing price using two premier recurrent neural network architectures: **LSTM (Long Short-Term Memory)** and **GRU (Gated Recurrent Unit)**.
 
