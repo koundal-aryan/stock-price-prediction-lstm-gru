@@ -206,13 +206,17 @@ st.markdown("""
     }
 
     /* Completely hide clumsy radio input circles for a clean, humanized tab look */
-    div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) > div:first-child,
+    div[data-testid="stRadio"] [role="radiogroup"] label > div:not([data-testid="stMarkdownContainer"]),
+    div[data-testid="stRadio"] [role="radiogroup"] label input,
+    div[data-testid="stRadio"] [role="radiogroup"] label [data-baseweb="radio"] > div:not([data-testid="stMarkdownContainer"]),
     div[data-testid="stRadio"] input[type="radio"] {
         display: none !important;
+        visibility: hidden !important;
         width: 0 !important;
         height: 0 !important;
         opacity: 0 !important;
+        position: absolute !important;
+        pointer-events: none !important;
     }
 
     /* High-contrast, clean typography for navigation text */
@@ -883,27 +887,39 @@ if "Executive" in menu:
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["Close"],
             mode="lines", name="Live Close Price (₹)",
-            line=dict(color="#0F172A", width=2.5),
+            line=dict(color="#38BDF8", width=2.5),
             hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["SMA_20"],
             mode="lines", name="SMA 20",
-            line=dict(color="#2563EB", width=1.5, dash="dash"),
+            line=dict(color="#60A5FA", width=1.8, dash="dash"),
             hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["SMA_50"],
             mode="lines", name="SMA 50",
-            line=dict(color="#F59E0B", width=1.5, dash="dot"),
+            line=dict(color="#F59E0B", width=1.8, dash="dot"),
             hovertemplate="<b>SMA 50:</b> ₹%{y:.2f}<extra></extra>"
         ))
         fig_dash.update_layout(
-            template="plotly_white",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
             hovermode="x unified",
-            xaxis_title="Trading Session Date",
-            yaxis_title="Stock Price (₹ INR)",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+            xaxis=dict(
+                title=dict(text="Trading Session Date", font=dict(color="#CBD5E1", size=12)),
+                tickfont=dict(color="#CBD5E1", size=11),
+                gridcolor="rgba(255, 255, 255, 0.08)",
+                zerolinecolor="rgba(255, 255, 255, 0.12)"
+            ),
+            yaxis=dict(
+                title=dict(text="Stock Price (₹ INR)", font=dict(color="#CBD5E1", size=12)),
+                tickfont=dict(color="#CBD5E1", size=11),
+                gridcolor="rgba(255, 255, 255, 0.08)",
+                zerolinecolor="rgba(255, 255, 255, 0.12)"
+            ),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=12)),
             margin=dict(l=20, r=20, t=10, b=20),
             height=460
         )
@@ -922,7 +938,7 @@ if "Executive" in menu:
             fig_dash.add_trace(go.Scatter(
                 x=test_dates, y=actual,
                 mode="lines", name="Actual Close Price (₹)",
-                line=dict(color="#0F172A", width=2.5),
+                line=dict(color="#38BDF8", width=2.5),
                 hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Actual Close:</b> ₹%{y:.2f}<extra></extra>"
             ))
             fig_dash.add_trace(go.Scatter(
@@ -932,11 +948,23 @@ if "Executive" in menu:
                 hovertemplate="<b>GRU Forecast:</b> ₹%{y:.2f}<extra></extra>"
             ))
             fig_dash.update_layout(
-                template="plotly_white",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font=dict(color="#E2E8F0", family="Inter, sans-serif"),
                 hovermode="x unified",
-                xaxis_title="Trading Session Date",
-                yaxis_title="Stock Price (₹ INR)",
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+                xaxis=dict(
+                    title=dict(text="Trading Session Date", font=dict(color="#CBD5E1", size=12)),
+                    tickfont=dict(color="#CBD5E1", size=11),
+                    gridcolor="rgba(255, 255, 255, 0.08)",
+                    zerolinecolor="rgba(255, 255, 255, 0.12)"
+                ),
+                yaxis=dict(
+                    title=dict(text="Stock Price (₹ INR)", font=dict(color="#CBD5E1", size=12)),
+                    tickfont=dict(color="#CBD5E1", size=11),
+                    gridcolor="rgba(255, 255, 255, 0.08)",
+                    zerolinecolor="rgba(255, 255, 255, 0.12)"
+                ),
+                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=12)),
                 margin=dict(l=20, r=20, t=10, b=20),
                 height=460
             )
@@ -947,14 +975,18 @@ if "Executive" in menu:
     with ch1:
         st.markdown("#### 📈 Multi-Timeframe Trend Crossover")
         fig_cross = go.Figure()
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["Close"], name="Close", line=dict(color="#0F172A", width=1.2), opacity=0.6))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["Close"], name="Close", line=dict(color="#38BDF8", width=1.8)))
         fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_20"], name="SMA 20 (Short-term)", line=dict(color="#2563EB", width=1.5)))
         fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_50"], name="SMA 50 (Medium-term)", line=dict(color="#F59E0B", width=1.5)))
         fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_100"], name="SMA 100 (Long-term)", line=dict(color="#EF4444", width=1.8)))
         fig_cross.update_layout(
-            template="plotly_white",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
             hovermode="x unified",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+            xaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
+            yaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=11)),
             margin=dict(l=10, r=10, t=10, b=20),
             height=340
         )
@@ -966,12 +998,16 @@ if "Executive" in menu:
         fig_risk.add_trace(go.Scatter(
             x=df["Date"], y=df["Volatility_20"],
             fill="tozeroy",
-            line=dict(color="#8B5CF6", width=1.8),
+            line=dict(color="#A78BFA", width=2),
             name="20d Volatility (%)"
         ))
         fig_risk.update_layout(
-            template="plotly_white",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
             hovermode="x unified",
+            xaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
+            yaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
             yaxis_title="Volatility (%)",
             margin=dict(l=10, r=10, t=10, b=20),
             height=340
@@ -1172,14 +1208,18 @@ elif "Candlestick" in menu:
         )
 
     fig_candle.update_layout(
-        template="plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#E2E8F0", family="Inter, sans-serif"),
         xaxis_rangeslider_visible=False,
         hovermode="x unified",
+        xaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
+        xaxis2=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1")),
+        yaxis=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1"), title=dict(text="Price (₹ INR)", font=dict(color="#CBD5E1"))),
+        yaxis2=dict(gridcolor="rgba(255, 255, 255, 0.08)", tickfont=dict(color="#CBD5E1"), title=dict(text="Return %", font=dict(color="#CBD5E1"))),
         margin=dict(l=15, r=15, t=10, b=10),
         height=520,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
-        yaxis_title="Price (₹ INR)",
-        yaxis2_title="Return %"
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(color="#F1F5F9", size=12))
     )
     st.plotly_chart(fig_candle, use_container_width=True)
 
@@ -1376,25 +1416,25 @@ elif "Forecast" in menu or "Target" in menu:
 
         fig_proj = go.Figure()
         
-        # Trailing Historical/Live Close
+        # Trailing Historical/Live Close - Vibrant Sky Blue for high dark-mode contrast
         fig_proj.add_trace(go.Scatter(
             x=tail_df["Date"],
             y=tail_df["Close"],
             mode="lines+markers",
             name="Recent Actual Close",
-            line=dict(color="#0F172A", width=3),
-            marker=dict(size=5, color="#0F172A"),
+            line=dict(color="#38BDF8", width=3),
+            marker=dict(size=6, color="#38BDF8", line=dict(color="#FFFFFF", width=1.5)),
             hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
         ))
 
-        # 20-Day SMA for trend reference
+        # 20-Day SMA for trend reference - Vivid Amber
         if "SMA_20" in tail_df.columns:
             fig_proj.add_trace(go.Scatter(
                 x=tail_df["Date"],
                 y=tail_df["SMA_20"],
                 mode="lines",
                 name="20-Day SMA",
-                line=dict(color="#94A3B8", width=1.5, dash="dot"),
+                line=dict(color="#F59E0B", width=2, dash="dash"),
                 hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
             ))
 
@@ -1406,29 +1446,48 @@ elif "Forecast" in menu or "Target" in menu:
             y=bridge_y,
             mode="lines",
             name="Forecast Trajectory",
-            line=dict(color=signal_color, width=3, dash="dash"),
+            line=dict(color=signal_color, width=3.5, dash="dash"),
             showlegend=False
         ))
 
-        # Distinct Forecast Target Marker
+        # Distinct Forecast Target Marker with Bright Star and Text
         fig_proj.add_trace(go.Scatter(
             x=[next_dt],
             y=[sel_pred],
             mode="markers+text",
             name=f"Target: ₹{sel_pred:.2f}",
-            marker=dict(size=14, color=signal_color, symbol="star", line=dict(color="white", width=2)),
+            marker=dict(size=16, color=signal_color, symbol="star", line=dict(color="white", width=2.5)),
             text=[f" 🎯 <b>₹{sel_pred:.2f}</b><br>({pct_sel:+.2f}%)"],
             textposition="top center",
-            textfont=dict(size=12, color=signal_color),
+            textfont=dict(size=13, color="#FFFFFF", family="JetBrains Mono"),
             hovertemplate=f"<b>Forecast Session (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Predicted:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
         ))
 
         fig_proj.update_layout(
-            template="plotly_white",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
             hovermode="x unified",
-            xaxis_title="Trading Session Date",
-            yaxis_title="Price (₹ INR)",
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
+            xaxis=dict(
+                title=dict(text="Trading Session Date", font=dict(color="#CBD5E1", size=12)),
+                tickfont=dict(color="#CBD5E1", size=11),
+                gridcolor="rgba(255, 255, 255, 0.08)",
+                zerolinecolor="rgba(255, 255, 255, 0.12)"
+            ),
+            yaxis=dict(
+                title=dict(text="Price (₹ INR)", font=dict(color="#CBD5E1", size=12)),
+                tickfont=dict(color="#CBD5E1", size=11),
+                gridcolor="rgba(255, 255, 255, 0.08)",
+                zerolinecolor="rgba(255, 255, 255, 0.12)"
+            ),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="center",
+                x=0.5,
+                font=dict(color="#F1F5F9", size=12)
+            ),
             margin=dict(l=10, r=10, t=10, b=10),
             height=370
         )
@@ -1443,26 +1502,48 @@ elif "Forecast" in menu or "Target" in menu:
             mode="gauge+number+delta",
             value=sel_pred,
             domain={'x': [0, 1], 'y': [0, 1]},
-            delta={'reference': latest_close, 'increasing': {'color': "#10B981"}, 'decreasing': {'color': "#EF4444"}, 'valueformat': "+.2f"},
-            number={'prefix': "₹", 'valueformat': ".2f", 'font': {'size': 26, 'color': '#0F172A', 'family': 'JetBrains Mono'}},
+            delta={
+                'reference': latest_close,
+                'increasing': {'color': "#10B981"},
+                'decreasing': {'color': "#EF4444"},
+                'valueformat': "+.2f",
+                'font': {'size': 18}
+            },
+            number={
+                'prefix': "₹",
+                'valueformat': ".2f",
+                'font': {'size': 32, 'color': '#FFFFFF', 'family': 'JetBrains Mono'}
+            },
             gauge={
-                'axis': {'range': [latest_close - range_span, latest_close + range_span], 'tickwidth': 1, 'tickcolor': "#64748B", 'tickprefix': "₹"},
-                'bar': {'color': signal_color, 'thickness': 0.3},
-                'bgcolor': "#F8FAFC",
-                'borderwidth': 1,
-                'bordercolor': "#E2E8F0",
+                'axis': {
+                    'range': [latest_close - range_span, latest_close + range_span],
+                    'tickwidth': 1.5,
+                    'tickcolor': "#94A3B8",
+                    'tickprefix': "₹",
+                    'tickfont': {'color': "#E2E8F0", 'size': 12}
+                },
+                'bar': {'color': signal_color, 'thickness': 0.35},
+                'bgcolor': "rgba(255, 255, 255, 0.06)",
+                'borderwidth': 1.5,
+                'bordercolor': "rgba(255, 255, 255, 0.15)",
                 'steps': [
-                    {'range': [latest_close - range_span, latest_close], 'color': '#FEE2E2'},
-                    {'range': [latest_close, latest_close + range_span], 'color': '#DCFCE7'}
+                    {'range': [latest_close - range_span, latest_close], 'color': 'rgba(239, 68, 68, 0.35)'},
+                    {'range': [latest_close, latest_close + range_span], 'color': 'rgba(16, 185, 129, 0.35)'}
                 ],
                 'threshold': {
-                    'line': {'color': "#0F172A", 'width': 3},
-                    'thickness': 0.8,
+                    'line': {'color': "#FFFFFF", 'width': 3.5},
+                    'thickness': 0.85,
                     'value': latest_close
                 }
             }
         ))
-        fig_gauge.update_layout(height=320, margin=dict(l=15, r=15, t=25, b=10))
+        fig_gauge.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font=dict(color="#E2E8F0", family="Inter, sans-serif"),
+            height=330,
+            margin=dict(l=15, r=15, t=30, b=10)
+        )
         st.plotly_chart(fig_gauge, use_container_width=True)
 
     # Last 10 Days Lookback Sequence Table with Rich Color Styling
