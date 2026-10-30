@@ -251,14 +251,6 @@ with st.sidebar:
     st.caption(f"**Data Span:** {df['Date'].min().strftime('%d %b %Y')} – {df['Date'].max().strftime('%d %b %Y')}")
     st.caption(f"**Sessions Evaluated:** {len(df):,} Days")
     st.caption(f"**Best Architecture:** GRU (R² = 0.9832)")
-    
-    st.markdown("---")
-    st.markdown("""
-    <div style="background:#F1F5F9; border-radius:10px; padding:10px; font-size:0.78rem; color:#475569;">
-        🟢 <b>Cloud Status:</b> Online 24/7<br>
-        🎓 <b>Capstone:</b> MBA Data Science & AI
-    </div>
-    """, unsafe_allow_html=True)
 
 latest_close = float(df["Close"].iloc[-1])
 latest_date = df["Date"].iloc[-1].strftime("%d %B %Y")
