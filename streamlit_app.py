@@ -1544,7 +1544,7 @@ elif "Forecast" in menu or "Target" in menu:
         ))
 
         # Clean non-overlapping Callout Annotation Badge (Universal Contrast in Light & Dark Mode)
-        arrow_ay = -42 if is_bullish else 42
+        arrow_ay = -40 if is_bullish else 40
         fig_proj.add_annotation(
             x=next_dt,
             y=sel_pred,
@@ -1554,18 +1554,19 @@ elif "Forecast" in menu or "Target" in menu:
             arrowsize=1,
             arrowwidth=1.8,
             arrowcolor=signal_color,
-            ax=0,
+            ax=-65,
             ay=arrow_ay,
-            bgcolor="rgba(15, 23, 42, 0.92)",
+            align="center",
+            bgcolor="rgba(15, 23, 42, 0.94)",
             bordercolor=signal_color,
             borderwidth=1.5,
-            borderpad=6,
+            borderpad=8,
             font=dict(family="JetBrains Mono, monospace", size=12, color=signal_color),
             opacity=0.98
         )
 
         x_min = tail_df["Date"].iloc[0]
-        x_max = next_dt + pd.Timedelta(days=3)
+        x_max = next_dt + pd.Timedelta(days=4)
         y_vals = list(tail_df["Close"].values) + [sel_pred, latest_close]
         y_min = min(y_vals) - (latest_close * 0.02)
         y_max = max(y_vals) + (latest_close * 0.02)
@@ -1597,7 +1598,7 @@ elif "Forecast" in menu or "Target" in menu:
                 x=0.5,
                 font=dict(size=12)
             ),
-            margin=dict(l=10, r=15, t=10, b=10),
+            margin=dict(l=10, r=40, t=10, b=10),
             height=370
         )
         st.plotly_chart(fig_proj, use_container_width=True)
