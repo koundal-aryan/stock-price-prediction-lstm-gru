@@ -375,14 +375,13 @@ st.markdown("""
     .js-plotly-plot .gtitle,
     .js-plotly-plot .xtitle,
     .js-plotly-plot .ytitle,
-    .js-plotly-plot text.title,
-    .js-plotly-plot .annotation-text {
+    .js-plotly-plot text.title {
         fill: var(--text-color, currentColor) !important;
         font-family: 'Inter', -apple-system, sans-serif !important;
         font-weight: 600 !important;
     }
 
-    /* Preserve rich colors for gauge delta indicators (Red on negative, Green on positive) */
+    /* Preserve rich colors for gauge delta indicators and custom callout annotations */
     .js-plotly-plot g.delta text,
     .js-plotly-plot g.delta path,
     .js-plotly-plot .delta-text {
@@ -1544,8 +1543,8 @@ elif "Forecast" in menu or "Target" in menu:
             hovertemplate=f"<b>Forecast Target (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Projected:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
         ))
 
-        # Clean non-overlapping Callout Annotation Badge
-        arrow_ay = -38 if is_bullish else 38
+        # Clean non-overlapping Callout Annotation Badge (Universal Contrast in Light & Dark Mode)
+        arrow_ay = -42 if is_bullish else 42
         fig_proj.add_annotation(
             x=next_dt,
             y=sel_pred,
@@ -1557,7 +1556,7 @@ elif "Forecast" in menu or "Target" in menu:
             arrowcolor=signal_color,
             ax=0,
             ay=arrow_ay,
-            bgcolor="white",
+            bgcolor="rgba(15, 23, 42, 0.92)",
             bordercolor=signal_color,
             borderwidth=1.5,
             borderpad=6,
