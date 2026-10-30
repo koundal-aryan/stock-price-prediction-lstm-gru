@@ -351,75 +351,119 @@ st.markdown("""
         display: block !important;
     }
 
-    /* Option Cards - Full width, row flex layout with Sleek Slate */
+    /* Keyframes for Fluid Bubble Physics */
+    @keyframes bubblePulse {
+        0% { transform: scale(0.96) translateX(0); }
+        45% { transform: scale(1.025) translateX(4px); }
+        100% { transform: scale(1) translateX(3px); }
+    }
+
+    @keyframes bubbleDot {
+        0% { transform: scale(0.5); opacity: 0.6; }
+        60% { transform: scale(1.3); opacity: 1; }
+        100% { transform: scale(1); }
+    }
+
+    /* Option Cards - Full width with Bubble Physics */
     div[data-testid="stRadio"] div[role="radiogroup"] > label,
     div[data-testid="stRadio"] label {
         background: var(--sb-radio-bg) !important;
-        border: 1px solid var(--sb-radio-border) !important;
-        border-radius: 9px !important;
-        padding: 6px 10px !important;
+        border: 1.5px solid var(--sb-radio-border) !important;
+        border-radius: 12px !important;
+        padding: 7px 12px !important;
         margin: 0 !important;
         width: 100% !important;
         min-width: 100% !important;
         box-sizing: border-box !important;
-        transition: all 0.15s ease !important;
+        transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
         display: flex !important;
         flex-direction: row !important;
         align-items: center !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
         cursor: pointer !important;
+        position: relative !important;
+        overflow: hidden !important;
     }
 
-    /* Replace Streamlit's red radio button completely with Royal Blue */
-    div[data-testid="stRadio"] input[type="radio"] {
-        accent-color: #2563EB !important;
-    }
-
-    /* BaseWeb Radio Container */
-    div[data-testid="stRadio"] [data-baseweb="radio"] {
-        margin-right: 8px !important;
-        flex-shrink: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-    }
-
-    /* Unselected radio button: crisp border with adaptive center */
-    div[data-testid="stRadio"] [data-baseweb="radio"] > div {
-        border: 1.5px solid var(--sb-radio-dot-border) !important;
-        background-color: var(--sb-radio-dot-bg) !important;
-        width: 14px !important;
-        height: 14px !important;
-        min-width: 14px !important;
-        border-radius: 50% !important;
-        box-sizing: border-box !important;
-    }
-
-    div[data-testid="stRadio"] [data-baseweb="radio"] > div > div {
-        background-color: transparent !important;
-    }
-
-    /* Selected radio button: Royal Blue indicator with white center dot */
-    div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div,
-    div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div {
+    /* While sliding / hovering over items: Bubble Expand Effect */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
         border-color: #3B82F6 !important;
-        background-color: #2563EB !important;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4) !important;
+        transform: translateX(4px) scale(1.02) !important;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.16) !important;
     }
 
-    div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div > div,
-    div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div > div {
-        background-color: #FFFFFF !important;
-        width: 6px !important;
-        height: 6px !important;
-        border-radius: 50% !important;
-    }
-
-    /* Selected Card Active State */
+    /* Selected Card: Active Bubble Pop State */
     div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked),
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] {
         background: var(--sb-radio-active-bg) !important;
-        border: 1px solid var(--sb-radio-active-border) !important;
-        box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2) !important;
+        border: 1.5px solid var(--sb-radio-active-border) !important;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.22) !important;
+        transform: translateX(3px) !important;
+        animation: bubblePulse 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    /* Completely hide browser default radio inputs to prevent red dots */
+    div[data-testid="stRadio"] input[type="radio"] {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 0 !important;
+        height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        pointer-events: none !important;
+    }
+
+    /* Radio Outer Circle Container */
+    div[data-testid="stRadio"] [data-baseweb="radio"],
+    div[data-testid="stRadio"] label > div > div:first-of-type,
+    div[data-testid="stRadio"] label div[class*="e1dm8mpf4"] {
+        margin-right: 9px !important;
+        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    /* Radio Circle: Unselected State */
+    div[data-testid="stRadio"] [data-baseweb="radio"] > div,
+    div[data-testid="stRadio"] label > div > div:first-of-type,
+    div[data-testid="stRadio"] label div[class*="e1dm8mpf4"] {
+        border: 2px solid var(--sb-radio-dot-border) !important;
+        background-color: var(--sb-radio-dot-bg) !important;
+        width: 16px !important;
+        height: 16px !important;
+        min-width: 16px !important;
+        border-radius: 50% !important;
+        box-sizing: border-box !important;
+        transition: all 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    /* Selected Radio Circle: Royal Blue Bubble with White Center Dot (ZERO RED) */
+    div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div,
+    div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div,
+    div[data-testid="stRadio"] label:has(input:checked) > div > div:first-of-type,
+    div[data-testid="stRadio"] label[data-checked="true"] > div > div:first-of-type,
+    div[data-testid="stRadio"] label:has(input:checked) div[class*="e1dm8mpf4"],
+    div[data-testid="stRadio"] label[data-checked="true"] div[class*="e1dm8mpf4"] {
+        border: 2px solid #2563EB !important;
+        background-color: #2563EB !important;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.28) !important;
+        animation: bubbleDot 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    }
+
+    /* White Center Dot */
+    div[data-testid="stRadio"] label:has(input:checked) [data-baseweb="radio"] > div > div,
+    div[data-testid="stRadio"] label[data-checked="true"] [data-baseweb="radio"] > div > div,
+    div[data-testid="stRadio"] label:has(input:checked) > div > div:first-of-type > div,
+    div[data-testid="stRadio"] label[data-checked="true"] > div > div:first-of-type > div,
+    div[data-testid="stRadio"] label:has(input:checked) div[class*="e1dm8mpf5"],
+    div[data-testid="stRadio"] label[data-checked="true"] div[class*="e1dm8mpf5"] {
+        background-color: #FFFFFF !important;
+        width: 6px !important;
+        height: 6px !important;
+        min-width: 6px !important;
+        border-radius: 50% !important;
+        display: block !important;
     }
 
     /* Option Text Container: Always 100% visible, crisp typography */
@@ -446,12 +490,6 @@ st.markdown("""
     div[data-testid="stRadio"] div[role="radiogroup"] label[data-checked="true"] [data-testid="stMarkdownContainer"] p {
         color: var(--sb-radio-active-text) !important;
         font-weight: 800 !important;
-    }
-
-    /* Subtle hover interaction */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
-        border-color: #3B82F6 !important;
-        transform: translateX(2px) !important;
     }
 
     /* Styled Selectbox for Market Feed - Sleek Pill */
