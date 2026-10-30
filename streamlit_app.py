@@ -154,22 +154,27 @@ st.markdown("""
         }
     }
 
-    /* Premium FinTech Sidebar Styling */
+    /* Premium FinTech Sidebar Styling - Compact Zero Scroll Design */
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%) !important;
         border-right: 1px solid #E2E8F0 !important;
     }
 
     section[data-testid="stSidebar"] .block-container {
-        padding-top: 1.2rem !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-        padding-bottom: 1.2rem !important;
+        padding-top: 0.15rem !important;
+        padding-left: 0.8rem !important;
+        padding-right: 0.8rem !important;
+        padding-bottom: 0.5rem !important;
     }
 
-    /* Modern Humanized Navigation Segmented Cards */
+    /* Shift content higher up to utilize top screen space */
+    section[data-testid="stSidebar"] .block-container > div:first-child {
+        margin-top: -0.65rem !important;
+    }
+
+    /* Navigation Radio Container */
     div[data-testid="stRadio"] > div {
-        gap: 6px !important;
+        gap: 3px !important;
     }
 
     /* Clean uppercase section header for NAVIGATE */
@@ -179,9 +184,9 @@ st.markdown("""
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        padding: 0 0 6px 2px !important;
+        padding: 0 0 2px 2px !important;
         margin: 0 !important;
-        font-size: 0.72rem !important;
+        font-size: 0.68rem !important;
         font-weight: 800 !important;
         color: #475569 !important;
         letter-spacing: 0.08em !important;
@@ -189,116 +194,111 @@ st.markdown("""
         display: block !important;
     }
 
-    /* Modern Humanized Card Tabs - Hide Clunky Radio Circles */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) {
+    /* Option Cards - Matches Streamlit radiogroup items */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label {
         background: #FFFFFF !important;
-        border: 1.5px solid #E2E8F0 !important;
-        border-radius: 12px !important;
-        padding: 10px 14px !important;
-        margin-bottom: 4px !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 9px !important;
+        padding: 6px 10px !important;
+        margin-bottom: 2px !important;
+        transition: all 0.15s ease !important;
         display: flex !important;
         align-items: center !important;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) !important;
         cursor: pointer !important;
-        user-select: none !important;
     }
 
-    /* Completely hide clumsy radio input circles for a clean, humanized tab look */
-    div[data-testid="stRadio"] [role="radiogroup"] label > div:not([data-testid="stMarkdownContainer"]),
-    div[data-testid="stRadio"] [role="radiogroup"] label input,
-    div[data-testid="stRadio"] [role="radiogroup"] label [data-baseweb="radio"] > div:not([data-testid="stMarkdownContainer"]),
-    div[data-testid="stRadio"] input[type="radio"] {
-        display: none !important;
-        visibility: hidden !important;
-        width: 0 !important;
-        height: 0 !important;
-        opacity: 0 !important;
-        position: absolute !important;
-        pointer-events: none !important;
-    }
-
-    /* High-contrast, clean typography for navigation text */
+    /* Force Option Text to High-Contrast Bold Slate - 100% VISIBLE ALWAYS */
     div[data-testid="stRadio"] div[role="radiogroup"] label *,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) *,
     div[data-testid="stRadio"] div[role="radiogroup"] label p,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]) p {
+    div[data-testid="stRadio"] div[role="radiogroup"] label span {
         color: #0F172A !important;
-        font-weight: 650 !important;
-        font-size: 0.86rem !important;
-        letter-spacing: 0.01em !important;
+        font-weight: 700 !important;
+        font-size: 0.82rem !important;
+        line-height: 1.25 !important;
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
 
     /* Subtle hover interaction */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:hover,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):hover {
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:hover {
         background: #F8FAFC !important;
         border-color: #94A3B8 !important;
-        transform: translateX(3px) !important;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06) !important;
+        transform: translateX(2px) !important;
     }
 
-    /* Selected Active State - Crisp Royal Blue Accent */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked),
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) {
+    /* Active / Checked State */
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) {
         background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%) !important;
-        border: 2px solid #2563EB !important;
-        box-shadow: 0 4px 14px rgba(37, 99, 235, 0.16) !important;
+        border-color: #2563EB !important;
+        box-shadow: 0 2px 8px rgba(37, 99, 235, 0.15) !important;
     }
 
     div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) *,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) *,
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) p,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked) p {
+    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked) p {
         color: #1D4ED8 !important;
         font-weight: 800 !important;
     }
 
-    /* Subtle active pill indicator on the right */
-    div[data-testid="stRadio"] div[role="radiogroup"] > label:has(input:checked)::after,
-    div[data-testid="stRadio"] label:not([data-testid="stWidgetLabel"]):has(input:checked)::after {
-        content: "●";
-        margin-left: auto;
-        color: #2563EB;
-        font-size: 0.72rem;
-        padding-left: 6px;
+    /* Clean subtle radio dot */
+    div[data-testid="stRadio"] div[role="radiogroup"] label input[type="radio"] + div,
+    div[data-testid="stRadio"] div[role="radiogroup"] label > div:first-child {
+        border-color: #94A3B8 !important;
+        background-color: #FFFFFF !important;
+        width: 14px !important;
+        height: 14px !important;
+        margin-right: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) input[type="radio"] + div,
+    div[data-testid="stRadio"] div[role="radiogroup"] label:has(input:checked) > div:first-child {
+        border-color: #2563EB !important;
+        background-color: #2563EB !important;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
     }
 
     /* Styled Selectbox for Market Feed - Sleek Slate Pill */
+    div[data-testid="stSidebar"] div[data-testid="stSelectbox"] {
+        margin-bottom: 0.35rem !important;
+    }
+
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] {
         background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
-        border-radius: 10px !important;
+        border-radius: 9px !important;
         border: 1px solid rgba(255, 255, 255, 0.12) !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+        min-height: 34px !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] div {
         color: #FFFFFF !important;
         font-weight: 600 !important;
-        font-size: 0.82rem !important;
+        font-size: 0.8rem !important;
     }
 
     div[data-testid="stSidebar"] div[data-testid="stSelectbox"] svg {
         fill: #94A3B8 !important;
     }
 
-    /* Styled Expander for Date Inspector - 100% Anti-Camouflage High-Visibility */
+    /* Styled Expander for Date Inspector - Compact Design */
     div[data-testid="stExpander"] {
         border: 1.5px solid #CBD5E1 !important;
-        border-radius: 12px !important;
+        border-radius: 10px !important;
         background: #FFFFFF !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04) !important;
         overflow: hidden !important;
+        margin-top: 0.2rem !important;
     }
 
     div[data-testid="stExpander"] details summary {
         background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%) !important;
-        border-radius: 10px !important;
-        padding: 10px 14px !important;
+        border-radius: 9px !important;
+        padding: 8px 11px !important;
         font-weight: 700 !important;
         border: 1px solid rgba(255, 255, 255, 0.12) !important;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08) !important;
         cursor: pointer !important;
         transition: all 0.2s ease !important;
     }
@@ -318,7 +318,7 @@ st.markdown("""
     div[data-testid="stExpander"] details summary {
         color: #FFFFFF !important;
         font-weight: 700 !important;
-        font-size: 0.86rem !important;
+        font-size: 0.83rem !important;
         letter-spacing: 0.02em !important;
     }
 
@@ -331,22 +331,22 @@ st.markdown("""
     /* Expander Content Inner Body */
     div[data-testid="stExpander"] details > div:last-child {
         background: #FFFFFF !important;
-        padding: 10px 10px !important;
-        border-radius: 0 0 10px 10px !important;
+        padding: 8px 9px !important;
+        border-radius: 0 0 9px 9px !important;
     }
 
     /* Date Input inside Date Inspector - Crisp Light Slate Background & High Contrast Text */
     div[data-testid="stExpander"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
         background-color: #F8FAFC !important;
         border: 1.5px solid #CBD5E1 !important;
-        border-radius: 8px !important;
+        border-radius: 7px !important;
         box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
     }
 
     div[data-testid="stExpander"] div[data-testid="stDateInput"] input {
         color: #0F172A !important;
         font-weight: 700 !important;
-        font-size: 0.88rem !important;
+        font-size: 0.84rem !important;
         background-color: transparent !important;
     }
 
@@ -362,18 +362,19 @@ st.markdown("""
         border: 1.5px solid #CBD5E1 !important;
         color: #1E293B !important;
         font-weight: 700 !important;
-        border-radius: 10px !important;
-        padding: 9px 14px !important;
+        border-radius: 9px !important;
+        padding: 7px 12px !important;
+        margin-top: 0.3rem !important;
         transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         box-shadow: 0 1px 3px rgba(0,0,0,0.03) !important;
-        font-size: 0.82rem !important;
+        font-size: 0.78rem !important;
     }
 
     section[data-testid="stSidebar"] div.stDownloadButton button:hover {
         background: #EFF6FF !important;
         border-color: #3B82F6 !important;
         color: #1D4ED8 !important;
-        box-shadow: 0 3px 8px rgba(37, 99, 235, 0.12) !important;
+        box-shadow: 0 2px 6px rgba(37, 99, 235, 0.12) !important;
         transform: translateY(-1px) !important;
     }
 
@@ -663,20 +664,20 @@ lstm_model = load_keras_model(LSTM_MODEL_PATH)
 # SIDEBAR CONTROLS & STREAMING SELECTOR (10/10 UX & ZERO SCROLL COMPACT DESIGN)
 # ==============================================================================
 with st.sidebar:
-    # 1. Compact Header Branding with Live Market Status Badge
+    # 1. Compact Header Branding with Live Market Status Badge (Zero Waste Space)
     st.markdown("""
-    <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 12px; margin-bottom: 0.85rem; box-shadow: 0 4px 14px rgba(0,0,0,0.12);">
+    <div style="background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 7px 10px; margin-bottom: 0.35rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
         <div style="display:flex; align-items:center; justify-content:space-between;">
-            <div style="display:flex; align-items:center; gap:8px;">
-                <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; color:white; font-size:18px; font-weight:bold; box-shadow:0 3px 8px rgba(37,99,235,0.4);">
+            <div style="display:flex; align-items:center; gap:7px;">
+                <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; color:white; font-size:15px; font-weight:bold; box-shadow:0 2px 6px rgba(37,99,235,0.4);">
                     ⚡
                 </div>
                 <div>
-                    <div style="font-size:1.05rem; font-weight:800; color:#FFFFFF; line-height:1.1;">ADANIPORTS AI</div>
-                    <div style="font-size:0.65rem; font-weight:700; color:#60A5FA; text-transform:uppercase; letter-spacing:0.06em;">Quant Terminal</div>
+                    <div style="font-size:0.95rem; font-weight:800; color:#FFFFFF; line-height:1.1;">ADANIPORTS AI</div>
+                    <div style="font-size:0.6rem; font-weight:700; color:#60A5FA; text-transform:uppercase; letter-spacing:0.05em;">Quant Terminal</div>
                 </div>
             </div>
-            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.68rem; color:#60A5FA; font-weight:700; text-decoration:none; background:rgba(37,99,235,0.2); border:1px solid rgba(96,165,250,0.3); padding:3px 7px; border-radius:6px;">
+            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.65rem; color:#60A5FA; font-weight:700; text-decoration:none; background:rgba(37,99,235,0.2); border:1px solid rgba(96,165,250,0.3); padding:2px 6px; border-radius:5px;">
                 Yahoo ↗
             </a>
         </div>
@@ -735,20 +736,20 @@ with st.sidebar:
     feed_tag = "LIVE NSE" if is_live_mode else "HISTORICAL"
 
     st.markdown(f"""
-    <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:12px; padding:10px 12px; margin-bottom:0.85rem; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-            <span style="font-size:0.68rem; font-weight:800; color:#475569; letter-spacing:0.04em;">ADANIPORTS.NS</span>
-            <span style="background:{badge_bg}; color:{badge_color}; padding:2px 6px; border-radius:5px; font-weight:800; font-size:0.68rem;">{day_change_pct:+.2f}%</span>
+    <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:10px; padding:6px 10px; margin-bottom:0.35rem; box-shadow:0 1px 4px rgba(0,0,0,0.03);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
+            <span style="font-size:0.66rem; font-weight:800; color:#475569; letter-spacing:0.03em;">ADANIPORTS.NS</span>
+            <span style="background:{badge_bg}; color:{badge_color}; padding:1px 5px; border-radius:4px; font-weight:800; font-size:0.65rem;">{day_change_pct:+.2f}%</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:3px 0;">
-            <div style="font-size:1.45rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:1px 0;">
+            <div style="font-size:1.28rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">
                 ₹{latest_close:.2f}
             </div>
-            <div style="font-size:0.75rem; color:#475569;">
+            <div style="font-size:0.72rem; color:#475569;">
                 Target: <b style="color:#2563EB;">₹{pred_close_gru:.2f}</b>
             </div>
         </div>
-        <div style="display:flex; justify-content:space-between; font-size:0.68rem; color:#64748B; border-top:1px dashed #E2E8F0; padding-top:4px; margin-top:4px;">
+        <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:#64748B; border-top:1px dashed #E2E8F0; padding-top:3px; margin-top:2px;">
             <span>Feed: <b>{feed_tag}</b></span>
             <span>Est Delta: <b style="color:{'#15803D' if diff_gru>=0 else '#B91C1C'};">{pct_diff_gru:+.2f}%</b></span>
         </div>
@@ -768,7 +769,7 @@ with st.sidebar:
         index=0
     )
     
-    st.markdown("<hr style='margin:0.5rem 0;'>", unsafe_allow_html=True)
+    st.markdown("<div style='height:4px;'></div>", unsafe_allow_html=True)
     
     # 5. Compact, High-Visibility Historical Date Inspector (Expanded by Default)
     with st.expander("🔎 Historical Date Inspector", expanded=True):
