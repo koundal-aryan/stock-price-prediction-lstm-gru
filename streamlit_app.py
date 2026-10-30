@@ -960,51 +960,138 @@ elif menu == "🔮 Next-Day Forecast Terminal":
 # TAB 5: TRADING SCENARIO SIMULATOR
 # ==============================================================================
 elif menu == "💡 Trading Scenario Simulator":
-    st.markdown('<div class="hero-badge">Interactive Quant Sandbox</div>', unsafe_allow_html=True)
-    st.markdown("## Strategy & Position Profit Simulator")
-    st.caption("Simulate portfolio return outcomes based on the deep learning model's forecasted price movement.")
+    st.markdown('<div class="hero-badge">Interactive Strategy Sandbox</div>', unsafe_allow_html=True)
+    st.markdown("## 💡 Next-Day Trading Scenario Simulator")
+    st.caption("Plan and test portfolio allocation based on the AI price projection, complete with dates, entry targets, and downside protection.")
+
+    # Calculate Entry Date and Target Exit Date
+    last_session_dt = df["Date"].iloc[-1]
+    entry_date_str = last_session_dt.strftime("%d %b %Y")
     
+    target_dt = last_session_dt + pd.Timedelta(days=1)
+    if target_dt.weekday() >= 5:  # Roll weekend forward to Monday
+        target_dt += pd.Timedelta(days=(7 - target_dt.weekday()))
+    target_date_str = target_dt.strftime("%d %b %Y (%A)")
+
     sim_col1, sim_col2 = st.columns([1, 1.4])
     with sim_col1:
-        st.markdown("#### Investment Parameters")
-        capital = st.number_input("Capital Allocated (₹ INR)", min_value=10000, max_value=5000000, value=100000, step=10000)
-        stop_loss_pct = st.slider("Risk Management: Stop Loss (%)", min_value=0.5, max_value=10.0, value=2.0, step=0.5)
-        target_model = st.selectbox("Forecast Model to Follow", [f"GRU (₹{pred_close_gru:.2f} Target)", f"LSTM (₹{pred_close_lstm:.2f} Target)"])
+        st.markdown("#### ⚙️ Trade Parameters")
+        capital = st.number_input(
+            "Investment Capital (₹ INR)",
+            min_value=10000,
+            max_value=10000000,
+            value=100000,
+            step=10000,
+            help="Total cash you wish to allocate for this trade."
+        )
         
+        target_model = st.selectbox(
+            "Forecast Signal to Follow",
+            [f"GRU Engine (Target: ₹{pred_close_gru:.2f})", f"LSTM Engine (Target: ₹{pred_close_lstm:.2f})"],
+            help="The AI model whose price forecast dictates your target exit price."
+        )
+
+        stop_loss_pct = st.slider(
+            "Risk Management: Stop Loss (%)",
+            min_value=0.5,
+            max_value=10.0,
+            value=2.0,
+            step=0.5,
+            help="Maximum acceptable loss percentage before exiting position."
+        )
+
+        # Position Sizing Math
         shares = int(capital // latest_close)
         invested = shares * latest_close
         cash_left = capital - invested
-        
+
         target_p = pred_close_gru if "GRU" in target_model else pred_close_lstm
         expected_gain = (target_p - latest_close) * shares
         expected_roi = (expected_gain / invested) * 100 if invested > 0 else 0.0
         stop_loss_price = latest_close * (1 - (stop_loss_pct / 100))
         max_risk_amt = (latest_close - stop_loss_price) * shares
-        
+        risk_reward_ratio = abs(expected_gain / max_risk_amt) if max_risk_amt > 0 else 0.0
+
+        is_gain_positive = expected_gain >= 0
+        gain_color = "#15803D" if is_gain_positive else "#B91C1C"
+
     with sim_col2:
         st.markdown(f"""
-        <div class="sim-card">
-            <h3 style="color:#065F46; margin-top:0;">📊 Simulated Position Summary</h3>
-            <p style="color:#047857; margin-bottom:1rem;">Shares Purchased: <b>{shares} Units</b> @ ₹{latest_close:.2f}</p>
+        <div style="background:linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border:1px solid #CBD5E1; border-radius:16px; padding:1.4rem; box-shadow:0 4px 12px rgba(0,0,0,0.04);">
+            <!-- Trade Header with Clear Dates -->
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #E2E8F0; padding-bottom:10px; margin-bottom:12px;">
+                <div>
+                    <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase;">Entry Date (Current Close)</span>
+                    <div style="font-size:1rem; font-weight:800; color:#0F172A;">📅 {entry_date_str} @ ₹{latest_close:.2f}</div>
+                </div>
+                <div style="text-align:right;">
+                    <span style="font-size:0.75rem; font-weight:700; color:#2563EB; text-transform:uppercase;">Target Exit Date (Day t+1)</span>
+                    <div style="font-size:1rem; font-weight:800; color:#2563EB;">🎯 {target_date_str}</div>
+                </div>
+            </div>
+
+            <!-- Position Overview -->
+            <div style="margin-bottom:14px; font-size:0.9rem; color:#334155;">
+                Purchasing: <b style="font-size:1.1rem; color:#0F172A;">{shares} Shares</b> of <b>ADANIPORTS</b> (Remaining Cash: ₹{cash_left:,.2f})
+            </div>
+
+            <!-- 4 Visual KPI Tiles -->
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
-                <div style="background:white; padding:12px; border-radius:10px; border:1px solid #A7F3D0;">
-                    <div style="font-size:0.75rem; color:#047857; font-weight:700;">TOTAL INVESTED</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#065F46;">₹{invested:,.2f}</div>
+                <div style="background:white; padding:12px; border-radius:12px; border:1px solid #E2E8F0;">
+                    <div style="font-size:0.72rem; color:#64748B; font-weight:700; text-transform:uppercase;">Total Capital Deployed</div>
+                    <div style="font-size:1.35rem; font-weight:800; color:#0F172A; font-family:'JetBrains Mono', monospace;">₹{invested:,.2f}</div>
                 </div>
-                <div style="background:white; padding:12px; border-radius:10px; border:1px solid #A7F3D0;">
-                    <div style="font-size:0.75rem; color:#047857; font-weight:700;">ESTIMATED P&L</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:{'#059669' if expected_gain>=0 else '#DC2626'};">{expected_gain:+,.2f} ({expected_roi:+.2f}%)</div>
+
+                <div style="background:{'#F0FDF4' if is_gain_positive else '#FEF2F2'}; padding:12px; border-radius:12px; border:1px solid {'#BBF7D0' if is_gain_positive else '#FECACA'};">
+                    <div style="font-size:0.72rem; color:{gain_color}; font-weight:700; text-transform:uppercase;">Projected Return (Target: ₹{target_p:.2f})</div>
+                    <div style="font-size:1.35rem; font-weight:800; color:{gain_color}; font-family:'JetBrains Mono', monospace;">
+                        {expected_gain:+,.2f} INR ({expected_roi:+.2f}%)
+                    </div>
                 </div>
-                <div style="background:white; padding:12px; border-radius:10px; border:1px solid #A7F3D0;">
-                    <div style="font-size:0.75rem; color:#047857; font-weight:700;">STOP LOSS TRIGGER</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#B45309;">₹{stop_loss_price:.2f}</div>
+
+                <div style="background:white; padding:12px; border-radius:12px; border:1px solid #E2E8F0;">
+                    <div style="font-size:0.72rem; color:#D97706; font-weight:700; text-transform:uppercase;">Stop-Loss Trigger (-{stop_loss_pct}%)</div>
+                    <div style="font-size:1.35rem; font-weight:800; color:#B45309; font-family:'JetBrains Mono', monospace;">₹{stop_loss_price:.2f}</div>
                 </div>
-                <div style="background:white; padding:12px; border-radius:10px; border:1px solid #A7F3D0;">
-                    <div style="font-size:0.75rem; color:#047857; font-weight:700;">MAX CONTROLLED RISK</div>
-                    <div style="font-size:1.3rem; font-weight:800; color:#DC2626;">-₹{max_risk_amt:,.2f}</div>
+
+                <div style="background:white; padding:12px; border-radius:12px; border:1px solid #E2E8F0;">
+                    <div style="font-size:0.72rem; color:#DC2626; font-weight:700; text-transform:uppercase;">Max Controlled Risk</div>
+                    <div style="font-size:1.35rem; font-weight:800; color:#DC2626; font-family:'JetBrains Mono', monospace;">-₹{max_risk_amt:,.2f}</div>
                 </div>
+            </div>
+
+            <!-- Risk to Reward Badge -->
+            <div style="margin-top:14px; background:white; border:1px solid #E2E8F0; border-radius:10px; padding:10px; display:flex; justify-content:space-between; align-items:center; font-size:0.82rem;">
+                <span style="color:#475569;">Risk-to-Reward Ratio:</span>
+                <span style="font-weight:800; color:{'#15803D' if risk_reward_ratio>=1.0 else '#B45309'}; background:{'#DCFCE7' if risk_reward_ratio>=1.0 else '#FEF3C7'}; padding:3px 8px; border-radius:6px;">
+                    1 : {risk_reward_ratio:.2f}
+                </span>
             </div>
         </div>
         """, unsafe_allow_html=True)
-        
-        st.caption("ℹ️ *Educational Simulation:* Demonstrates how quantitative price point estimates integrate directly with corporate risk management & portfolio allocation rules.")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # Visual Trade Step Breakdown (Easy to Understand Step Timeline)
+    st.markdown("### 🗺️ Visual Trade Timeline")
+    st.markdown(f"""
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px;">
+        <div style="background:white; border-left:4px solid #2563EB; border-radius:10px; padding:14px; box-shadow:0 2px 6px rgba(0,0,0,0.04); border-top:1px solid #E2E8F0; border-right:1px solid #E2E8F0; border-bottom:1px solid #E2E8F0;">
+            <div style="font-size:0.75rem; font-weight:700; color:#2563EB; text-transform:uppercase;">STEP 1: ENTRY</div>
+            <div style="font-weight:800; font-size:1rem; color:#0F172A; margin:4px 0;">📅 {entry_date_str}</div>
+            <div style="font-size:0.82rem; color:#64748B;">Buy <b>{shares} units</b> at market close: <b style="color:#0F172A;">₹{latest_close:.2f}</b> (Capital: ₹{invested:,.0f}).</div>
+        </div>
+
+        <div style="background:white; border-left:4px solid #F59E0B; border-radius:10px; padding:14px; box-shadow:0 2px 6px rgba(0,0,0,0.04); border-top:1px solid #E2E8F0; border-right:1px solid #E2E8F0; border-bottom:1px solid #E2E8F0;">
+            <div style="font-size:0.75rem; font-weight:700; color:#D97706; text-transform:uppercase;">STEP 2: RISK SHIELD</div>
+            <div style="font-weight:800; font-size:1rem; color:#0F172A; margin:4px 0;">🛡️ Set Stop-Loss @ ₹{stop_loss_price:.2f}</div>
+            <div style="font-size:0.82rem; color:#64748B;">Automated exit if price falls by {stop_loss_pct}%. Caps loss to <b style="color:#DC2626;">₹{max_risk_amt:,.0f}</b>.</div>
+        </div>
+
+        <div style="background:white; border-left:4px solid {'#10B981' if is_gain_positive else '#EF4444'}; border-radius:10px; padding:14px; box-shadow:0 2px 6px rgba(0,0,0,0.04); border-top:1px solid #E2E8F0; border-right:1px solid #E2E8F0; border-bottom:1px solid #E2E8F0;">
+            <div style="font-size:0.75rem; font-weight:700; color:{'#15803D' if is_gain_positive else '#B91C1C'}; text-transform:uppercase;">STEP 3: TARGET EXIT</div>
+            <div style="font-weight:800; font-size:1rem; color:#0F172A; margin:4px 0;">🎯 {target_date_str}</div>
+            <div style="font-size:0.82rem; color:#64748B;">Target close: <b style="color:{gain_color};">₹{target_p:.2f}</b>. Expected P&L: <b style="color:{gain_color};">{expected_gain:+,.0f} INR</b>.</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
