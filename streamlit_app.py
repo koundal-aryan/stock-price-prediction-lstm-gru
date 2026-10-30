@@ -114,22 +114,29 @@ st.markdown("""
         -webkit-appearance: none !important;
     }
 
+    /* On mobile, keep sidebar width comfortable and ensure close button is prominent */
     @media (max-width: 768px) {
         section[data-testid="stSidebar"] {
-            width: 82vw !important;
-            max-width: 320px !important;
             box-shadow: 6px 0 24px rgba(0,0,0,0.2) !important;
-            position: fixed !important;
-            height: 100vh !important;
-            height: 100dvh !important; /* Dynamic viewport for Safari URL bar */
-            z-index: 99999 !important;
+            -webkit-overflow-scrolling: touch !important;
         }
 
-        button[data-testid="stSidebarCollapseButton"] {
+        /* Prominently surface Streamlit's native sidebar collapse button on mobile */
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="collapsedControl"] {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            z-index: 9999999 !important;
+        }
+
+        [data-testid="stSidebarCollapseButton"] button {
             background: #EFF6FF !important;
             border: 1px solid #BFDBFE !important;
             border-radius: 8px !important;
-            padding: 6px !important;
+            color: #1D4ED8 !important;
+            min-width: 36px !important;
+            min-height: 36px !important;
         }
     }
 
@@ -451,7 +458,7 @@ lstm_model = load_keras_model(LSTM_MODEL_PATH)
 # SIDEBAR CONTROLS & STREAMING SELECTOR (10/10 UX & ZERO SCROLL COMPACT DESIGN)
 # ==============================================================================
 with st.sidebar:
-    # 1. Compact Header Branding
+    # 1. Compact Header Branding with Explicit Close Action
     st.markdown("""
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem; padding-bottom:0.5rem; border-bottom:1px solid #E2E8F0;">
         <div style="display:flex; align-items:center; gap:8px;">
