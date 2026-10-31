@@ -639,7 +639,9 @@ st.markdown("""
 
     /* Plotly Tooltip Hoverlabel: Dark Mode (Default) - Razor sharp white text on obsidian slate */
     .js-plotly-plot .hoverlayer path.bg,
-    .js-plotly-plot .hoverlayer rect.bg {
+    .js-plotly-plot .hoverlayer rect.bg,
+    .js-plotly-plot .hoverlayer g.hovertext > path,
+    .js-plotly-plot .hoverlayer g.hovertext path:not(.line) {
         fill: #0F172A !important;
         fill-opacity: 0.96 !important;
         stroke: rgba(255, 255, 255, 0.18) !important;
@@ -657,7 +659,9 @@ st.markdown("""
 
     /* Plotly Tooltip Hoverlabel: Light Mode - Elegant white card with high-contrast slate text */
     [data-theme="light"] .js-plotly-plot .hoverlayer path.bg,
-    [data-theme="light"] .js-plotly-plot .hoverlayer rect.bg {
+    [data-theme="light"] .js-plotly-plot .hoverlayer rect.bg,
+    [data-theme="light"] .js-plotly-plot .hoverlayer g.hovertext > path,
+    [data-theme="light"] .js-plotly-plot .hoverlayer g.hovertext path:not(.line) {
         fill: #FFFFFF !important;
         fill-opacity: 0.98 !important;
         stroke: #CBD5E1 !important;
@@ -674,7 +678,9 @@ st.markdown("""
 
     @media (prefers-color-scheme: light) {
         :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer path.bg,
-        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer rect.bg {
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer rect.bg,
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer g.hovertext > path,
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer g.hovertext path:not(.line) {
             fill: #FFFFFF !important;
             fill-opacity: 0.98 !important;
             stroke: #CBD5E1 !important;
@@ -1675,15 +1681,43 @@ elif "Benchmark" in menu:
             lstm_h = meta.get("lstm_history", {})
             gru_h = meta.get("gru_history", {})
             
+            loss_lstm = lstm_h.get("loss", [])
+            val_loss_lstm = lstm_h.get("val_loss", [])
+            loss_gru = gru_h.get("loss", [])
+            val_loss_gru = gru_h.get("val_loss", [])
+            epochs_lstm = list(range(1, len(loss_lstm) + 1))
+            epochs_gru = list(range(1, len(loss_gru) + 1))
+            
             fig_loss = go.Figure()
-            fig_loss.add_trace(go.Scatter(y=lstm_h.get("loss", []), mode="lines", name="LSTM Train Loss", line=dict(color="#2563EB")))
-            fig_loss.add_trace(go.Scatter(y=lstm_h.get("val_loss", []), mode="lines", name="LSTM Val Loss", line=dict(color="#2563EB", dash="dash")))
-            fig_loss.add_trace(go.Scatter(y=gru_h.get("loss", []), mode="lines", name="GRU Train Loss", line=dict(color="#EF4444")))
-            fig_loss.add_trace(go.Scatter(y=gru_h.get("val_loss", []), mode="lines", name="GRU Val Loss", line=dict(color="#EF4444", dash="dash")))
+            fig_loss.add_trace(go.Scatter(
+                x=epochs_lstm, y=loss_lstm,
+                mode="lines", name="LSTM Train Loss",
+                line=dict(color="#2563EB", width=2),
+                hovertemplate="<b>LSTM Train Loss:</b> %{y:.5f}&nbsp;&nbsp;&nbsp;<extra></extra>"
+            ))
+            fig_loss.add_trace(go.Scatter(
+                x=epochs_lstm, y=val_loss_lstm,
+                mode="lines", name="LSTM Val Loss",
+                line=dict(color="#2563EB", width=2, dash="dash"),
+                hovertemplate="<b>LSTM Val Loss:</b> %{y:.5f}&nbsp;&nbsp;&nbsp;<extra></extra>"
+            ))
+            fig_loss.add_trace(go.Scatter(
+                x=epochs_gru, y=loss_gru,
+                mode="lines", name="GRU Train Loss",
+                line=dict(color="#EF4444", width=2),
+                hovertemplate="<b>GRU Train Loss:</b> %{y:.5f}&nbsp;&nbsp;&nbsp;<extra></extra>"
+            ))
+            fig_loss.add_trace(go.Scatter(
+                x=epochs_gru, y=val_loss_gru,
+                mode="lines", name="GRU Val Loss",
+                line=dict(color="#EF4444", width=2, dash="dash"),
+                hovertemplate="<b>GRU Val Loss:</b> %{y:.5f}&nbsp;&nbsp;&nbsp;<extra></extra>"
+            ))
             fig_loss.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
+                hovermode="x unified",
                 hoverlabel=dict(
                     bgcolor="rgba(15, 23, 42, 0.96)",
                     bordercolor="rgba(255, 255, 255, 0.18)",
@@ -1693,7 +1727,7 @@ elif "Benchmark" in menu:
                 ),
                 xaxis_title="Epoch",
                 yaxis_title="Mean Squared Error",
-                xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
+                xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)", dtick=5),
                 yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
                 legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5),
                 margin=dict(l=10, r=10, t=10, b=20),
@@ -1710,8 +1744,22 @@ elif "Benchmark" in menu:
             gru_p = np.array(meta.get("gru_predictions", []))
             
             fig_err = go.Figure()
-            fig_err.add_trace(go.Histogram(x=actual - lstm_p, name="LSTM Residuals", marker_color="#2563EB", opacity=0.5, nbinsx=40))
-            fig_err.add_trace(go.Histogram(x=actual - gru_p, name="GRU Residuals", marker_color="#10B981", opacity=0.6, nbinsx=40))
+            fig_err.add_trace(go.Histogram(
+                x=actual - lstm_p,
+                name="LSTM Residuals",
+                marker_color="#2563EB",
+                opacity=0.55,
+                nbinsx=40,
+                hovertemplate="<b>LSTM Error:</b> ₹%{x:.1f}<br><b>Count:</b> %{y} sessions&nbsp;&nbsp;&nbsp;<extra></extra>"
+            ))
+            fig_err.add_trace(go.Histogram(
+                x=actual - gru_p,
+                name="GRU Residuals",
+                marker_color="#10B981",
+                opacity=0.6,
+                nbinsx=40,
+                hovertemplate="<b>GRU Error:</b> ₹%{x:.1f}<br><b>Count:</b> %{y} sessions&nbsp;&nbsp;&nbsp;<extra></extra>"
+            ))
             fig_err.update_layout(
                 barmode="overlay",
                 paper_bgcolor="rgba(0,0,0,0)",
