@@ -171,11 +171,71 @@ st.markdown("""
         }
     }
 
-    /* On mobile, keep sidebar width comfortable and ensure close button is prominent */
+    /* On mobile, expand sidebar drawer width and spacing for spacious, touch-friendly UI */
     @media (max-width: 768px) {
         section[data-testid="stSidebar"] {
-            box-shadow: 6px 0 24px rgba(0,0,0,0.3) !important;
+            width: 86vw !important;
+            min-width: 320px !important;
+            max-width: 390px !important;
+            box-shadow: 12px 0 36px rgba(0, 0, 0, 0.45) !important;
             -webkit-overflow-scrolling: touch !important;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        /* Ensure collapsed sidebar completely clears mobile viewport */
+        section[data-testid="stSidebar"][aria-expanded="false"],
+        section[data-testid="stSidebar"][data-collapsed="true"] {
+            margin-left: -115% !important;
+            transform: translateX(-115%) !important;
+        }
+
+        /* Full drawer container breathing room on mobile */
+        section[data-testid="stSidebar"] > div:first-child,
+        section[data-testid="stSidebar"] div[data-testid="stSidebarContent"],
+        section[data-testid="stSidebar"] div[data-testid="stSidebarUserContent"] {
+            width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 0.65rem !important;
+            padding-left: 0.9rem !important;
+            padding-right: 0.9rem !important;
+            padding-bottom: 2.5rem !important;
+            max-width: 100% !important;
+        }
+
+        /* Mobile sidebar cards with comfortable padding */
+        .sidebar-card,
+        .sidebar-glass-card {
+            padding: 9px 12px !important;
+            margin-bottom: 0.5rem !important;
+            border-radius: 12px !important;
+        }
+
+        /* Mobile navigation options */
+        div[data-testid="stRadio"] div[role="radiogroup"] > label,
+        div[data-testid="stRadio"] label {
+            padding: 9px 12px !important;
+            margin-bottom: 3px !important;
+            border-radius: 12px !important;
+            font-size: 0.88rem !important;
+        }
+
+        /* Prevent cramped selects and inputs on touch devices */
+        div[data-testid="stSidebar"] div[data-testid="stSelectbox"] div[data-baseweb="select"] {
+            min-height: 40px !important;
+        }
+
+        div[data-testid="stSidebar"] div[data-testid="stDateInput"] div[data-baseweb="input"] {
+            min-height: 40px !important;
+        }
+
+        section[data-testid="stSidebar"] div.stDownloadButton button {
+            padding: 10px 14px !important;
+            font-size: 0.84rem !important;
+            border-radius: 10px !important;
         }
     }
 
@@ -901,18 +961,18 @@ lstm_model = load_keras_model(LSTM_MODEL_PATH)
 with st.sidebar:
     # 1. Compact Header Branding with Live Market Status Badge (Zero Waste Space)
     st.markdown("""
-    <div style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.92) 0%, rgba(15, 23, 42, 0.96) 100%); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 7px 10px; margin-bottom: 0.35rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-            <div style="display:flex; align-items:center; gap:7px;">
-                <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; color:white; font-size:15px; font-weight:bold; box-shadow:0 2px 6px rgba(37,99,235,0.4);">
+    <div style="background: var(--sb-card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--sb-card-border); border-radius: 10px; padding: 7px 10px; margin-bottom: 0.35rem; box-shadow: var(--sb-card-shadow);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:6px;">
+            <div style="display:flex; align-items:center; gap:7px; min-width:0;">
+                <div style="background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%); width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; color:white; font-size:15px; font-weight:bold; box-shadow:0 2px 6px rgba(37,99,235,0.4); flex-shrink:0;">
                     ⚡
                 </div>
-                <div>
-                    <div style="font-size:0.95rem; font-weight:800; color:#FFFFFF; line-height:1.1;">ADANIPORTS AI</div>
-                    <div style="font-size:0.6rem; font-weight:700; color:#60A5FA; text-transform:uppercase; letter-spacing:0.05em;">Quant Terminal</div>
+                <div style="white-space:nowrap; overflow:hidden;">
+                    <div style="font-size:0.95rem; font-weight:800; color:var(--sb-text-main); line-height:1.1; white-space:nowrap;">ADANIPORTS AI</div>
+                    <div style="font-size:0.6rem; font-weight:700; color:var(--sb-target-val); text-transform:uppercase; letter-spacing:0.05em; white-space:nowrap;">Quant Terminal</div>
                 </div>
             </div>
-            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.65rem; color:#60A5FA; font-weight:700; text-decoration:none; background:rgba(37,99,235,0.25); border:1px solid rgba(96,165,250,0.35); padding:2px 6px; border-radius:5px;">
+            <a href="https://finance.yahoo.com/quote/ADANIPORTS.NS/" target="_blank" style="font-size:0.65rem; color:var(--sb-target-val); font-weight:700; text-decoration:none; background:var(--sb-radio-active-bg); border:1px solid var(--sb-radio-active-border); padding:3px 8px; border-radius:6px; white-space:nowrap; flex-shrink:0;">
                 Yahoo ↗
             </a>
         </div>
@@ -990,20 +1050,20 @@ with st.sidebar:
     st.markdown(f"""
     <div class="sidebar-card">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
-            <span style="font-size:0.68rem; font-weight:800; color:var(--sb-text-sub); letter-spacing:0.04em;">ADANIPORTS.NS</span>
-            <span style="background:{badge_bg}; color:{badge_color}; border:1px solid {badge_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.66rem;">{day_change_pct:+.2f}%</span>
+            <span style="font-size:0.68rem; font-weight:800; color:var(--sb-text-sub); letter-spacing:0.04em; white-space:nowrap;">ADANIPORTS.NS</span>
+            <span style="background:{badge_bg}; color:{badge_color}; border:1px solid {badge_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.66rem; white-space:nowrap; flex-shrink:0;">{day_change_pct:+.2f}%</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2px 0;">
-            <div style="font-size:1.32rem; font-weight:800; color:var(--sb-text-main); font-family:'JetBrains Mono', monospace; letter-spacing:-0.02em;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin:2px 0; gap:8px;">
+            <div style="font-size:1.32rem; font-weight:800; color:var(--sb-text-main); font-family:'JetBrains Mono', monospace; letter-spacing:-0.02em; white-space:nowrap;">
                 ₹{latest_close:.2f}
             </div>
-            <div style="font-size:0.74rem; color:var(--sb-text-sub);">
+            <div style="font-size:0.74rem; color:var(--sb-text-sub); white-space:nowrap; flex-shrink:0;">
                 Target: <b style="color:var(--sb-target-val); font-weight:700;">₹{pred_close_gru:.2f}</b>
             </div>
         </div>
         <div style="display:flex; justify-content:space-between; font-size:0.66rem; color:var(--sb-text-muted); border-top:1px dashed var(--sb-divider); padding-top:4px; margin-top:3px;">
-            <span>Feed: <b style="color:var(--sb-text-sub);">{feed_tag}</b></span>
-            <span>Est Delta: <b style="color:{est_delta_color}; font-weight:700;">{pct_diff_gru:+.2f}%</b></span>
+            <span style="white-space:nowrap;">Feed: <b style="color:var(--sb-text-sub);">{feed_tag}</b></span>
+            <span style="white-space:nowrap;">Est Delta: <b style="color:{est_delta_color}; font-weight:700;">{pct_diff_gru:+.2f}%</b></span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -1053,15 +1113,15 @@ with st.sidebar:
         
         st.markdown(f"""
         <div class="sidebar-card" style="font-size:0.73rem; margin-top:-6px; margin-bottom:4px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                <span style="font-weight:800; color:var(--sb-text-main); font-size:0.76rem;">📅 {r['Date'].strftime('%d %b %Y')}</span>
-                <span style="background:{ret_bg}; color:{ret_color}; border:1px solid {ret_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.68rem;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; gap:6px;">
+                <span style="font-weight:800; color:var(--sb-text-main); font-size:0.76rem; white-space:nowrap;">📅 {r['Date'].strftime('%d %b %Y')}</span>
+                <span style="background:{ret_bg}; color:{ret_color}; border:1px solid {ret_border}; padding:1px 6px; border-radius:4px; font-weight:800; font-size:0.68rem; white-space:nowrap; flex-shrink:0;">{ret_icon} {r['Daily_Return']:+.2f}%</span>
             </div>
             <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span style="color:var(--sb-text-sub);">Close:</span> <b style="color:var(--sb-target-val); font-family:'JetBrains Mono', monospace; font-size:0.8rem;">₹{r['Close']:.2f}</b>
+                <span style="color:var(--sb-text-sub); white-space:nowrap;">Close:</span> <b style="color:var(--sb-target-val); font-family:'JetBrains Mono', monospace; font-size:0.8rem; white-space:nowrap;">₹{r['Close']:.2f}</b>
             </div>
             <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--sb-text-sub);">Range:</span> <span style="font-weight:600; color:var(--sb-text-main);">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
+                <span style="color:var(--sb-text-sub); white-space:nowrap;">Range:</span> <span style="font-weight:600; color:var(--sb-text-main); white-space:nowrap;">₹{r['Low']:.1f} – ₹{r['High']:.1f}</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
