@@ -633,8 +633,16 @@ st.markdown("""
     .js-plotly-plot .ytitle,
     .js-plotly-plot text.title {
         fill: var(--text-color, currentColor) !important;
-        font-family: 'Inter', -apple-system, sans-serif !important;
+        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
         font-weight: 600 !important;
+    }
+
+    /* Plotly Tooltip Hoverlabel: Ensure generous width, proper padding, and zero text clipping */
+    .js-plotly-plot .hoverlayer .hovertext text,
+    .js-plotly-plot .hoverlayer text {
+        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+        font-size: 11.5px !important;
+        letter-spacing: 0.01em !important;
     }
 
     /* Preserve rich colors for gauge delta indicators and custom callout annotations */
@@ -1209,25 +1217,32 @@ if "Executive" in menu:
             x=df["Date"], y=df["Close"],
             mode="lines", name="Live Close Price (₹)",
             line=dict(color="#2563EB", width=2.8),
-            hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>Date:</b> %{x|%d %b %Y}&nbsp;&nbsp;&nbsp;<br><b>Close:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
         ))
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["SMA_20"],
             mode="lines", name="SMA 20",
             line=dict(color="#D97706", width=2, dash="dash"),
-            hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
         ))
         fig_dash.add_trace(go.Scatter(
             x=df["Date"], y=df["SMA_50"],
             mode="lines", name="SMA 50",
             line=dict(color="#7C3AED", width=2, dash="dot"),
-            hovertemplate="<b>SMA 50:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>SMA 50:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
         ))
         fig_dash.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter, sans-serif"),
+            font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
             hovermode="x unified",
+            hoverlabel=dict(
+                bgcolor="rgba(15, 23, 42, 0.96)",
+                bordercolor="rgba(255, 255, 255, 0.18)",
+                font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+                namelength=-1,
+                align="left"
+            ),
             xaxis=dict(
                 title=dict(text="Trading Session Date", font=dict(size=12)),
                 tickfont=dict(size=11),
@@ -1260,19 +1275,26 @@ if "Executive" in menu:
                 x=test_dates, y=actual,
                 mode="lines", name="Actual Close Price (₹)",
                 line=dict(color="#2563EB", width=2.8),
-                hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Actual Close:</b> ₹%{y:.2f}<extra></extra>"
+                hovertemplate="<b>Date:</b> %{x|%d %b %Y}&nbsp;&nbsp;&nbsp;<br><b>Actual Close:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
             ))
             fig_dash.add_trace(go.Scatter(
                 x=test_dates, y=gru_preds,
                 mode="lines", name="GRU Forecast (Selected Model)",
                 line=dict(color="#059669", width=2.2, dash="dash"),
-                hovertemplate="<b>GRU Forecast:</b> ₹%{y:.2f}<extra></extra>"
+                hovertemplate="<b>GRU Forecast:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
             ))
             fig_dash.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Inter, sans-serif"),
+                font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
                 hovermode="x unified",
+                hoverlabel=dict(
+                    bgcolor="rgba(15, 23, 42, 0.96)",
+                    bordercolor="rgba(255, 255, 255, 0.18)",
+                    font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+                    namelength=-1,
+                    align="left"
+                ),
                 xaxis=dict(
                     title=dict(text="Trading Session Date", font=dict(size=12)),
                     tickfont=dict(size=11),
@@ -1296,15 +1318,22 @@ if "Executive" in menu:
     with ch1:
         st.markdown("#### 📈 Multi-Timeframe Trend Crossover")
         fig_cross = go.Figure()
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["Close"], name="Close", line=dict(color="#2563EB", width=2.2)))
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_20"], name="SMA 20 (Short-term)", line=dict(color="#0284C7", width=1.6)))
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_50"], name="SMA 50 (Medium-term)", line=dict(color="#D97706", width=1.6)))
-        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_100"], name="SMA 100 (Long-term)", line=dict(color="#DC2626", width=1.8)))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["Close"], name="Close", line=dict(color="#2563EB", width=2.2), hovertemplate="<b>Close:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_20"], name="SMA 20 (Short-term)", line=dict(color="#0284C7", width=1.6), hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_50"], name="SMA 50 (Medium-term)", line=dict(color="#D97706", width=1.6), hovertemplate="<b>SMA 50:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"))
+        fig_cross.add_trace(go.Scatter(x=df["Date"], y=df["SMA_100"], name="SMA 100 (Long-term)", line=dict(color="#DC2626", width=1.8), hovertemplate="<b>SMA 100:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"))
         fig_cross.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter, sans-serif"),
+            font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
             hovermode="x unified",
+            hoverlabel=dict(
+                bgcolor="rgba(15, 23, 42, 0.96)",
+                bordercolor="rgba(255, 255, 255, 0.18)",
+                font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+                namelength=-1,
+                align="left"
+            ),
             xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
             yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="center", x=0.5, font=dict(size=11)),
@@ -1321,13 +1350,21 @@ if "Executive" in menu:
             fill="tozeroy",
             line=dict(color="#7C3AED", width=2.2),
             fillcolor="rgba(124, 58, 237, 0.18)",
-            name="20d Volatility (%)"
+            name="20d Volatility (%)",
+            hovertemplate="<b>20d Volatility:</b> %{y:.2f}%&nbsp;&nbsp;&nbsp;<extra></extra>"
         ))
         fig_risk.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter, sans-serif"),
+            font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
             hovermode="x unified",
+            hoverlabel=dict(
+                bgcolor="rgba(15, 23, 42, 0.96)",
+                bordercolor="rgba(255, 255, 255, 0.18)",
+                font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+                namelength=-1,
+                align="left"
+            ),
             xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
             yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
             yaxis_title="Volatility (%)",
@@ -1465,7 +1502,6 @@ elif "Candlestick" in menu:
     )
     
     # 1. High-Clarity Candlestick Trace
-    time_hover = "%{x|%d %b %H:%M}" if using_intraday else "%{x|%d %b %Y}"
     fig_candle.add_trace(go.Candlestick(
         x=df_view["Date"],
         open=df_view["Open"],
@@ -1477,7 +1513,7 @@ elif "Candlestick" in menu:
         decreasing_line_color="#EF4444",
         increasing_fillcolor="#10B981",
         decreasing_fillcolor="#EF4444",
-        hovertemplate=f"<b>Time:</b> {time_hover}<br><b>Open:</b> ₹%{{open:.2f}}<br><b>High:</b> ₹%{{high:.2f}}<br><b>Low:</b> ₹%{{low:.2f}}<br><b>Close:</b> ₹%{{close:.2f}}<extra></extra>"
+        hovertemplate="<b>Open:</b> ₹%{open:.2f}&nbsp;&nbsp;&nbsp;<br><b>High:</b> ₹%{high:.2f}&nbsp;&nbsp;&nbsp;<br><b>Low:</b> ₹%{low:.2f}&nbsp;&nbsp;&nbsp;<br><b>Close:</b> ₹%{close:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
     ), row=1, col=1)
     
     # 2. Bollinger Bands
@@ -1486,14 +1522,14 @@ elif "Candlestick" in menu:
             x=df_view["Date"], y=df_view["BB_Upper"],
             line=dict(color="rgba(148, 163, 184, 0.7)", width=1.2, dash="dot"),
             name="BB Upper (2σ)",
-            hovertemplate="<b>BB Upper:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>BB Upper:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
         ), row=1, col=1)
         fig_candle.add_trace(go.Scatter(
             x=df_view["Date"], y=df_view["BB_Lower"],
             line=dict(color="rgba(148, 163, 184, 0.7)", width=1.2, dash="dot"),
             fill="tonexty", fillcolor="rgba(241, 245, 249, 0.18)",
             name="BB Band",
-            hovertemplate="<b>BB Lower:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>BB Lower:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
         ), row=1, col=1)
     
     # 3. 20 EMA Line
@@ -1502,7 +1538,7 @@ elif "Candlestick" in menu:
             x=df_view["Date"], y=df_view["EMA_20"],
             line=dict(color="#2563EB", width=2),
             name="20 EMA Trend",
-            hovertemplate="<b>20 EMA:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>20 EMA:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
         ), row=1, col=1)
     
     # 4. Period Return % Bar Chart below
@@ -1510,7 +1546,7 @@ elif "Candlestick" in menu:
     fig_candle.add_trace(go.Bar(
         x=df_view["Date"], y=df_view["Daily_Return"],
         marker_color=colors_ret, name="Period Return %",
-        hovertemplate="<b>Return:</b> %{y:+.2f}%<extra></extra>"
+        hovertemplate="<b>Return:</b> %{y:+.2f}%&nbsp;&nbsp;&nbsp;<extra></extra>"
     ), row=2, col=1)
     
     # Filter out empty weekends and overnight gaps when showing intraday or daily charts
@@ -1532,9 +1568,16 @@ elif "Candlestick" in menu:
     fig_candle.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, sans-serif"),
+        font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
         xaxis_rangeslider_visible=False,
         hovermode="x unified",
+        hoverlabel=dict(
+            bgcolor="rgba(15, 23, 42, 0.96)",
+            bordercolor="rgba(255, 255, 255, 0.18)",
+            font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+            namelength=-1,
+            align="left"
+        ),
         xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
         xaxis2=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
         yaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)", title=dict(text="Price (₹ INR)")),
@@ -1595,7 +1638,14 @@ elif "Benchmark" in menu:
             fig_loss.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Inter, sans-serif"),
+                font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
+                hoverlabel=dict(
+                    bgcolor="rgba(15, 23, 42, 0.96)",
+                    bordercolor="rgba(255, 255, 255, 0.18)",
+                    font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+                    namelength=-1,
+                    align="left"
+                ),
                 xaxis_title="Epoch",
                 yaxis_title="Mean Squared Error",
                 xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
@@ -1621,7 +1671,14 @@ elif "Benchmark" in menu:
                 barmode="overlay",
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(family="Inter, sans-serif"),
+                font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
+                hoverlabel=dict(
+                    bgcolor="rgba(15, 23, 42, 0.96)",
+                    bordercolor="rgba(255, 255, 255, 0.18)",
+                    font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+                    namelength=-1,
+                    align="left"
+                ),
                 xaxis_title="Error in ₹ INR (Actual - Predicted)",
                 yaxis_title="Count",
                 xaxis=dict(gridcolor="rgba(148, 163, 184, 0.2)"),
@@ -1756,7 +1813,7 @@ elif "Forecast" in menu or "Target" in menu:
             marker=dict(size=5, color="#2563EB", line=dict(color="#FFFFFF", width=1)),
             fill="tozeroy",
             fillcolor="rgba(37, 99, 235, 0.06)",
-            hovertemplate="<b>Date:</b> %{x|%d %b %Y}<br><b>Close:</b> ₹%{y:.2f}<extra></extra>"
+            hovertemplate="<b>Date:</b> %{x|%d %b %Y}&nbsp;&nbsp;&nbsp;<br><b>Close:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
         ))
 
         # 20-Day SMA for trend reference - Vivid Amber
@@ -1767,7 +1824,7 @@ elif "Forecast" in menu or "Target" in menu:
                 mode="lines",
                 name="20-Day SMA",
                 line=dict(color="#D97706", width=2, dash="dash"),
-                hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}<extra></extra>"
+                hovertemplate="<b>SMA 20:</b> ₹%{y:.2f}&nbsp;&nbsp;&nbsp;<extra></extra>"
             ))
 
         # Horizontal dotted baseline reference for Current Close
@@ -1800,7 +1857,7 @@ elif "Forecast" in menu or "Target" in menu:
             mode="markers",
             name=f"Target: ₹{sel_pred:.2f}",
             marker=dict(size=18, color=signal_color, symbol="star", line=dict(color="white", width=2)),
-            hovertemplate=f"<b>Forecast Target (t+1):</b> {next_dt.strftime('%d %b %Y')}<br><b>Projected:</b> ₹{sel_pred:.2f}<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)<extra></extra>"
+            hovertemplate=f"<b>Target (t+1):</b> {next_dt.strftime('%d %b %Y')}&nbsp;&nbsp;&nbsp;<br><b>Projected:</b> ₹{sel_pred:.2f}&nbsp;&nbsp;&nbsp;<br><b>Delta:</b> {diff_sel:+.2f} ({pct_sel:+.2f}%)&nbsp;&nbsp;&nbsp;<extra></extra>"
         ))
 
         # Condition-based Light Pastel Callout Badge (High-Contrast, Easy Reading)
@@ -1838,8 +1895,15 @@ elif "Forecast" in menu or "Target" in menu:
         fig_proj.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Inter, sans-serif"),
+            font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif"),
             hovermode="x unified",
+            hoverlabel=dict(
+                bgcolor="rgba(15, 23, 42, 0.96)",
+                bordercolor="rgba(255, 255, 255, 0.18)",
+                font=dict(family="'Plus Jakarta Sans', -apple-system, sans-serif", size=11.5, color="#FFFFFF"),
+                namelength=-1,
+                align="left"
+            ),
             xaxis=dict(
                 title=dict(text="Trading Session Date", font=dict(size=12)),
                 tickfont=dict(size=11),
