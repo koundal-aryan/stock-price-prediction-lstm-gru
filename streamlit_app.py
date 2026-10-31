@@ -637,12 +637,57 @@ st.markdown("""
         font-weight: 600 !important;
     }
 
-    /* Plotly Tooltip Hoverlabel: Ensure generous width, proper padding, and zero text clipping */
+    /* Plotly Tooltip Hoverlabel: Dark Mode (Default) - Razor sharp white text on obsidian slate */
+    .js-plotly-plot .hoverlayer path.bg,
+    .js-plotly-plot .hoverlayer rect.bg {
+        fill: #0F172A !important;
+        fill-opacity: 0.96 !important;
+        stroke: rgba(255, 255, 255, 0.18) !important;
+    }
+
     .js-plotly-plot .hoverlayer .hovertext text,
-    .js-plotly-plot .hoverlayer text {
+    .js-plotly-plot .hoverlayer text,
+    .js-plotly-plot .hoverlayer text tspan {
         font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
         font-size: 11.5px !important;
         letter-spacing: 0.01em !important;
+        fill: #FFFFFF !important;
+        color: #FFFFFF !important;
+    }
+
+    /* Plotly Tooltip Hoverlabel: Light Mode - Elegant white card with high-contrast slate text */
+    [data-theme="light"] .js-plotly-plot .hoverlayer path.bg,
+    [data-theme="light"] .js-plotly-plot .hoverlayer rect.bg {
+        fill: #FFFFFF !important;
+        fill-opacity: 0.98 !important;
+        stroke: #CBD5E1 !important;
+        stroke-width: 1.5px !important;
+        filter: drop-shadow(0 6px 20px rgba(15, 23, 42, 0.14)) !important;
+    }
+
+    [data-theme="light"] .js-plotly-plot .hoverlayer .hovertext text,
+    [data-theme="light"] .js-plotly-plot .hoverlayer text,
+    [data-theme="light"] .js-plotly-plot .hoverlayer text tspan {
+        fill: #0F172A !important;
+        color: #0F172A !important;
+    }
+
+    @media (prefers-color-scheme: light) {
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer path.bg,
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer rect.bg {
+            fill: #FFFFFF !important;
+            fill-opacity: 0.98 !important;
+            stroke: #CBD5E1 !important;
+            stroke-width: 1.5px !important;
+            filter: drop-shadow(0 6px 20px rgba(15, 23, 42, 0.14)) !important;
+        }
+
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer .hovertext text,
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer text,
+        :root:not([data-theme="dark"]) .js-plotly-plot .hoverlayer text tspan {
+            fill: #0F172A !important;
+            color: #0F172A !important;
+        }
     }
 
     /* Preserve rich colors for gauge delta indicators and custom callout annotations */
